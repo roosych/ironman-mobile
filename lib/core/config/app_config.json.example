@@ -1,0 +1,11 @@
+{
+  "baseUrl": "http://127.0.0.1:8000/api/v1",
+  "connectTimeout": 30,
+  "receiveTimeout": 30,
+  "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY_HERE",
+  "firebaseApiKey": "YOUR_FIREBASE_API_KEY_HERE",
+  "otherApiKey": "YOUR_OTHER_API_KEY_HERE",
+  "enableRequestLogging": true,
+  "debugMode": true
+}
+

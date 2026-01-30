@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:ironman_mobile/l10n/app_localizations.dart';
+
+class BottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const BottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final fontSize = screenWidth < 360 ? 12.0 : 14.0;
+        final iconSize = screenWidth < 360 ? 22.0 : 24.0;
+        final horizontalPadding = screenWidth < 360 ? 4.0 : 8.0;
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                color: Colors.black.withValues(alpha: 0.1),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(
+                    context: context,
+                    index: 0,
+                    icon: HugeIcons.strokeRoundedHome01,
+                    label: AppLocalizations.of(context)!.nav_home,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 1,
+                    icon: HugeIcons.strokeRoundedFlag01,
+                    label: AppLocalizations.of(context)!.nav_results,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 2,
+                    icon: HugeIcons.strokeRoundedAward01,
+                    label: AppLocalizations.of(context)!.nav_ratings,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 3,
+                    icon: HugeIcons.strokeRoundedUserGroup,
+                    label: AppLocalizations.of(context)!.nav_athletes,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required int index,
+    required IconData icon,
+    required String label,
+    required double fontSize,
+    required double iconSize,
+  }) {
+    final isSelected = currentIndex == index;
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(index),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              HugeIcon(
+                icon: icon,
+                size: iconSize,
+                color: isSelected
+                    ? Colors.red
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 4),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected
+                        ? Colors.red
+                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

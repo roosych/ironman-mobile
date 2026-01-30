@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ipconfig:*)",
+      "Bash(findstr:*)",
+      "Bash(netsh advfirewall firewall:*)",
+      "Bash(dir:*)",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter run:*)",
+      "Bash(del \"lib\\\\core\\\\config\\\\app_config_new.dart\")",
+      "Bash(timeout 15 tail:*)",
+      "Bash(flutter doctor:*)",
+      "Bash(flutter build:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)",
+      "Bash(./check-env.sh:*)",
+      "Bash(tree:*)",
+      "Bash(./switch-env.sh:*)",
+      "Bash(bash:*)",
+      "Bash(build \")",
+      "Bash(flutter clean:*)",
+      "Bash(.gradlew clean:*)",
+      "Bash(gradlew.bat clean:*)",
+      "Bash(flutter devices:*)",
+      "Bash(adb uninstall:*)",
+      "Bash(adb kill-server:*)",
+      "Bash(adb start-server:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb logcat:*)",
+      "Bash(adb connect:*)",
+      "Bash(./gradlew signingReport:*)",
+      "Bash(keytool -list -v -keystore:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Program Files\\\\Common Files\\\\Oracle\\\\Java\\\\javapath\\\\keytool.exe\" -list -v -keystore \"%USERPROFILE%\\\\.android\\\\debug.keystore\" -alias androiddebugkey -storepass android -keypass android)"
+    ]
+  }
+}

@@ -1,0 +1,1002 @@
+{
+  "@@locale": "en",
+  "app_title": "IRONSTATS",
+  "@app_title": {
+    "description": "Application title"
+  },
+  "login_title": "Sign in to your account",
+  "@login_title": {
+    "description": "Login screen title"
+  },
+  "login_email": "Email",
+  "@login_email": {
+    "description": "Email field label"
+  },
+  "login_password": "Password",
+  "@login_password": {
+    "description": "Password field label"
+  },
+  "login_button": "SIGN IN",
+  "@login_button": {
+    "description": "Login button text"
+  },
+  "login_email_required": "Enter email",
+  "@login_email_required": {
+    "description": "Email validation error"
+  },
+  "login_email_invalid": "Invalid email",
+  "@login_email_invalid": {
+    "description": "Email format validation error"
+  },
+  "login_password_required": "Enter password",
+  "@login_password_required": {
+    "description": "Password validation error"
+  },
+  "login_forgot_password": "Forgot password?",
+  "@login_forgot_password": {
+    "description": "Forgot password link"
+  },
+  "login_no_account": "Don't have an account?",
+  "@login_no_account": {
+    "description": "Text before registration link"
+  },
+  "login_create_account": "Create account",
+  "@login_create_account": {
+    "description": "Registration link text"
+  },
+  "settings_title": "Settings",
+  "@settings_title": {
+    "description": "Settings screen title"
+  },
+  "settings_language": "Language",
+  "@settings_language": {
+    "description": "Language setting label"
+  },
+  "language_russian": "Русский",
+  "@language_russian": {
+    "description": "Russian language name"
+  },
+  "language_english": "English",
+  "@language_english": {
+    "description": "English language name"
+  },
+  "language_azerbaijani": "Azərbaycan",
+  "@language_azerbaijani": {
+    "description": "Azerbaijani language name"
+  },
+  "logout_button": "LOG OUT",
+  "@logout_button": {
+    "description": "Logout button text"
+  },
+  "profile_title": "Profile",
+  "@profile_title": {
+    "description": "Profile screen title"
+  },
+  "profile_information": "Information",
+  "@profile_information": {
+    "description": "Information menu item"
+  },
+  "profile_photo_gallery": "Photo Gallery",
+  "@profile_photo_gallery": {
+    "description": "Photo Gallery menu item"
+  },
+  "profile_workouts": "Workouts",
+  "@profile_workouts": {
+    "description": "Workouts menu item"
+  },
+  "profile_user_fallback": "User",
+  "@profile_user_fallback": {
+    "description": "Fallback text for user name"
+  },
+  "common_coming_soon": "coming soon",
+  "@common_coming_soon": {
+    "description": "Coming soon text"
+  },
+  "common_retry": "Retry",
+  "@common_retry": {
+    "description": "Retry button text"
+  },
+  "common_cancel": "Cancel",
+  "@common_cancel": {
+    "description": "Cancel button text"
+  },
+  "common_undo": "Undo",
+  "@common_undo": {
+    "description": "Undo button text"
+  },
+  "common_all": "All",
+  "@common_all": {
+    "description": "All button/text"
+  },
+  "common_loading_error": "Loading error",
+  "@common_loading_error": {
+    "description": "Loading error message"
+  },
+  "home_upcoming_races": "Upcoming Races",
+  "@home_upcoming_races": {
+    "description": "Upcoming races section title"
+  },
+  "home_personal_bests": "Personal Bests",
+  "@home_personal_bests": {
+    "description": "Personal bests section title"
+  },
+  "home_greeting": "Hello,",
+  "@home_greeting": {
+    "description": "Greeting text before user name"
+  },
+  "home_finishes": "finishes",
+  "@home_finishes": {
+    "description": "Finishes label"
+  },
+  "home_add_race": "Add Race",
+  "@home_add_race": {
+    "description": "Add race button text"
+  },
+  "home_add_race_title": "Add Race",
+  "@home_add_race_title": {
+    "description": "Add upcoming race bottom sheet title"
+  },
+  "home_no_upcoming_races": "No upcoming races",
+  "@home_no_upcoming_races": {
+    "description": "No upcoming races message"
+  },
+  "common_no_data": "No data",
+  "@common_no_data": {
+    "description": "No data message"
+  },
+  "common_today": "Today",
+  "@common_today": {
+    "description": "Today label"
+  },
+  "common_days": "{count, plural, =0{Today} =1{1 day} other{{count} days}}",
+  "@common_days": {
+    "description": "Days count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "results_title": "Results",
+  "@results_title": {
+    "description": "Results screen title"
+  },
+  "result_detail_title": "Result",
+  "@result_detail_title": {
+    "description": "Result detail screen title"
+  },
+  "results_my_results": "My Results",
+  "@results_my_results": {
+    "description": "My Results tab"
+  },
+  "results_all_athletes": "All Athletes",
+  "@results_all_athletes": {
+    "description": "All Athletes tab"
+  },
+  "results_no_results": "No results",
+  "@results_no_results": {
+    "description": "No results message"
+  },
+  "results_all_coming_soon": "All athletes results coming soon",
+  "@results_all_coming_soon": {
+    "description": "All athletes results coming soon message"
+  },
+  "news_title": "News",
+  "@news_title": {
+    "description": "News screen title"
+  },
+  "news_coming_soon": "News coming soon",
+  "@news_coming_soon": {
+    "description": "News coming soon message"
+  },
+  "news_working_on_section": "We are working on this section. Stay tuned for updates!",
+  "@news_working_on_section": {
+    "description": "News section work in progress message"
+  },
+  "ratings_title": "Ratings",
+  "@ratings_title": {
+    "description": "Ratings screen title"
+  },
+  "ratings_coming_soon": "Ratings coming soon",
+  "@ratings_coming_soon": {
+    "description": "Ratings coming soon message"
+  },
+  "ratings_working_on_section": "We are working on this section. Stay tuned for updates!",
+  "@ratings_working_on_section": {
+    "description": "Ratings section work in progress message"
+  },
+  "ratings_by_race_type": "By Race Type",
+  "@ratings_by_race_type": {
+    "description": "By race type tab label"
+  },
+  "ratings_by_discipline": "By Discipline",
+  "@ratings_by_discipline": {
+    "description": "By discipline tab label"
+  },
+  "ratings_filter_race_type": "Race Type",
+  "@ratings_filter_race_type": {
+    "description": "Race type filter label"
+  },
+  "ratings_filter_discipline": "Discipline",
+  "@ratings_filter_discipline": {
+    "description": "Discipline filter label"
+  },
+  "ratings_discipline_total": "Total",
+  "@ratings_discipline_total": {
+    "description": "Total discipline label"
+  },
+  "ratings_discipline_swim": "Swim",
+  "@ratings_discipline_swim": {
+    "description": "Swim discipline label"
+  },
+  "ratings_discipline_bike": "Bike",
+  "@ratings_discipline_bike": {
+    "description": "Bike discipline label"
+  },
+  "ratings_discipline_run": "Run",
+  "@ratings_discipline_run": {
+    "description": "Run discipline label"
+  },
+  "ratings_no_rankings": "No rankings",
+  "@ratings_no_rankings": {
+    "description": "No rankings message"
+  },
+  "ratings_position": "Position",
+  "@ratings_position": {
+    "description": "Position label"
+  },
+  "ratings_record_date": "Record Date",
+  "@ratings_record_date": {
+    "description": "Record date label"
+  },
+  "ratings_record_location": "Record Location",
+  "@ratings_record_location": {
+    "description": "Record location label"
+  },
+  "ratings_compare": "Compare",
+  "ratings_disciplines_comparison": "Discipline comparison by athlete's best records",
+  "ratings_compare_records": "Compare personal records",
+  "ratings_race_type_full": "FULL 140.6",
+  "ratings_race_type_half": "HALF 70.3",
+  "@ratings_compare": {
+    "description": "Compare label"
+  },
+  "ratings_select_two_athletes": "Select 2 athletes to compare",
+  "@ratings_select_two_athletes": {
+    "description": "Select two athletes message"
+  },
+  "ratings_clear_selection": "Clear selection",
+  "@ratings_clear_selection": {
+    "description": "Clear selection button text"
+  },
+  "ratings_time": "Time",
+  "@ratings_time": {
+    "description": "Time label"
+  },
+  "ratings_difference": "Difference",
+  "@ratings_difference": {
+    "description": "Difference label"
+  },
+  "ratings_tap_to_compare_hint": "Tap on an athlete to compare",
+  "@ratings_tap_to_compare_hint": {
+    "description": "Hint text for comparing athletes"
+  },
+  "athletes_title": "Athletes",
+  "@athletes_title": {
+    "description": "Athletes screen title"
+  },
+  "athletes_coming_soon": "Athletes screen — coming soon",
+  "@athletes_coming_soon": {
+    "description": "Athletes screen coming soon message"
+  },
+  "athletes_list_title": "Athletes",
+  "@athletes_list_title": {
+    "description": "Athletes list screen title"
+  },
+  "athletes_search_hint": "Search",
+  "@athletes_search_hint": {
+    "description": "Athletes search field placeholder"
+  },
+  "athletes_filter_registered": "Registered",
+  "@athletes_filter_registered": {
+    "description": "Registered athletes filter"
+  },
+  "athletes_filter_new": "New",
+  "@athletes_filter_new": {
+    "description": "New athletes filter"
+  },
+  "athletes_status_registered": "Registered",
+  "@athletes_status_registered": {
+    "description": "Registered status label"
+  },
+  "athletes_invite_button": "INVITE",
+  "@athletes_invite_button": {
+    "description": "Invite athlete button text"
+  },
+  "athlete_profile_title": "Athlete Profile",
+  "@athlete_profile_title": {
+    "description": "Athlete profile screen title"
+  },
+  "athlete_profile_info_tab": "Info",
+  "@athlete_profile_info_tab": {
+    "description": "Info tab label"
+  },
+  "athlete_profile_results_tab": "Results",
+  "@athlete_profile_results_tab": {
+    "description": "Results tab label"
+  },
+  "athlete_profile_best_by_race_type": "Best by race type",
+  "@athlete_profile_best_by_race_type": {
+    "description": "Best by race type section title"
+  },
+  "athlete_profile_by_disciplines": "By disciplines",
+  "@athlete_profile_by_disciplines": {
+    "description": "By disciplines section title"
+  },
+  "athlete_profile_swimming": "Swimming",
+  "@athlete_profile_swimming": {
+    "description": "Swimming discipline label"
+  },
+  "athlete_profile_cycling": "Cycling",
+  "@athlete_profile_cycling": {
+    "description": "Cycling discipline label"
+  },
+  "athlete_profile_running": "Running",
+  "@athlete_profile_running": {
+    "description": "Running discipline label"
+  },
+  "athlete_profile_personal_bests": "Records",
+  "@athlete_profile_personal_bests": {
+    "description": "Personal bests tab label"
+  },
+  "nav_home": "Home",
+  "@nav_home": {
+    "description": "Bottom navigation Home"
+  },
+  "nav_results": "Results",
+  "@nav_results": {
+    "description": "Bottom navigation Results"
+  },
+  "nav_ratings": "Ratings",
+  "@nav_ratings": {
+    "description": "Bottom navigation Ratings"
+  },
+  "nav_athletes": "Athletes",
+  "@nav_athletes": {
+    "description": "Bottom navigation Athletes"
+  },
+  "photo_delete_title": "Delete photo?",
+  "@photo_delete_title": {
+    "description": "Delete photo dialog title"
+  },
+  "photo_delete_avatar_warning": "This photo is your avatar. After deletion, the avatar will be reset.",
+  "@photo_delete_avatar_warning": {
+    "description": "Delete avatar photo warning"
+  },
+  "photo_delete_irreversible": "This action cannot be undone.",
+  "@photo_delete_irreversible": {
+    "description": "Delete photo irreversible warning"
+  },
+  "photo_delete_button": "Delete",
+  "@photo_delete_button": {
+    "description": "Delete button text"
+  },
+  "photo_deleted": "Photo deleted",
+  "@photo_deleted": {
+    "description": "Photo deleted success message"
+  },
+  "photo_uploaded": "Photo uploaded",
+  "@photo_uploaded": {
+    "description": "Photo uploaded success message"
+  },
+  "photo_already_avatar": "This photo is already set as avatar",
+  "@photo_already_avatar": {
+    "description": "Photo already avatar message"
+  },
+  "photo_set_avatar_title": "Set as avatar?",
+  "@photo_set_avatar_title": {
+    "description": "Set as avatar dialog title"
+  },
+  "photo_set_avatar_description": "This photo will be used as your avatar in the profile.",
+  "@photo_set_avatar_description": {
+    "description": "Set as avatar dialog description"
+  },
+  "photo_set_button": "Set",
+  "@photo_set_button": {
+    "description": "Set button text"
+  },
+  "photo_set_as_avatar": "Set as avatar",
+  "@photo_set_as_avatar": {
+    "description": "Set as avatar button text"
+  },
+  "photo_avatar": "Avatar",
+  "@photo_avatar": {
+    "description": "Avatar label"
+  },
+  "photo_delete": "Delete",
+  "@photo_delete": {
+    "description": "Delete button text"
+  },
+  "photo_avatar_updated": "Avatar successfully updated",
+  "@photo_avatar_updated": {
+    "description": "Avatar updated success message"
+  },
+  "photo_add_button": "Add",
+  "@photo_add_button": {
+    "description": "Add photo button text"
+  },
+  "result_total_time": "Total Time",
+  "@result_total_time": {
+    "description": "Total time label"
+  },
+  "result_category": "Category",
+  "@result_category": {
+    "description": "Category label"
+  },
+  "result_disciplines": "Disciplines",
+  "@result_disciplines": {
+    "description": "Disciplines section title"
+  },
+  "result_swim": "Swim",
+  "@result_swim": {
+    "description": "Swim discipline label"
+  },
+  "result_t1": "T1",
+  "@result_t1": {
+    "description": "Transition 1 label"
+  },
+  "result_bike": "Bike",
+  "@result_bike": {
+    "description": "Bike discipline label"
+  },
+  "result_t2": "T2",
+  "@result_t2": {
+    "description": "Transition 2 label"
+  },
+  "result_run": "Run",
+  "@result_run": {
+    "description": "Run discipline label"
+  },
+  "register_sign_in": "Sign in",
+  "@register_sign_in": {
+    "description": "Sign in button text"
+  },
+  "register_title": "Create account",
+  "@register_title": {
+    "description": "Registration screen title"
+  },
+  "register_name": "Name",
+  "@register_name": {
+    "description": "Name field label"
+  },
+  "register_name_required": "Enter name",
+  "@register_name_required": {
+    "description": "Name validation error"
+  },
+  "register_confirm_password": "Confirm password",
+  "@register_confirm_password": {
+    "description": "Confirm password field label"
+  },
+  "register_confirm_password_required": "Confirm password",
+  "@register_confirm_password_required": {
+    "description": "Confirm password validation error"
+  },
+  "register_password_min_length": "Password must be at least 6 characters",
+  "@register_password_min_length": {
+    "description": "Password minimum length validation error"
+  },
+  "register_passwords_not_match": "Passwords do not match",
+  "@register_passwords_not_match": {
+    "description": "Password mismatch validation error"
+  },
+  "register_button": "SIGN UP",
+  "@register_button": {
+    "description": "Registration button text"
+  },
+  "register_already_have_account": "Already have an account?",
+  "@register_already_have_account": {
+    "description": "Text before login link"
+  },
+  "register_thank_you": "Thank you!",
+  "@register_thank_you": {
+    "description": "Registration success title"
+  },
+  "register_success_message": "Registration successful.\nPlease verify your account by clicking the link in the email we sent you.\nYou can then sign in to your account.",
+  "@register_success_message": {
+    "description": "Registration success message"
+  },
+  "register_success_sign_in": "SIGN IN",
+  "@register_success_sign_in": {
+    "description": "Sign in button on success screen"
+  },
+  "settings_language_changed": "Language changed",
+  "@settings_language_changed": {
+    "description": "Language changed notification message"
+  },
+  "edit_profile_title": "Athlete Info",
+  "@edit_profile_title": {
+    "description": "Edit profile screen title"
+  },
+  "edit_profile_name": "Name",
+  "@edit_profile_name": {
+    "description": "Name field label"
+  },
+  "edit_profile_bio": "Bio",
+  "@edit_profile_bio": {
+    "description": "Bio field label"
+  },
+  "edit_profile_social_links": "Social Links",
+  "@edit_profile_social_links": {
+    "description": "Social links section title"
+  },
+  "edit_profile_save_button": "SAVE CHANGES",
+  "@edit_profile_save_button": {
+    "description": "Save button text"
+  },
+  "edit_profile_save_success": "Profile saved successfully",
+  "@edit_profile_save_success": {
+    "description": "Profile save success message"
+  },
+  "edit_profile_save_error": "Failed to save profile",
+  "@edit_profile_save_error": {
+    "description": "Profile save error message"
+  },
+  "profile_security": "Security",
+  "@profile_security": {
+    "description": "Security menu item"
+  },
+  "change_password_title": "Change Password",
+  "@change_password_title": {
+    "description": "Change password screen title"
+  },
+  "change_password_current": "Current Password",
+  "@change_password_current": {
+    "description": "Current password field label"
+  },
+  "change_password_new": "New Password",
+  "@change_password_new": {
+    "description": "New password field label"
+  },
+  "change_password_confirm": "Confirm New Password",
+  "@change_password_confirm": {
+    "description": "Confirm new password field label"
+  },
+  "change_password_current_required": "Enter current password",
+  "@change_password_current_required": {
+    "description": "Current password validation error"
+  },
+  "change_password_new_required": "Enter new password",
+  "@change_password_new_required": {
+    "description": "New password validation error"
+  },
+  "change_password_confirm_required": "Confirm new password",
+  "@change_password_confirm_required": {
+    "description": "Confirm password validation error"
+  },
+  "change_password_min_length": "Password must be at least 8 characters",
+  "@change_password_min_length": {
+    "description": "Password minimum length validation error"
+  },
+  "change_password_same_as_current": "New password must differ from current password",
+  "@change_password_same_as_current": {
+    "description": "New password same as current validation error"
+  },
+  "change_password_mismatch": "Passwords do not match",
+  "@change_password_mismatch": {
+    "description": "Password mismatch validation error"
+  },
+  "change_password_button": "CHANGE PASSWORD",
+  "@change_password_button": {
+    "description": "Change password button text"
+  },
+  "change_password_success": "Password changed successfully",
+  "@change_password_success": {
+    "description": "Password change success message"
+  },
+  "change_password_error": "Failed to change password",
+  "@change_password_error": {
+    "description": "Password change error message"
+  },
+  "change_password_current_incorrect": "Current password is incorrect",
+  "@change_password_current_incorrect": {
+    "description": "Current password incorrect error message"
+  },
+  "change_password_success_title": "Success!",
+  "@change_password_success_title": {
+    "description": "Success dialog title"
+  },
+  "change_password_error_title": "Error",
+  "@change_password_error_title": {
+    "description": "Error dialog title"
+  },
+  "add_result_title": "Add Result",
+  "@add_result_title": {
+    "description": "Add result screen title"
+  },
+  "add_result_info": "Fill in the information about your race result. All fields marked with * are required.",
+  "@add_result_info": {
+    "description": "Add result screen info text"
+  },
+  "add_result_location": "Location",
+  "@add_result_location": {
+    "description": "Location field label"
+  },
+  "add_result_location_hint": "e.g. Cozumel, Mexico",
+  "@add_result_location_hint": {
+    "description": "Location field hint"
+  },
+  "add_result_location_required": "Enter location",
+  "@add_result_location_required": {
+    "description": "Location validation error"
+  },
+  "add_result_date": "Race Date",
+  "@add_result_date": {
+    "description": "Date field label"
+  },
+  "add_result_date_hint": "Select date",
+  "@add_result_date_hint": {
+    "description": "Date field hint"
+  },
+  "add_result_race_type": "Race Type",
+  "@add_result_race_type": {
+    "description": "Race type field label"
+  },
+  "add_result_race_type_required": "Select race type",
+  "@add_result_race_type_required": {
+    "description": "Race type validation error"
+  },
+  "add_result_total_time": "Total Time",
+  "@add_result_total_time": {
+    "description": "Total time field label"
+  },
+  "add_result_total_time_required": "Enter total time",
+  "@add_result_total_time_required": {
+    "description": "Total time validation error"
+  },
+  "add_result_swim": "Swim",
+  "@add_result_swim": {
+    "description": "Swim time field label"
+  },
+  "add_result_t1": "T1 (Transition 1)",
+  "@add_result_t1": {
+    "description": "T1 time field label"
+  },
+  "add_result_bike": "Bike",
+  "@add_result_bike": {
+    "description": "Bike time field label"
+  },
+  "add_result_t2": "T2 (Transition 2)",
+  "@add_result_t2": {
+    "description": "T2 time field label"
+  },
+  "add_result_run": "Run",
+  "@add_result_run": {
+    "description": "Run time field label"
+  },
+  "add_result_time_format": "Format: HH:MM:SS",
+  "@add_result_time_format": {
+    "description": "Time format validation error"
+  },
+  "add_result_save": "SAVE",
+  "@add_result_save": {
+    "description": "Save button text"
+  },
+  "add_result_saved_stub": "Result saved (stub)",
+  "@add_result_saved_stub": {
+    "description": "Save success message stub"
+  },
+  "add_result_section_basic_info": "Basic Information",
+  "@add_result_section_basic_info": {
+    "description": "Basic information section title"
+  },
+  "add_result_section_time": "Time",
+  "@add_result_section_time": {
+    "description": "Time section title"
+  },
+  "add_result_section_disciplines": "Disciplines",
+  "@add_result_section_disciplines": {
+    "description": "Disciplines section title"
+  },
+  "add_result_t1_label": "T1",
+  "@add_result_t1_label": {
+    "description": "T1 field label"
+  },
+  "add_result_t2_label": "T2",
+  "@add_result_t2_label": {
+    "description": "T2 field label"
+  },
+  "add_result_time_hint": "HH:MM:SS",
+  "@add_result_time_hint": {
+    "description": "Time format hint"
+  },
+  "add_result_race_type_ironman": "Ironman",
+  "@add_result_race_type_ironman": {
+    "description": "Ironman race type label"
+  },
+  "add_result_race_type_ironman_70_3": "Ironman 70.3",
+  "@add_result_race_type_ironman_70_3": {
+    "description": "Ironman 70.3 race type label"
+  },
+  "add_result_race_type_5150": "5150",
+  "@add_result_race_type_5150": {
+    "description": "5150 race type label"
+  },
+  "add_result_success_title": "Result submitted",
+  "@add_result_success_title": {
+    "description": "Success message title when result is submitted"
+  },
+  "add_result_success_message": "Your result has been submitted for administrator approval. It will appear in the list after verification.",
+  "@add_result_success_message": {
+    "description": "Success message when result is submitted for approval"
+  },
+  "add_result_approved": "Approved",
+  "@add_result_approved": {
+    "description": "Status label for approved result"
+  },
+  "add_result_pending_approval": "Pending approval",
+  "@add_result_pending_approval": {
+    "description": "Status label for pending approval result"
+  },
+  "athlete_profile_ironman_number": "Ironman Number",
+  "@athlete_profile_ironman_number": {
+    "description": "Ironman number label"
+  },
+  "athlete_profile_bio": "Bio",
+  "@athlete_profile_bio": {
+    "description": "Bio section title"
+  },
+  "athlete_profile_social_links": "Social Links",
+  "@athlete_profile_social_links": {
+    "description": "Social links section title"
+  },
+  "athlete_profile_info_not_available": "Information not available",
+  "@athlete_profile_info_not_available": {
+    "description": "Information not available message"
+  },
+  "athlete_profile_social_links_not_specified": "Social links not specified",
+  "@athlete_profile_social_links_not_specified": {
+    "description": "Social links not specified message"
+  },
+  "error_server_error": "Something went wrong, please try again later",
+  "@error_server_error": {
+    "description": "Server error message"
+  },
+  "error_no_internet": "Check your internet connection and try again",
+  "@error_no_internet": {
+    "description": "No internet connection error message"
+  },
+  "error_no_network_connection": "No internet connection available",
+  "@error_no_network_connection": {
+    "description": "Network connection error message"
+  },
+  "error_ok": "OK",
+  "@error_ok": {
+    "description": "OK button text for error alerts"
+  },
+  "error_cooldown": "Please wait {seconds} seconds before trying again",
+  "@error_cooldown": {
+    "description": "Network cooldown error message with seconds parameter",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "error_network_error": "Network connection problem, please check your internet",
+  "@error_network_error": {
+    "description": "General network error message"
+  },
+  "error_unexpected": "An unexpected error occurred, please try again",
+  "@error_unexpected": {
+    "description": "Unexpected error message"
+  },
+  "my_races_title": "Events",
+  "@my_races_title": {
+    "description": "My races screen title"
+  },
+  "my_races_no_races": "You don't have any upcoming races yet",
+  "@my_races_no_races": {
+    "description": "No races message for my races screen"
+  },
+  "my_races_delete": "Delete",
+  "@my_races_delete": {
+    "description": "Delete button text for race swipe action"
+  },
+  "notifications_title": "Notifications",
+  "@notifications_title": {
+    "description": "Notifications screen title"
+  },
+  "notifications_mark_all_read_tooltip": "Mark all as read",
+  "@notifications_mark_all_read_tooltip": {
+    "description": "Tooltip for mark all as read button"
+  },
+  "notifications_mark_all_read_error": "Failed to mark all as read",
+  "@notifications_mark_all_read_error": {
+    "description": "Error message when marking all as read fails"
+  },
+  "notifications_delete_error": "Failed to delete",
+  "@notifications_delete_error": {
+    "description": "Error message when deleting notification fails"
+  },
+  "notifications_no_notifications": "No notifications",
+  "@notifications_no_notifications": {
+    "description": "Empty notifications list message"
+  },
+  "notifications_fallback_title": "Notification",
+  "@notifications_fallback_title": {
+    "description": "Fallback title for notification without title"
+  },
+  "notification_detail_title": "Notification",
+  "@notification_detail_title": {
+    "description": "Notification detail screen title"
+  },
+  "notification_detail_understood": "Got it",
+  "upcoming_completed": "COMPLETED",
+  "upcoming_day_label": "DAY",
+  "upcoming_days_label": "DAYS",
+  "home_sync_title": "Sync your past races",
+  "home_sync_description": "If you already have race results on ironman.az, we can sync them with your profile.",
+  "home_sync_button": "REQUEST SYNC",
+  "home_sync_requested": "Sync request sent. Your results will appear in the profile after processing.",
+  "home_sync_error": "Failed to send sync request",
+  "home_sync_error_timeout": "Connection timeout. Please try again.",
+  "home_sync_error_network": "Connection error. Check your network.",
+  "home_sync_error_server": "Server error",
+  "@notification_detail_understood": {
+    "description": "Button text to close notification detail screen"
+  },
+  "email_not_verified_title": "Your email is not verified",
+  "@email_not_verified_title": {
+    "description": "Email not verified screen title"
+  },
+  "email_not_verified_message": "Please check your email and click the link to verify your account.",
+  "@email_not_verified_message": {
+    "description": "Email verification message"
+  },
+  "email_not_verified_no_email": "Didn't receive the email?",
+  "@email_not_verified_no_email": {
+    "description": "Text before resend email button"
+  },
+  "email_not_verified_resend": "RESEND EMAIL",
+  "@email_not_verified_resend": {
+    "description": "Resend email button text"
+  },
+  "email_not_verified_resend_success": "Email sent again",
+  "@email_not_verified_resend_success": {
+    "description": "Success message when email is resent"
+  },
+  "email_not_verified_back_to_login": "BACK TO LOGIN",
+  "@email_not_verified_back_to_login": {
+    "description": "Back to login button text"
+  },
+  "email_not_verified_back_to_login_description": "You are already logged in. Clicking this button will log you out and return you to the login screen.",
+  "@email_not_verified_back_to_login_description": {
+    "description": "Explanation of what happens when clicking back to login button"
+  },
+  "profile_selection_title": "Welcome!",
+  "@profile_selection_title": {
+    "description": "Profile selection screen title"
+  },
+  "profile_selection_description": "If your results are not on the site, tap 'Create new profile' to create an athlete profile.",
+  "@profile_selection_description": {
+    "description": "Profile selection screen description"
+  },
+  "profile_selection_code_text": "If your results are on ironman.az, enter the 6-character code provided by the administrator to link your profile.",
+  "@profile_selection_code_text": {
+    "description": "Text about entering profile code"
+  },
+  "profile_selection_code_label": "Profile code",
+  "@profile_selection_code_label": {
+    "description": "Profile code input field label"
+  },
+  "profile_selection_code_hint": "Enter 6-character code",
+  "@profile_selection_code_hint": {
+    "description": "Profile code input field hint"
+  },
+  "profile_selection_code_required": "Code is required",
+  "@profile_selection_code_required": {
+    "description": "Code required validation message"
+  },
+  "profile_selection_code_length": "Code must be exactly 6 characters",
+  "@profile_selection_code_length": {
+    "description": "Code length validation message"
+  },
+  "profile_selection_code_invalid": "Code contains invalid characters. Use only letters and numbers (excluding 0, O, I, L).",
+  "@profile_selection_code_invalid": {
+    "description": "Code format validation message"
+  },
+  "profile_selection_link_button": "Link profile",
+  "@profile_selection_link_button": {
+    "description": "Link profile button text"
+  },
+  "profile_selection_or": "OR",
+  "@profile_selection_or": {
+    "description": "OR separator text"
+  },
+  "profile_selection_search": "Search",
+  "@profile_selection_search": {
+    "description": "Search field placeholder"
+  },
+  "profile_selection_results_count": "{count, plural, =0{No results} =1{1 result} other{{count} results}}",
+  "@profile_selection_results_count": {
+    "description": "Results count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_selection_select": "Select",
+  "@profile_selection_select": {
+    "description": "Select profile button text"
+  },
+  "profile_selection_next": "Next",
+  "@profile_selection_next": {
+    "description": "Next button text to proceed with profile linking"
+  },
+  "profile_selection_create_new": "Create new profile",
+  "@profile_selection_create_new": {
+    "description": "Create new profile button text"
+  },
+  "profile_selection_loading": "Loading profiles...",
+  "@profile_selection_loading": {
+    "description": "Loading profiles message"
+  },
+  "profile_selection_no_profiles": "No available profiles",
+  "@profile_selection_no_profiles": {
+    "description": "No profiles available message"
+  },
+  "profile_selection_link_success": "Profile linked successfully",
+  "@profile_selection_link_success": {
+    "description": "Profile linked success message"
+  },
+  "profile_selection_create_success": "Profile created successfully",
+  "@profile_selection_create_success": {
+    "description": "Profile created success message"
+  },
+  "profile_selection_error_network": "Connection error. Check your network.",
+  "@profile_selection_error_network": {
+    "description": "Network error message"
+  },
+  "profile_selection_error_server": "Server error. Please try again later.",
+  "@profile_selection_error_server": {
+    "description": "Server error message"
+  },
+  "profile_selection_error_already_linked": "This profile is already linked to another user",
+  "@profile_selection_error_already_linked": {
+    "description": "Profile already linked error message"
+  },
+  "profile_selection_error_code_not_found": "Code not found or invalid",
+  "@profile_selection_error_code_not_found": {
+    "description": "Code not found error message"
+  },
+  "profile_selection_error_code_already_used": "This code has already been used",
+  "@profile_selection_error_code_already_used": {
+    "description": "Code already used error message"
+  },
+  "profile_selection_error_code_already_linked": "Profile with this code is already linked to another user",
+  "@profile_selection_error_code_already_linked": {
+    "description": "Code already linked error message"
+  },
+  "profile_selection_error_profile_already_exists": "You already have a linked profile",
+  "@profile_selection_error_profile_already_exists": {
+    "description": "Profile already exists error message"
+  },
+  "profile_selection_logout": "Log out",
+  "@profile_selection_logout": {
+    "description": "Logout button text"
+  },
+  "notification_permission_disabled_title": "Notifications disabled",
+  "@notification_permission_disabled_title": {
+    "description": "Title for notification permission disabled banner"
+  },
+  "notification_permission_disabled_message": "You can enable them in settings",
+  "@notification_permission_disabled_message": {
+    "description": "Message for notification permission disabled banner"
+  },
+  "notification_permission_open_settings": "Open settings",
+  "@notification_permission_open_settings": {
+    "description": "Button text to open app settings"
+  }
+}
+

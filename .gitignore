@@ -1,0 +1,85 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+nul
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# ============================================
+# Environment Configuration Files
+# ============================================
+# Реальные .env файлы с секретами НЕ ДОЛЖНЫ попадать в git!
+
+.env.development
+.env.staging
+.env.production
+
+# Но example файлы ДОЛЖНЫ быть в git
+# .env.*.example
+
+# ============================================
+# Old Configuration Files (Migration Backup)
+# ============================================
+
+# Бэкап старых файлов конфигурации
+lib/core/config/app_config_old.dart
+lib/core/config/app_config_old_backup.dart
+lib/core/config/app_config_new.dart
+
+# ============================================
+# Firebase Environment Configuration
+# ============================================
+
+# Active Firebase configs (НЕ коммитим активные конфиги)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Production configs (НЕ коммитим продакшн ключи в git!)
+firebase-configs/prod/google-services.json
+firebase-configs/prod/GoogleService-Info.plist
+
+# Dev configs можно коммитить (безопасны для разработки)
+# Они будут в firebase-configs/dev/
+
+# Environment switcher logs
+switch-env.log
