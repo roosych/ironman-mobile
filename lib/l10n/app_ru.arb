@@ -296,6 +296,32 @@
   "notification_permission_open_settings": "Открыть настройки",
   "@notification_permission_open_settings": {
     "description": "Текст кнопки для открытия настроек приложения"
-  }
+  },
+  "pace_calculator_done": "Готово",
+  "pace_calculator_tab_full": "IRONMAN",
+  "pace_calculator_tab_70_3": "IRONMAN 70.3",
+  "pace_calculator_tab_5150": "5150",
+  "pace_calculator_appbar_title": "Калькулятор",
+  "pace_calculator_total_race_time": "ОБЩЕЕ ВРЕМЯ ГОНКИ",
+  "pace_calculator_km_unit": "км",
+  "pace_calculator_min_per_100m": "мин / 100 м",
+  "pace_calculator_km_per_h": "км / ч",
+  "pace_calculator_min_per_km": "мин / км",
+  "pace_calculator_swim_time": "Плавание",
+  "pace_calculator_t1_time": "T1",
+  "pace_calculator_bike_time": "Вело",
+  "pace_calculator_t2_time": "T2",
+  "pace_calculator_run_time": "Бег",
+  "home_pace_calculator_title": "Калькулятор темпа",
+  "home_pace_calculator_subtitle": "Плавание • Вело • Бег",
+  "home_pace_calculator_button": "РАССЧИТАТЬ",
+  "home_card_pace_title": "Калькулятор темпа",
+  "home_card_pace_subtitle": "ПЛАВАНИЕ • ВЕЛО • БЕГ",
+  "home_card_pace_helper": "Инструменты для гонки",
+  "home_card_pace_button": "РАССЧИТАТЬ",
+  "home_card_profile_title": "Кабинет атлета",
+  "home_card_profile_subtitle": "РЕЗУЛЬТАТЫ • РЕЙТИНГИ • ПРОФИЛЬ",
+  "home_card_profile_helper": "Соревновательные результаты",
+  "home_card_profile_button": "ПРОФИЛЬ"
 }
 

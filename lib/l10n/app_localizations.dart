@@ -1641,6 +1641,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get notification_permission_open_settings;
+
+  /// No description provided for @pace_calculator_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get pace_calculator_done;
+
+  /// No description provided for @pace_calculator_tab_full.
+  ///
+  /// In en, this message translates to:
+  /// **'IRONMAN'**
+  String get pace_calculator_tab_full;
+
+  /// No description provided for @pace_calculator_tab_70_3.
+  ///
+  /// In en, this message translates to:
+  /// **'IRONMAN 70.3'**
+  String get pace_calculator_tab_70_3;
+
+  /// No description provided for @pace_calculator_tab_5150.
+  ///
+  /// In en, this message translates to:
+  /// **'5150'**
+  String get pace_calculator_tab_5150;
+
+  /// No description provided for @pace_calculator_appbar_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace Calculator'**
+  String get pace_calculator_appbar_title;
+
+  /// No description provided for @pace_calculator_total_race_time.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL RACE TIME'**
+  String get pace_calculator_total_race_time;
+
+  /// No description provided for @pace_calculator_km_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get pace_calculator_km_unit;
+
+  /// No description provided for @pace_calculator_min_per_100m.
+  ///
+  /// In en, this message translates to:
+  /// **'min / 100m'**
+  String get pace_calculator_min_per_100m;
+
+  /// No description provided for @pace_calculator_km_per_h.
+  ///
+  /// In en, this message translates to:
+  /// **'km / h'**
+  String get pace_calculator_km_per_h;
+
+  /// No description provided for @pace_calculator_min_per_km.
+  ///
+  /// In en, this message translates to:
+  /// **'min / km'**
+  String get pace_calculator_min_per_km;
+
+  /// No description provided for @pace_calculator_swim_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get pace_calculator_swim_time;
+
+  /// No description provided for @pace_calculator_t1_time.
+  ///
+  /// In en, this message translates to:
+  /// **'T1'**
+  String get pace_calculator_t1_time;
+
+  /// No description provided for @pace_calculator_bike_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike'**
+  String get pace_calculator_bike_time;
+
+  /// No description provided for @pace_calculator_t2_time.
+  ///
+  /// In en, this message translates to:
+  /// **'T2'**
+  String get pace_calculator_t2_time;
+
+  /// No description provided for @pace_calculator_run_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get pace_calculator_run_time;
+
+  /// No description provided for @home_pace_calculator_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace Calculator'**
+  String get home_pace_calculator_title;
+
+  /// No description provided for @home_pace_calculator_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Swimming • Cycling • Running'**
+  String get home_pace_calculator_subtitle;
+
+  /// No description provided for @home_pace_calculator_button.
+  ///
+  /// In en, this message translates to:
+  /// **'CALCULATE'**
+  String get home_pace_calculator_button;
+
+  /// No description provided for @home_card_pace_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace Calculator'**
+  String get home_card_pace_title;
+
+  /// No description provided for @home_card_pace_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SWIMMING • CYCLING • RUNNING'**
+  String get home_card_pace_subtitle;
+
+  /// No description provided for @home_card_pace_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Race tools'**
+  String get home_card_pace_helper;
+
+  /// No description provided for @home_card_pace_button.
+  ///
+  /// In en, this message translates to:
+  /// **'CALCULATE'**
+  String get home_card_pace_button;
+
+  /// No description provided for @home_card_profile_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Athlete Cabinet'**
+  String get home_card_profile_title;
+
+  /// No description provided for @home_card_profile_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RESULTS • RATINGS • PROFILE'**
+  String get home_card_profile_subtitle;
+
+  /// No description provided for @home_card_profile_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitive results'**
+  String get home_card_profile_helper;
+
+  /// No description provided for @home_card_profile_button.
+  ///
+  /// In en, this message translates to:
+  /// **'PROFILE'**
+  String get home_card_profile_button;
 }
 
 class _AppLocalizationsDelegate

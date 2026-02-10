@@ -834,4 +834,82 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notification_permission_open_settings => 'Открыть настройки';
+
+  @override
+  String get pace_calculator_done => 'Готово';
+
+  @override
+  String get pace_calculator_tab_full => 'IRONMAN';
+
+  @override
+  String get pace_calculator_tab_70_3 => 'IRONMAN 70.3';
+
+  @override
+  String get pace_calculator_tab_5150 => '5150';
+
+  @override
+  String get pace_calculator_appbar_title => 'Калькулятор';
+
+  @override
+  String get pace_calculator_total_race_time => 'ОБЩЕЕ ВРЕМЯ ГОНКИ';
+
+  @override
+  String get pace_calculator_km_unit => 'км';
+
+  @override
+  String get pace_calculator_min_per_100m => 'мин / 100 м';
+
+  @override
+  String get pace_calculator_km_per_h => 'км / ч';
+
+  @override
+  String get pace_calculator_min_per_km => 'мин / км';
+
+  @override
+  String get pace_calculator_swim_time => 'Плавание';
+
+  @override
+  String get pace_calculator_t1_time => 'T1';
+
+  @override
+  String get pace_calculator_bike_time => 'Вело';
+
+  @override
+  String get pace_calculator_t2_time => 'T2';
+
+  @override
+  String get pace_calculator_run_time => 'Бег';
+
+  @override
+  String get home_pace_calculator_title => 'Калькулятор темпа';
+
+  @override
+  String get home_pace_calculator_subtitle => 'Плавание • Вело • Бег';
+
+  @override
+  String get home_pace_calculator_button => 'РАССЧИТАТЬ';
+
+  @override
+  String get home_card_pace_title => 'Калькулятор темпа';
+
+  @override
+  String get home_card_pace_subtitle => 'ПЛАВАНИЕ • ВЕЛО • БЕГ';
+
+  @override
+  String get home_card_pace_helper => 'Инструменты для гонки';
+
+  @override
+  String get home_card_pace_button => 'РАССЧИТАТЬ';
+
+  @override
+  String get home_card_profile_title => 'Кабинет атлета';
+
+  @override
+  String get home_card_profile_subtitle => 'РЕЗУЛЬТАТЫ • РЕЙТИНГИ • ПРОФИЛЬ';
+
+  @override
+  String get home_card_profile_helper => 'Соревновательные результаты';
+
+  @override
+  String get home_card_profile_button => 'ПРОФИЛЬ';
 }

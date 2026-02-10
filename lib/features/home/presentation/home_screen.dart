@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
-import 'package:ironman_mobile/shared/widgets/gradient_button.dart';
 import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
@@ -433,9 +432,8 @@ class PrimaryActionButton extends StatelessWidget {
       ),
     );
     if (isPrimary) {
-      return GradientPrimaryButton(
+      return ElevatedButton(
         onPressed: onPressed,
-        padding: _buttonPadding,
         child: child,
       );
     }

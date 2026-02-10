@@ -997,6 +997,32 @@
   "notification_permission_open_settings": "Open settings",
   "@notification_permission_open_settings": {
     "description": "Button text to open app settings"
-  }
+  },
+  "pace_calculator_done": "Done",
+  "pace_calculator_tab_full": "IRONMAN",
+  "pace_calculator_tab_70_3": "IRONMAN 70.3",
+  "pace_calculator_tab_5150": "5150",
+  "pace_calculator_appbar_title": "Pace Calculator",
+  "pace_calculator_total_race_time": "TOTAL RACE TIME",
+  "pace_calculator_km_unit": "km",
+  "pace_calculator_min_per_100m": "min / 100m",
+  "pace_calculator_km_per_h": "km / h",
+  "pace_calculator_min_per_km": "min / km",
+  "pace_calculator_swim_time": "Swim",
+  "pace_calculator_t1_time": "T1",
+  "pace_calculator_bike_time": "Bike",
+  "pace_calculator_t2_time": "T2",
+  "pace_calculator_run_time": "Run",
+  "home_pace_calculator_title": "Pace Calculator",
+  "home_pace_calculator_subtitle": "Swimming • Cycling • Running",
+  "home_pace_calculator_button": "CALCULATE",
+  "home_card_pace_title": "Pace Calculator",
+  "home_card_pace_subtitle": "SWIMMING • CYCLING • RUNNING",
+  "home_card_pace_helper": "Race tools",
+  "home_card_pace_button": "CALCULATE",
+  "home_card_profile_title": "Athlete Cabinet",
+  "home_card_profile_subtitle": "RESULTS • RATINGS • PROFILE",
+  "home_card_profile_helper": "Competitive results",
+  "home_card_profile_button": "PROFILE"
 }
 

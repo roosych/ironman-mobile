@@ -833,4 +833,82 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get notification_permission_open_settings => 'Parametrləri aç';
+
+  @override
+  String get pace_calculator_done => 'Done';
+
+  @override
+  String get pace_calculator_tab_full => 'IRONMAN';
+
+  @override
+  String get pace_calculator_tab_70_3 => 'IRONMAN 70.3';
+
+  @override
+  String get pace_calculator_tab_5150 => '5150';
+
+  @override
+  String get pace_calculator_appbar_title => 'Pace Calculator';
+
+  @override
+  String get pace_calculator_total_race_time => 'TOTAL RACE TIME';
+
+  @override
+  String get pace_calculator_km_unit => 'km';
+
+  @override
+  String get pace_calculator_min_per_100m => 'min / 100m';
+
+  @override
+  String get pace_calculator_km_per_h => 'km / h';
+
+  @override
+  String get pace_calculator_min_per_km => 'min / km';
+
+  @override
+  String get pace_calculator_swim_time => 'Swim';
+
+  @override
+  String get pace_calculator_t1_time => 'T1';
+
+  @override
+  String get pace_calculator_bike_time => 'Bike';
+
+  @override
+  String get pace_calculator_t2_time => 'T2';
+
+  @override
+  String get pace_calculator_run_time => 'Run';
+
+  @override
+  String get home_pace_calculator_title => 'Pace Calculator';
+
+  @override
+  String get home_pace_calculator_subtitle => 'Swimming • Cycling • Running';
+
+  @override
+  String get home_pace_calculator_button => 'CALCULATE';
+
+  @override
+  String get home_card_pace_title => 'Pace Calculator';
+
+  @override
+  String get home_card_pace_subtitle => 'SWIMMING • CYCLING • RUNNING';
+
+  @override
+  String get home_card_pace_helper => 'Race tools';
+
+  @override
+  String get home_card_pace_button => 'CALCULATE';
+
+  @override
+  String get home_card_profile_title => 'Athlete Cabinet';
+
+  @override
+  String get home_card_profile_subtitle => 'RESULTS • RATINGS • PROFILE';
+
+  @override
+  String get home_card_profile_helper => 'Competitive results';
+
+  @override
+  String get home_card_profile_button => 'PROFILE';
 }
