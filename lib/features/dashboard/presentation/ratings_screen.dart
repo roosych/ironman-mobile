@@ -294,32 +294,15 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.ironmanRed, width: 1.5),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          localizations.ratings_tap_to_compare_hint,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.ironmanWhite,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                  child: Center(
+                    child: Text(
+                      localizations.ratings_tap_to_compare_hint,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.ironmanWhite,
+                        fontWeight: FontWeight.w500,
                       ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _showHintAlert = false;
-                          });
-                        },
-                        icon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedCancel01,
-                          color: AppColors.ironmanWhite,
-                          size: 20,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
@@ -680,7 +663,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     side: BorderSide(
                       color: state.canCompare
                           ? AppColors.ironmanRed
-                          : AppColors.ironmanGray,
+                          : AppColors.ironmanLightGray,
                       width: state.canCompare ? 2 : 1,
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import '../infrastructure/rankings_api.dart';
+import '../domain/ranking.dart';
 import 'rankings_state.dart';
 
 final rankingsProvider =
@@ -15,6 +16,19 @@ class RankingsNotifier extends StateNotifier<RankingsState> {
   RankingsNotifier({RankingsApi? api})
       : _api = api ?? RankingsApi(),
         super(const RankingsState());
+
+  /// Фильтрует атлетов, у которых есть результаты по всем дисциплинам больше 0
+  List<Ranking> _filterCompleteAthletes(List<Ranking> rankings) {
+    return rankings.where((ranking) {
+      // Проверяем, что все дисциплины существуют и больше 0
+      return ranking.swimSeconds != null &&
+             ranking.bikeSeconds != null &&
+             ranking.runSeconds != null &&
+             ranking.swimSeconds! > 0 &&
+             ranking.bikeSeconds! > 0 &&
+             ranking.runSeconds! > 0;
+    }).toList();
+  }
 
   Future<void> loadRankings({
     String? raceType,
@@ -46,6 +60,10 @@ class RankingsNotifier extends StateNotifier<RankingsState> {
             discipline: effectiveDiscipline,
           )
           .timeout(_requestTimeout);
+
+      // Временно отключаем фильтрацию для отладки
+      // final filteredRankings = _filterCompleteAthletes(response.rankings);
+
       state = state.copyWith(
         rankings: response.rankings,
         isLoading: false,
@@ -79,6 +97,10 @@ class RankingsNotifier extends StateNotifier<RankingsState> {
             discipline: state.selectedDiscipline,
           )
           .timeout(_requestTimeout);
+
+      // Временно отключаем фильтрацию для отладки
+      // final filteredRankings = _filterCompleteAthletes(response.rankings);
+
       state = state.copyWith(
         rankings: response.rankings,
         meta: response.meta,

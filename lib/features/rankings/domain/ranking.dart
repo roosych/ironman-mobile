@@ -8,6 +8,9 @@ class Ranking {
   final String raceDate;
   final String location;
   final int ironmanCount;
+  final int? swimSeconds;
+  final int? bikeSeconds;
+  final int? runSeconds;
 
   const Ranking({
     required this.position,
@@ -19,6 +22,9 @@ class Ranking {
     required this.raceDate,
     required this.location,
     this.ironmanCount = 0,
+    this.swimSeconds,
+    this.bikeSeconds,
+    this.runSeconds,
   });
 
   factory Ranking.fromJson(Map<String, dynamic> json) {
@@ -73,6 +79,9 @@ class Ranking {
       raceDate: safeString(json['race_date'], ''),
       location: safeString(json['location'], ''),
       ironmanCount: ironmanCount,
+      swimSeconds: json['swim_seconds'] != null ? safeInt(json['swim_seconds']) : null,
+      bikeSeconds: json['bike_seconds'] != null ? safeInt(json['bike_seconds']) : null,
+      runSeconds: json['run_seconds'] != null ? safeInt(json['run_seconds']) : null,
     );
   }
 
@@ -87,6 +96,9 @@ class Ranking {
       'race_date': raceDate,
       'location': location,
       'ironman_count': ironmanCount,
+      'swim_seconds': swimSeconds,
+      'bike_seconds': bikeSeconds,
+      'run_seconds': runSeconds,
     };
   }
 }
