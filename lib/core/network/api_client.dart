@@ -128,8 +128,10 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // Check for 401 Unauthenticated (skip auth endpoints)
-    if (_isUnauthenticatedError(err) && !_isAuthEndpoint(err.requestOptions.path)) {
+    // Check for 401 Unauthenticated (skip auth endpoints and session restoration)
+    if (_isUnauthenticatedError(err) &&
+        !_isAuthEndpoint(err.requestOptions.path) &&
+        !_isSessionRestorationRequest(err.requestOptions.path)) {
       // Trigger session expiry handling (non-blocking)
       SessionManager().handleSessionExpired();
     }
@@ -153,6 +155,17 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
       '/notifications',       // список уведомлений
     ];
     return ignorePaths.any((ignorePath) => path.contains(ignorePath));
+  }
+
+  /// Check if the request is part of session restoration.
+  /// During session restoration, 401 errors should not trigger automatic logout
+  /// because we're checking if the current token is still valid.
+  bool _isSessionRestorationRequest(String path) {
+    const sessionRestorationPaths = [
+      '/user',              // getCurrentUser() called during restoreSession()
+      '/profile',           // getProfile() called during restoreSession()
+    ];
+    return sessionRestorationPaths.any((restorationPath) => path.contains(restorationPath));
   }
 
   /// Check if the error is a 401 Unauthenticated response.

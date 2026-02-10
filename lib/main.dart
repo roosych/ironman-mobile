@@ -16,6 +16,11 @@ import 'package:ironman_mobile/features/auth/presentation/email_not_verified_scr
 import 'package:ironman_mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:ironman_mobile/features/profile/presentation/profile_selection_screen.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:ironman_mobile/features/home/presentation/home_screen.dart';
+import 'package:ironman_mobile/features/home/presentation/pace_calculator_screen.dart';
+import 'package:ironman_mobile/features/dashboard/presentation/results_screen.dart';
+import 'package:ironman_mobile/features/dashboard/presentation/ratings_screen.dart';
+import 'package:ironman_mobile/features/dashboard/presentation/athletes_screen.dart';
 import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
 import 'package:ironman_mobile/features/settings/presentation/settings_screen.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_notifier.dart';
@@ -221,6 +226,11 @@ class MyApp extends ConsumerWidget {
         '/profile-selection': (context) => const ProfileSelectionScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/pace-calculator': (context) => const PaceCalculatorScreen(),
+        '/profile': (context) => const DashboardScreen(), // Redirect to dashboard for authenticated users
+        '/results': (context) => const ResultsScreen(),
+        '/ratings': (context) => const RatingsScreen(),
+        '/athletes': (context) => const AthletesScreen(),
       },
     );
   }
@@ -395,10 +405,10 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
     }
 
     debugPrint(
-      '=== AuthRouter: User NOT authenticated, showing LoginScreen ===',
+      '=== AuthRouter: User NOT authenticated, showing HomeScreen ===',
     );
     debugPrint('isAuthenticated: ${authState.isAuthenticated}');
     debugPrint('isLoading: ${authState.isLoading}');
-    return const LoginScreen();
+    return const HomeScreen();
   }
 }
