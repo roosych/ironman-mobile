@@ -144,9 +144,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
-              tabs: const [
-                Tab(text: 'Активные'),
-                Tab(text: 'Прошедшие'),
+              tabs: [
+                Tab(text: localizations.events_tab_active),
+                Tab(text: localizations.events_tab_past),
               ],
             ),
           ),
@@ -253,7 +253,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
     if (pastRaces.isEmpty) {
       return Center(
         child: Text(
-          'Нет прошедших гонок',
+          localizations.events_no_past_races,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       );

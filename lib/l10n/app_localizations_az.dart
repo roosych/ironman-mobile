@@ -911,4 +911,13 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get home_card_profile_button => 'PROFILE';
+
+  @override
+  String get events_tab_active => 'Active';
+
+  @override
+  String get events_tab_past => 'Past';
+
+  @override
+  String get events_no_past_races => 'No past races';
 }

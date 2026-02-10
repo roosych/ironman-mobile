@@ -323,6 +323,9 @@
   "home_card_profile_title": "Кабинет атлета",
   "home_card_profile_subtitle": "РЕЗУЛЬТАТЫ • РЕЙТИНГИ • ПРОФИЛЬ",
   "home_card_profile_helper": "Соревновательные результаты",
-  "home_card_profile_button": "ПРОФИЛЬ"
+  "home_card_profile_button": "ПРОФИЛЬ",
+  "events_tab_active": "Активные",
+  "events_tab_past": "Прошедшие",
+  "events_no_past_races": "Нет прошедших гонок"
 }
 

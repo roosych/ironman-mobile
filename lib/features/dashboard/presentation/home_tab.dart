@@ -12,7 +12,6 @@ import 'package:ironman_mobile/shared/widgets/result_card.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/profile_screen.dart'
     as profile;
 import 'package:ironman_mobile/features/notifications/presentation/notifications_screen.dart';
-import 'package:ironman_mobile/shared/widgets/home_app_bar.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_notifier.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_state.dart';
 import 'package:ironman_mobile/features/upcoming_races/presentation/upcoming_races_screen.dart';
@@ -20,6 +19,7 @@ import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
+import '../../notifications/application/notifications_notifier.dart';
 
 // Вспомогательные функции для расчёта темпа
 Map<String, double> _getDistances(String raceType) {
@@ -208,24 +208,90 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     // resultsState используется только для отображения списка результатов в карточке
 
     return Scaffold(
-      appBar: HomeAppBar(
-        onAvatarTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const profile.ProfileScreen()),
-          );
-        },
-        onNotificationsTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-          );
-        },
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 16),
+      body: Stack(
+        children: [
+          // Background image with gradient overlay
+          Transform.rotate(
+            angle: 3.14159, // 180 градусов (π радиан)
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg.png'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.matrix([
+                    0.299, 0.587, 0.114, 0, 0, // Red channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Green channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Blue channel -> grayscale
+                    0, 0, 0, 1, 0,             // Alpha channel unchanged
+                  ]),
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.3),
+                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
+                      Theme.of(context).scaffoldBackgroundColor,
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Main content
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+              // Top section with avatar and notifications
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Avatar
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const profile.ProfileScreen()),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 32, // Увеличенный размер
+                        backgroundColor: (user?.avatarUrl != null && user?.avatarUrl?.isNotEmpty == true)
+                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
+                            : Theme.of(context).colorScheme.surfaceContainerHighest,
+                        backgroundImage: (user?.avatarUrl != null && user?.avatarUrl?.isNotEmpty == true)
+                            ? NetworkImage(user!.avatarUrl!)
+                            : null,
+                        child: (user?.avatarUrl == null || user?.avatarUrl?.isEmpty == true)
+                            ? HugeIcon(
+                                icon: HugeIcons.strokeRoundedUser,
+                                size: 32,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              )
+                            : null,
+                      ),
+                    ),
+                    // Notifications
+                    _NotificationButton(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
 
               // Greeting section
               if (user != null)
@@ -286,9 +352,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               ),
 
               const SizedBox(height: 12),
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -1160,25 +1228,16 @@ class _UpcomingRacesSection extends ConsumerStatefulWidget {
       _UpcomingRacesSectionState();
 }
 
-class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     // Загружаем гонки после построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllRaces();
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   void _loadAllRaces() {
@@ -1212,26 +1271,6 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
     }).toList();
   }
 
-  List<dynamic> _getPastRaces(List<dynamic> races) {
-    final now = DateTime.now();
-    return races.where((race) {
-      try {
-        final raceDate = DateTime.parse(race.raceDate);
-        return raceDate.isBefore(now) && !_isSameDay(raceDate, now);
-      } catch (e) {
-        return false;
-      }
-    }).toList()
-      ..sort((a, b) {
-        try {
-          final dateA = DateTime.parse(a.raceDate);
-          final dateB = DateTime.parse(b.raceDate);
-          return dateB.compareTo(dateA); // Сортировка по убыванию даты
-        } catch (e) {
-          return 0;
-        }
-      });
-  }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
@@ -1291,57 +1330,6 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
     );
   }
 
-  Widget _buildPastRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
-    if (state.isLoading && state.races.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final pastRaces = _getPastRaces(state.races);
-    // Берем только первые 5 прошедших гонок для отображения на главном экране
-    final limitedPastRaces = pastRaces.take(5).toList();
-
-    if (limitedPastRaces.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Нет прошедших гонок',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
-        final cardWidth = screenWidth * 0.9;
-        final cardSpacing = 12.0;
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (int index = 0; index < limitedPastRaces.length; index++)
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: index < limitedPastRaces.length - 1 ? cardSpacing : 0,
-                  ),
-                  child: SizedBox(
-                    width: cardWidth,
-                    child: UpcomingRaceCard(race: limitedPastRaces[index]),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1398,51 +1386,8 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
             ),
             const SizedBox(height: 16),
 
-            // TabBar
-            Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.ironmanGray, width: 1),
-              ),
-              padding: const EdgeInsets.all(4),
-              child: TabBar(
-                controller: _tabController,
-                labelColor: AppColors.ironmanWhite,
-                unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.ironmanRed,
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                labelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                tabs: const [
-                  Tab(text: 'Активные'),
-                  Tab(text: 'Прошедшие'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // TabBarView content
-            SizedBox(
-              height: 280, // Фиксированная высота для TabBarView
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildActiveRacesTab(context, state, localizations),
-                  _buildPastRacesTab(context, state, localizations),
-                ],
-              ),
-            ),
+            // Upcoming races content (только активные)
+            _buildActiveRacesTab(context, state, localizations),
 
             const SizedBox(height: 16),
             // Кнопка добавления новой гонки
@@ -1459,6 +1404,53 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NotificationButton extends ConsumerWidget {
+  final VoidCallback onTap;
+
+  const _NotificationButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(notificationsProvider.select((s) => s.unreadCount));
+
+    // Ensure we have unread_count for the badge
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationsProvider.notifier).load();
+    });
+
+    return IconButton(
+      onPressed: onTap,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedNotification02,
+            color: Theme.of(context).colorScheme.onSurface,
+            size: 28, // Увеличенный размер
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              right: -1,
+              top: -1,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.surface,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -912,4 +912,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get home_card_profile_button => 'ПРОФИЛЬ';
+
+  @override
+  String get events_tab_active => 'Активные';
+
+  @override
+  String get events_tab_past => 'Прошедшие';
+
+  @override
+  String get events_no_past_races => 'Нет прошедших гонок';
 }

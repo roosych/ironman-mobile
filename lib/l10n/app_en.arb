@@ -1023,6 +1023,9 @@
   "home_card_profile_title": "Athlete Cabinet",
   "home_card_profile_subtitle": "RESULTS • RATINGS • PROFILE",
   "home_card_profile_helper": "Competitive results",
-  "home_card_profile_button": "PROFILE"
+  "home_card_profile_button": "PROFILE",
+  "events_tab_active": "Active",
+  "events_tab_past": "Past",
+  "events_no_past_races": "No past races"
 }
 

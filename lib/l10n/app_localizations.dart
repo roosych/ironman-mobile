@@ -1797,6 +1797,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PROFILE'**
   String get home_card_profile_button;
+
+  /// No description provided for @events_tab_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get events_tab_active;
+
+  /// No description provided for @events_tab_past.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get events_tab_past;
+
+  /// No description provided for @events_no_past_races.
+  ///
+  /// In en, this message translates to:
+  /// **'No past races'**
+  String get events_no_past_races;
 }
 
 class _AppLocalizationsDelegate
