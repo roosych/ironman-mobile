@@ -49,7 +49,7 @@ class BottomNavBar extends StatelessWidget {
                   _buildNavItem(
                     context: context,
                     index: 1,
-                    icon: HugeIcons.strokeRoundedFlag01,
+                    icon: HugeIcons.strokeRoundedTimer01,
                     label: AppLocalizations.of(context)!.nav_results,
                     fontSize: fontSize,
                     iconSize: iconSize,

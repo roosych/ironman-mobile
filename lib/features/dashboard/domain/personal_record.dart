@@ -36,13 +36,17 @@ class DisciplineRecord {
 /// Модель данных личных рекордов по типу гонки
 class PersonalRecord {
   final DisciplineRecord? swim;
+  final DisciplineRecord? t1;
   final DisciplineRecord? bike;
+  final DisciplineRecord? t2;
   final DisciplineRecord? run;
   final DisciplineRecord? total;
 
   const PersonalRecord({
     this.swim,
+    this.t1,
     this.bike,
+    this.t2,
     this.run,
     this.total,
   });
@@ -52,8 +56,14 @@ class PersonalRecord {
       swim: json['swim'] != null
           ? DisciplineRecord.fromJson(json['swim'] as Map<String, dynamic>)
           : null,
+      t1: json['t1'] != null
+          ? DisciplineRecord.fromJson(json['t1'] as Map<String, dynamic>)
+          : null,
       bike: json['bike'] != null
           ? DisciplineRecord.fromJson(json['bike'] as Map<String, dynamic>)
+          : null,
+      t2: json['t2'] != null
+          ? DisciplineRecord.fromJson(json['t2'] as Map<String, dynamic>)
           : null,
       run: json['run'] != null
           ? DisciplineRecord.fromJson(json['run'] as Map<String, dynamic>)
@@ -68,7 +78,9 @@ class PersonalRecord {
   Map<String, dynamic> toPersonalBestsFormat() {
     return {
       'swim': swim?.toPersonalBestsFormat(),
+      't1': t1?.toPersonalBestsFormat(),
       'bike': bike?.toPersonalBestsFormat(),
+      't2': t2?.toPersonalBestsFormat(),
       'run': run?.toPersonalBestsFormat(),
       'total': total?.toPersonalBestsFormat(),
     };

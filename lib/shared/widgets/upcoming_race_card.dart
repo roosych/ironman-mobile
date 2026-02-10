@@ -45,8 +45,7 @@ class UpcomingRaceCard extends StatelessWidget {
   String _formatDate(String isoDate, BuildContext context) {
     try {
       final date = DateTime.parse(isoDate);
-      final locale = Localizations.localeOf(context);
-      return DateFormat('MMM dd, yyyy', locale.toString()).format(date);
+      return DateFormat('dd.MM.yyyy').format(date);
     } catch (_) {
       return isoDate;
     }

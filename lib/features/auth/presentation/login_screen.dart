@@ -116,6 +116,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: Colors.white,
+            size: 24,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -346,9 +354,9 @@ class _LanguageDropdown extends StatelessWidget {
       dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       items: const [
-        Locale('ru'),
-        Locale('en'),
         Locale('az'),
+        Locale('en'),
+        Locale('ru'),
       ].map<DropdownMenuItem<Locale>>((Locale locale) {
         return DropdownMenuItem<Locale>(
           value: locale,

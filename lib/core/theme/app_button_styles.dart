@@ -96,6 +96,7 @@ class AppButtonStyles {
     EdgeInsets? padding,
     double borderRadius = 10,
     TextStyle? textStyle,
+    Widget? icon,
   }) {
     return Container(
       decoration: onPressed != null
@@ -114,15 +115,32 @@ class AppButtonStyles {
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
-        child: Text(
-          text,
-          style: textStyle ??
-              const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+        child: icon != null
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon,
+                  const SizedBox(width: 8),
+                  Text(
+                    text,
+                    style: textStyle ??
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                  ),
+                ],
+              )
+            : Text(
+                text,
+                style: textStyle ??
+                    const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
               ),
-        ),
       ),
     );
   }

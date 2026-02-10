@@ -187,60 +187,44 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                             horizontal: 16,
                             vertical: 8,
                           ),
-                          child: TabBar(
-                            controller: _mainTabController,
-                            labelColor: AppColors.ironmanRed,
-                            labelStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.ironmanGray,
+                                width: 1,
+                              ),
                             ),
-                            unselectedLabelColor: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.5),
-                            unselectedLabelStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            indicator: UnderlineTabIndicator(
-                              borderSide: const BorderSide(
+                            padding: const EdgeInsets.all(4),
+                            child: TabBar(
+                              controller: _mainTabController,
+                              labelColor: Colors.white,
+                              labelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              unselectedLabelColor: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                              unselectedLabelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              indicator: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
                                 color: AppColors.ironmanRed,
-                                width: 3,
                               ),
-                              insets: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              dividerColor: Colors.transparent,
+                              labelPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
                               ),
+                              indicatorPadding: EdgeInsets.zero,
+                              tabs: const [
+                                Tab(text: 'IRONMAN'),
+                                Tab(text: 'IRONMAN 70.3'),
+                              ],
                             ),
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            dividerColor: Colors.transparent,
-                            labelPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            indicatorPadding: EdgeInsets.zero,
-                            tabs: [
-                              Tab(
-                                child: Center(
-                                  child: Text(
-                                    localizations.ratings_race_type_full,
-                                    style: const TextStyle(
-                                      color: AppColors.ironmanWhite,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Tab(
-                                child: Center(
-                                  child: Text(
-                                    localizations.ratings_race_type_half,
-                                    style: const TextStyle(
-                                      color: AppColors.ironmanWhite,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ),
@@ -369,6 +353,8 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   late TabController _subTabController;
   bool _showComparison = false;
   bool _didInitialLoad = false;
+  String _searchQuery = '';
+  late TextEditingController _searchController;
 
   String? _getDisciplineImagePath(String discipline) {
     switch (discipline.toLowerCase()) {
@@ -394,6 +380,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
       initialIndex: 0, // Флаг (total) активен по умолчанию
     );
     _subTabController.addListener(_onSubTabChanged);
+    _searchController = TextEditingController();
     // ВАЖНО: не загружаем рейтинги здесь.
     // _RaceTypeTab создаётся внутри IndexedStack даже когда экран Ratings не активен,
     // поэтому любая автозагрузка в initState будет дергать API на главном экране.
@@ -421,6 +408,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   void dispose() {
     _subTabController.removeListener(_onSubTabChanged);
     _subTabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -508,6 +496,62 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             ),
           ),
         ),
+        // Поисковая строка
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+          child: TextField(
+            controller: _searchController,
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+                // Close comparison block when starting to type
+                if (_showComparison && value.isNotEmpty) {
+                  _showComparison = false;
+                  ref.read(rankingsProvider.notifier).clearSelection();
+                }
+              });
+            },
+            decoration: InputDecoration(
+              hintText: localizations.athletes_search_hint,
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              prefixIcon: HugeIcon(
+                icon: HugeIcons.strokeRoundedSearch01,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                size: 24,
+              ),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: HugeIcon(
+                        icon: HugeIcons.strokeRoundedCancel01,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _searchQuery = '';
+                          _searchController.clear();
+                        });
+                      },
+                    )
+                  : null,
+              filled: true,
+              fillColor: theme.colorScheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+            ),
+            style: theme.textTheme.bodyLarge,
+          ),
+        ),
         // Контент с рейтингами
         Expanded(child: _buildRankingsList(state, theme, localizations)),
       ],
@@ -567,6 +611,28 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
       return _buildComparisonView(state, theme, localizations);
     }
 
+    // Применяем фильтр поиска
+    var filteredRankings = state.rankings;
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      filteredRankings = filteredRankings.where((ranking) {
+        return ranking.name.toLowerCase().contains(query) ||
+            ranking.position.toString().contains(query);
+      }).toList();
+    }
+
+    // Если после фильтрации нет результатов
+    if (filteredRankings.isEmpty && _searchQuery.isNotEmpty) {
+      return Center(
+        child: Text(
+          localizations.results_no_results,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: AppColors.ironmanTextSecondary,
+          ),
+        ),
+      );
+    }
+
     return Stack(
       children: [
         RefreshIndicator(
@@ -580,9 +646,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               top: 16.0,
               bottom: 80.0, // Отступ для плавающей кнопки
             ),
-            itemCount: state.rankings.length,
+            itemCount: filteredRankings.length,
             itemBuilder: (context, index) {
-              final ranking = state.rankings[index];
+              final ranking = filteredRankings[index];
               return _buildRankingCard(ranking, state, theme, localizations);
             },
           ),

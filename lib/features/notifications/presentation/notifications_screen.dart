@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../settings/application/locale_notifier.dart';
@@ -531,7 +532,7 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
                   ),
                   child: Icon(
                     Icons.delete_outline,
-                    color: Colors.red.shade600,
+                    color: AppColors.ironmanRed,
                     size: 20,
                   ),
                 ),

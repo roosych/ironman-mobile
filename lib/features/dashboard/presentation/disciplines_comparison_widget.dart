@@ -154,7 +154,9 @@ class _DisciplinesComparisonWidgetState
   ) {
     final disciplines = [
       {'key': 'swim', 'imagePath': 'assets/images/svg/swim.png'},
+      {'key': 't1', 'label': 'T1'},
       {'key': 'bike', 'imagePath': 'assets/images/svg/bike.png'},
+      {'key': 't2', 'label': 'T2'},
       {'key': 'run', 'imagePath': 'assets/images/svg/run.png'},
     ];
 
@@ -165,6 +167,7 @@ class _DisciplinesComparisonWidgetState
         2: const FlexColumnWidth(1),
         3: const FlexColumnWidth(1),
       },
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder(
         horizontalInside: BorderSide(
           color: AppColors.ironmanGray,
@@ -204,7 +207,8 @@ class _DisciplinesComparisonWidgetState
         // Строки дисциплин
         ...disciplines.map((discipline) {
           final key = discipline['key'] as String;
-          final imagePath = discipline['imagePath'] as String;
+          final imagePath = discipline['imagePath'];
+          final label = discipline['label'];
 
           DisciplineRecord? record1;
           DisciplineRecord? record2;
@@ -214,9 +218,17 @@ class _DisciplinesComparisonWidgetState
               record1 = records1?.swim;
               record2 = records2?.swim;
               break;
+            case 't1':
+              record1 = records1?.t1;
+              record2 = records2?.t1;
+              break;
             case 'bike':
               record1 = records1?.bike;
               record2 = records2?.bike;
+              break;
+            case 't2':
+              record1 = records1?.t2;
+              record2 = records2?.t2;
               break;
             case 'run':
               record1 = records1?.run;
@@ -234,17 +246,13 @@ class _DisciplinesComparisonWidgetState
           if (hasBoth) {
             final diff = _formatTimeDifference(record1.seconds, record2.seconds);
             difference = diff;
-            if (record1.seconds < record2.seconds) {
-              differenceColor = Colors.green;
-            } else if (record1.seconds > record2.seconds) {
-              differenceColor = Colors.red;
-            }
+            differenceColor = AppColors.ironmanRed;
           }
 
           return TableRow(
             children: [
               _buildTableCell(
-                '',
+                label ?? '',
                 imagePath: imagePath,
                 alignment: Alignment.centerLeft,
               ),
@@ -285,7 +293,7 @@ class _DisciplinesComparisonWidgetState
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 60),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Align(
           alignment: alignment,
           child: Row(

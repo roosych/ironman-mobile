@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../auth/application/auth_notifier.dart';
 import '../../auth/application/auth_state.dart';
@@ -312,7 +313,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       )
                     : const HugeIcon(
                         icon: HugeIcons.strokeRoundedLogout01,
-                        color: Colors.red,
+                        color: AppColors.ironmanRed,
                         size: 20,
                       ),
                 label: Text(

@@ -231,8 +231,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   child: Column(
                     children: [
                       RadioListTile<Locale>(
-                        title: Text(localizations.language_russian),
-                        value: const Locale('ru'),
+                        title: Text(localizations.language_azerbaijani),
+                        value: const Locale('az'),
                         enabled: !_isUpdatingLocale,
                         activeColor: Theme.of(context).colorScheme.primary,
                       ),
@@ -255,8 +255,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         color: Theme.of(context).colorScheme.outlineVariant,
                       ),
                       RadioListTile<Locale>(
-                        title: Text(localizations.language_azerbaijani),
-                        value: const Locale('az'),
+                        title: Text(localizations.language_russian),
+                        value: const Locale('ru'),
                         enabled: !_isUpdatingLocale,
                         activeColor: Theme.of(context).colorScheme.primary,
                       ),

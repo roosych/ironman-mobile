@@ -92,8 +92,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
 
   String _formatDisplayDate(DateTime? date) {
     if (date == null) return '';
-    final locale = ref.read(localeProvider);
-    return DateFormat.yMd(locale.languageCode).format(date);
+    return DateFormat('dd.MM.yyyy').format(date);
   }
 
   @override

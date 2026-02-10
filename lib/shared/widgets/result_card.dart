@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/shared/widgets/result_detail_screen.dart';
-import 'package:ironman_mobile/core/theme/app_colors.dart';
-import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
 
 class ResultCard extends ConsumerWidget {
   final RaceResult result;
@@ -15,8 +13,7 @@ class ResultCard extends ConsumerWidget {
   String _formatDate(String isoDate, WidgetRef ref) {
     try {
       final date = DateTime.parse(isoDate);
-      final locale = ref.read(localeProvider);
-      return DateFormat.yMd(locale.languageCode).format(date);
+      return DateFormat('dd.MM.yyyy').format(date);
     } catch (_) {
       return isoDate;
     }

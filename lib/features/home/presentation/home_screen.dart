@@ -424,14 +424,6 @@ class PrimaryActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = Text(
-      label,
-      style: textTheme.labelLarge?.copyWith(
-        color: isPrimary ? AppColors.ironmanWhite : AppColors.ironmanRed,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1,
-      ),
-    );
     if (isPrimary) {
       return AppButtonStyles.gradientElevatedButton(
         text: label,
@@ -446,36 +438,22 @@ class PrimaryActionButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: AppButtonStyles.primaryGradient,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryGradientShadow.withValues(alpha: 0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
+        color: AppColors.ironmanWhite,
       ),
-      child: Container(
-        margin: const EdgeInsets.all(2), // Thickness of gradient border
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: AppColors.ironmanWhite,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          child: InkWell(
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              padding: _buttonPadding,
-              child: Text(
-                label,
-                style: textTheme.labelLarge?.copyWith(
-                  color: AppColors.primaryGradientEnd,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: _buttonPadding,
+            child: Text(
+              label,
+              style: textTheme.labelLarge?.copyWith(
+                color: AppColors.primaryGradientEnd,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
               ),
             ),
           ),
