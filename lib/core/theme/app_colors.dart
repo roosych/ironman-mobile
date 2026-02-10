@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Цветовая палитра приложения
 class AppColors {
   // Основные цвета Ironman
-  static const Color ironmanRed = Color(0xFFE31837);
+  static const Color ironmanRed = Color.fromARGB(255, 35, 129, 201);
   static const Color ironmanBlack = Color(0xFF0D0D0D);
   static const Color ironmanDarkGray = Color(0xFF1A1A1A);
   static const Color ironmanGray = Color(0xFF2A2A2A);
