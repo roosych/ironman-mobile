@@ -1160,24 +1160,33 @@ class _UpcomingRacesSection extends ConsumerStatefulWidget {
       _UpcomingRacesSectionState();
 }
 
-class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
+class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     // Загружаем гонки после построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _loadUpcomingRaces();
+        _loadAllRaces();
       }
     });
   }
 
-  void _loadUpcomingRaces() {
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _loadAllRaces() {
     // Используем отдельный провайдер для главного экрана
     ref
         .read(globalUpcomingRacesProvider.notifier)
         .loadUpcomingRaces(
-          onlyFuture: true, // Только будущие гонки
+          onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
         );
   }
 
@@ -1189,6 +1198,149 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
 
   void _addUpcomingRace(BuildContext context) {
     showAddUpcomingRaceBottomSheet(context);
+  }
+
+  List<dynamic> _getActiveRaces(List<dynamic> races) {
+    final now = DateTime.now();
+    return races.where((race) {
+      try {
+        final raceDate = DateTime.parse(race.raceDate);
+        return raceDate.isAfter(now) || _isSameDay(raceDate, now);
+      } catch (e) {
+        return false;
+      }
+    }).toList();
+  }
+
+  List<dynamic> _getPastRaces(List<dynamic> races) {
+    final now = DateTime.now();
+    return races.where((race) {
+      try {
+        final raceDate = DateTime.parse(race.raceDate);
+        return raceDate.isBefore(now) && !_isSameDay(raceDate, now);
+      } catch (e) {
+        return false;
+      }
+    }).toList()
+      ..sort((a, b) {
+        try {
+          final dateA = DateTime.parse(a.raceDate);
+          final dateB = DateTime.parse(b.raceDate);
+          return dateB.compareTo(dateA); // Сортировка по убыванию даты
+        } catch (e) {
+          return 0;
+        }
+      });
+  }
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  Widget _buildActiveRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
+    if (state.isLoading && state.races.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final activeRaces = _getActiveRaces(state.races);
+    // Берем только первые 5 активных гонок для отображения на главном экране
+    final limitedActiveRaces = activeRaces.take(5).toList();
+
+    if (limitedActiveRaces.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            localizations.home_no_upcoming_races,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final cardWidth = screenWidth * 0.9;
+        final cardSpacing = 12.0;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int index = 0; index < limitedActiveRaces.length; index++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: index < limitedActiveRaces.length - 1 ? cardSpacing : 0,
+                  ),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: UpcomingRaceCard(race: limitedActiveRaces[index]),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPastRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
+    if (state.isLoading && state.races.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final pastRaces = _getPastRaces(state.races);
+    // Берем только первые 5 прошедших гонок для отображения на главном экране
+    final limitedPastRaces = pastRaces.take(5).toList();
+
+    if (limitedPastRaces.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Нет прошедших гонок',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final cardWidth = screenWidth * 0.9;
+        final cardSpacing = 12.0;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int index = 0; index < limitedPastRaces.length; index++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: index < limitedPastRaces.length - 1 ? cardSpacing : 0,
+                  ),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: UpcomingRaceCard(race: limitedPastRaces[index]),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -1208,9 +1360,6 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
         ErrorHandler.showError(context, next.error!);
       }
     });
-
-    // Берем только первые 5 гонок для отображения на главном экране
-    final upcomingRaces = state.races.take(5).toList();
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -1248,62 +1397,53 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
               ],
             ),
             const SizedBox(height: 16),
-            // Горизонтальный скролл элементов гонок
-            if (state.isLoading && upcomingRaces.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (upcomingRaces.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    localizations.home_no_upcoming_races,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ),
-              )
-            else
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final screenWidth = constraints.maxWidth;
-                  final cardWidth = screenWidth * 0.9;
-                  final cardSpacing = 12.0;
 
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (
-                          int index = 0;
-                          index < upcomingRaces.length;
-                          index++
-                        )
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: index < upcomingRaces.length - 1
-                                  ? cardSpacing
-                                  : 0,
-                            ),
-                            child: SizedBox(
-                              width: cardWidth,
-                              child: UpcomingRaceCard(
-                                race: upcomingRaces[index],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                },
+            // TabBar
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.ironmanGray, width: 1),
               ),
+              padding: const EdgeInsets.all(4),
+              child: TabBar(
+                controller: _tabController,
+                labelColor: AppColors.ironmanWhite,
+                unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.ironmanRed,
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                tabs: const [
+                  Tab(text: 'Активные'),
+                  Tab(text: 'Прошедшие'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // TabBarView content
+            SizedBox(
+              height: 280, // Фиксированная высота для TabBarView
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildActiveRacesTab(context, state, localizations),
+                  _buildPastRacesTab(context, state, localizations),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 16),
             // Кнопка добавления новой гонки
             Center(

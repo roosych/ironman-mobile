@@ -178,7 +178,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 hintText: localizations.add_result_location_hint,
                 prefixIcon: Icon(
                   Icons.location_on_outlined,
-                  color: theme.colorScheme.primary,
+                  color: Colors.white,
                   size: 20,
                 ),
               ),
@@ -200,7 +200,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   hintText: localizations.add_result_date_hint,
                   prefixIcon: Icon(
                     Icons.calendar_today_outlined,
-                    color: theme.colorScheme.primary,
+                    color: Colors.white,
                     size: 20,
                   ),
                   suffixIcon: const Icon(Icons.arrow_drop_down),
@@ -226,7 +226,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 labelText: localizations.add_result_race_type,
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAward01,
-                  color: theme.colorScheme.primary,
+                  color: Colors.white,
                   size: 20,
                 ),
               ),
@@ -354,7 +354,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                         hintText: localizations.add_result_time_hint,
                         prefixIcon: HugeIcon(
                           icon: HugeIcons.strokeRoundedArrowRight01,
-                          color: theme.colorScheme.primary,
+                          color: Colors.white,
                           size: 20,
                         ),
                       ),
@@ -412,7 +412,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                         hintText: localizations.add_result_time_hint,
                         prefixIcon: HugeIcon(
                           icon: HugeIcons.strokeRoundedArrowRight01,
-                          color: theme.colorScheme.primary,
+                          color: Colors.white,
                           size: 20,
                         ),
                       ),

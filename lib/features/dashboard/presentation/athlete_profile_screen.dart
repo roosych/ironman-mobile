@@ -226,7 +226,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final currentTheme = Theme.of(context);
                             final isSelected = _tabController.index == 1;
                             return HugeIcon(
-                              icon: HugeIcons.strokeRoundedFlag01,
+                              icon: HugeIcons.strokeRoundedTimer01,
                               size: 24,
                               color: isSelected
                                   ? AppColors.ironmanWhite
@@ -1064,13 +1064,13 @@ class _PersonalBestsCard extends StatelessWidget {
   String _getRaceTypeText(String title) {
     switch (title.toLowerCase()) {
       case 'ironman':
-        return 'FULL 140.6';
+        return 'IRONMAN';
       case 'ironman 70.3':
-        return 'HALF 70.3';
+        return 'IRONMAN 70.3';
       case '5150':
-        return 'Olympic';
+        return '5150';
       default:
-        return 'FULL 140.6';
+        return 'IRONMAN';
     }
   }
 
