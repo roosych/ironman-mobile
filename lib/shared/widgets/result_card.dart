@@ -22,15 +22,15 @@ class ResultCard extends ConsumerWidget {
     }
   }
 
-  String _getRaceTypeText(String raceType) {
+  String _getRaceTypePrefix(String raceType) {
     final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
-    // Check for 70.3 variations: "70.3", "703", "ironman703", "ironman_70_3"
+    // Check for race type variations and return prefix
     if (type.contains('70.3') || type.contains('703')) {
-      return 'HALF 70.3';
+      return '70.3';
     } else if (type.contains('5150')) {
-      return 'Olympic';
+      return '5150';
     } else {
-      return 'FULL 140.6';
+      return 'IM'; // ironman full
     }
   }
 
@@ -52,28 +52,6 @@ class ResultCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Верстка для "Мои результаты" и "Все результаты" (одинаковая)
-              // Race type text
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.ironmanRed,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    _getRaceTypeText(result.raceType),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 17,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
               // Имя атлета (только для "Все результаты")
               if (!isMyResults &&
                   result.athleteName != null &&
@@ -95,10 +73,10 @@ class ResultCard extends ConsumerWidget {
                   result.athleteName != null &&
                   result.athleteName!.isNotEmpty)
                 const SizedBox(height: 4),
-              // Location (теперь над датой)
+              // Location with race type prefix
               Center(
                 child: Text(
-                  result.location,
+                  '${_getRaceTypePrefix(result.raceType)} ${result.location}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
