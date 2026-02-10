@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
-import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
-
 class ResultDetailScreen extends ConsumerWidget {
   final RaceResult result;
 
@@ -15,26 +13,90 @@ class ResultDetailScreen extends ConsumerWidget {
     required this.result,
   });
 
-  String _formatDate(String isoDate, WidgetRef ref) {
+  String _formatDate(String isoDate) {
     try {
       final date = DateTime.parse(isoDate);
-      final locale = ref.read(localeProvider);
-      return DateFormat.yMMMMd(locale.languageCode).format(date);
+      return DateFormat('dd.MM.yyyy').format(date);
     } catch (_) {
       return isoDate;
     }
   }
 
-  String _getRaceTypeText(String raceType) {
+  String _getRaceTypeText(String raceType, BuildContext context) {
     final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
+    final localizations = AppLocalizations.of(context)!;
+
     // Check for 70.3 variations: "70.3", "703", "ironman703", "ironman_70_3"
     if (type.contains('70.3') || type.contains('703')) {
-      return 'HALF 70.3';
+      return localizations.pace_calculator_tab_70_3; // "IRONMAN 70.3"
     } else if (type.contains('5150')) {
-      return 'Olympic';
+      return localizations.pace_calculator_tab_5150; // "5150"
     } else {
-      return 'FULL 140.6';
+      return localizations.pace_calculator_tab_full; // "IRONMAN"
     }
+  }
+
+  Map<String, double> _getDistances(String raceType) {
+    final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
+
+    if (type.contains('70.3') || type.contains('703')) {
+      return {'swim': 1.9, 'bike': 90.0, 'run': 21.1};
+    } else if (type.contains('5150')) {
+      return {'swim': 1.5, 'bike': 40.0, 'run': 10.0};
+    } else {
+      return {'swim': 3.8, 'bike': 180.0, 'run': 42.2};
+    }
+  }
+
+  Duration? _parseTime(String time) {
+    try {
+      final parts = time.split(':');
+      if (parts.length != 3) return null;
+
+      final hours = int.parse(parts[0]);
+      final minutes = int.parse(parts[1]);
+      final seconds = int.parse(parts[2]);
+
+      return Duration(hours: hours, minutes: minutes, seconds: seconds);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _calculateSwimPace(String timeStr, double distance) {
+    final duration = _parseTime(timeStr);
+    if (duration == null || distance <= 0) return '';
+
+    final totalSeconds = duration.inSeconds;
+    final pacePerHundredMetersSeconds = (totalSeconds / distance) * 0.1; // 100 meters
+
+    final minutes = (pacePerHundredMetersSeconds / 60).floor();
+    final seconds = (pacePerHundredMetersSeconds % 60).round();
+
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  String _calculateBikePace(String timeStr, double distance) {
+    final duration = _parseTime(timeStr);
+    if (duration == null || distance <= 0) return '';
+
+    final hours = duration.inSeconds / 3600;
+    final speed = distance / hours;
+
+    return speed.toStringAsFixed(1);
+  }
+
+  String _calculateRunPace(String timeStr, double distance) {
+    final duration = _parseTime(timeStr);
+    if (duration == null || distance <= 0) return '';
+
+    final totalSeconds = duration.inSeconds;
+    final pacePerKmSeconds = totalSeconds / distance;
+
+    final minutes = (pacePerKmSeconds / 60).floor();
+    final seconds = (pacePerKmSeconds % 60).round();
+
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -74,7 +136,7 @@ class ResultDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       child: Text(
-                        _getRaceTypeText(result.raceType),
+                        _getRaceTypeText(result.raceType, context),
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 22,
@@ -95,7 +157,7 @@ class ResultDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     // Date
                     Text(
-                      _formatDate(result.date, ref),
+                      _formatDate(result.date),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -150,6 +212,8 @@ class ResultDetailScreen extends ConsumerWidget {
               imagePath: 'assets/images/svg/swim.png',
               label: AppLocalizations.of(context)!.result_swim,
               time: result.swimTime,
+              pace: _calculateSwimPace(result.swimTime, _getDistances(result.raceType)['swim']!),
+              paceUnit: localizations.pace_calculator_min_per_100m,
             ),
             const SizedBox(height: 8),
 
@@ -165,6 +229,8 @@ class ResultDetailScreen extends ConsumerWidget {
               imagePath: 'assets/images/svg/bike.png',
               label: AppLocalizations.of(context)!.result_bike,
               time: result.bikeTime,
+              pace: _calculateBikePace(result.bikeTime, _getDistances(result.raceType)['bike']!),
+              paceUnit: localizations.pace_calculator_km_per_h,
             ),
             const SizedBox(height: 8),
 
@@ -180,6 +246,8 @@ class ResultDetailScreen extends ConsumerWidget {
               imagePath: 'assets/images/svg/run.png',
               label: AppLocalizations.of(context)!.result_run,
               time: result.runTime,
+              pace: _calculateRunPace(result.runTime, _getDistances(result.raceType)['run']!),
+              paceUnit: localizations.pace_calculator_min_per_km,
             ),
 
             const SizedBox(height: 48),
@@ -194,11 +262,15 @@ class _DisciplineCard extends StatelessWidget {
   final String imagePath;
   final String label;
   final String time;
+  final String? pace;
+  final String? paceUnit;
 
   const _DisciplineCard({
     required this.imagePath,
     required this.label,
     required this.time,
+    this.pace,
+    this.paceUnit,
   });
 
   @override
@@ -236,12 +308,27 @@ class _DisciplineCard extends StatelessWidget {
               ),
             ),
           ),
-          // Time
-          Text(
-            time,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          // Time and pace
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                time,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (pace != null && pace!.isNotEmpty && paceUnit != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  '~$pace $paceUnit',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),

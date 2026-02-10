@@ -27,6 +27,8 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final avatarUrl = authState.user?.avatarUrl;
     final canPop = ModalRoute.of(context)?.canPop ?? false;
     final unreadCount = ref.watch(notificationsProvider.select((s) => s.unreadCount));
+    // Для залогиненного пользователя не показываем стрелку «назад» — только аватар
+    final showBackButton = canPop && !authState.isAuthenticated;
 
     // Ensure we have unread_count early for the badge
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,7 +38,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: _appBarHeight,
       leadingWidth: 72,
-      leading: canPop
+      leading: showBackButton
           ? IconButton(
               icon: const HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowLeft01,
@@ -68,11 +70,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 ),
               ),
             ),
-      title: Image.asset(
-        'assets/images/logo.png',
-        height: 52,
-        fit: BoxFit.contain,
-      ),
+      title: null,
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12.0),

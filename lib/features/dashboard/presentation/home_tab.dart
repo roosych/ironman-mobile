@@ -9,7 +9,8 @@ import 'package:ironman_mobile/features/results/application/race_results_state.d
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/shared/widgets/result_detail_screen.dart';
 import 'package:ironman_mobile/shared/widgets/result_card.dart';
-import 'package:ironman_mobile/features/dashboard/presentation/profile_screen.dart' as profile;
+import 'package:ironman_mobile/features/dashboard/presentation/profile_screen.dart'
+    as profile;
 import 'package:ironman_mobile/features/notifications/presentation/notifications_screen.dart';
 import 'package:ironman_mobile/shared/widgets/home_app_bar.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_notifier.dart';
@@ -18,6 +19,70 @@ import 'package:ironman_mobile/features/upcoming_races/presentation/upcoming_rac
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
+
+// Вспомогательные функции для расчёта темпа
+Map<String, double> _getDistances(String raceType) {
+  final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
+
+  if (type.contains('70.3') || type.contains('703')) {
+    return {'swim': 1.9, 'bike': 90.0, 'run': 21.1};
+  } else if (type.contains('5150')) {
+    return {'swim': 1.5, 'bike': 40.0, 'run': 10.0};
+  } else {
+    return {'swim': 3.8, 'bike': 180.0, 'run': 42.2};
+  }
+}
+
+Duration? _parseTime(String time) {
+  try {
+    final parts = time.split(':');
+    if (parts.length != 3) return null;
+
+    final hours = int.parse(parts[0]);
+    final minutes = int.parse(parts[1]);
+    final seconds = int.parse(parts[2]);
+
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  } catch (_) {
+    return null;
+  }
+}
+
+String _calculateSwimPace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final totalSeconds = duration.inSeconds;
+  final pacePerHundredMetersSeconds = (totalSeconds / distance) * 0.1; // 100 meters
+
+  final minutes = (pacePerHundredMetersSeconds / 60).floor();
+  final seconds = (pacePerHundredMetersSeconds % 60).round();
+
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}
+
+String _calculateBikePace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final hours = duration.inSeconds / 3600;
+  final speed = distance / hours;
+
+  return speed.toStringAsFixed(1);
+}
+
+String _calculateRunPace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final totalSeconds = duration.inSeconds;
+  final pacePerKmSeconds = totalSeconds / distance;
+
+  final minutes = (pacePerKmSeconds / 60).floor();
+  final seconds = (pacePerKmSeconds % 60).round();
+
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}
 
 class HomeTab extends ConsumerStatefulWidget {
   const HomeTab({super.key});
@@ -144,9 +209,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     return Scaffold(
       appBar: HomeAppBar(
         onAvatarTap: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const profile.ProfileScreen()));
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const profile.ProfileScreen()),
+          );
         },
         onNotificationsTap: () {
           Navigator.of(context).push(
@@ -188,7 +253,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
               // Personal Bests Expandable Section
               if (personalBests != null)
@@ -203,7 +268,15 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   ),
                 ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+
+              // Pace Calculator card
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _PaceCalculatorCard(),
+              ),
+
+              const SizedBox(height: 12),
 
               // Upcoming Races Section
               Padding(
@@ -211,7 +284,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 child: _UpcomingRacesSection(),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
             ],
           ),
         ),
@@ -473,6 +546,7 @@ class _MyResultsExpandableCardState
                         return false;
                       },
                       child: RefreshIndicator(
+                        color: Theme.of(context).colorScheme.onSurface,
                         onRefresh: _refreshResults,
                         child: Builder(
                           builder: (context) {
@@ -529,6 +603,99 @@ class _MyResultsExpandableCardState
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Блок в стиле баннера: сплошной фон, текст, кнопка. Ширина как у других карточек (Card).
+class _PaceCalculatorCard extends StatelessWidget {
+  const _PaceCalculatorCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context)!;
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      color: Colors.white,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed('/pace-calculator');
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      loc.home_pace_calculator_title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      loc.home_pace_calculator_subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.black87,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Кнопка справа — синий градиент
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/pace-calculator');
+                  },
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF5BA3F8),
+                          Color(0xFF2E6FCC),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF2E6FCC).withValues(alpha: 0.35),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      loc.home_pace_calculator_button,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -685,13 +852,13 @@ class _PersonalBestsCard extends StatelessWidget {
   String _getRaceTypeText(String title) {
     switch (title.toLowerCase()) {
       case 'ironman':
-        return 'FULL 140.6';
+        return 'IRONMAN';
       case 'ironman 70.3':
-        return 'HALF 70.3';
+        return 'IRONMAN 70.3';
       case '5150':
-        return 'Olympic';
+        return '5150';
       default:
-        return 'FULL 140.6';
+        return 'IRONMAN';
     }
   }
 
@@ -735,10 +902,7 @@ class _PersonalBestsCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 4),
               decoration: const BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(
-                    color: AppColors.ironmanRed,
-                    width: 2,
-                  ),
+                  bottom: BorderSide(color: AppColors.ironmanRed, width: 2),
                 ),
               ),
               child: Text(
@@ -824,6 +988,46 @@ class _DisciplineRow extends StatelessWidget {
     required this.results,
   });
 
+  String _getDisciplineFromImagePath() {
+    if (imagePath.contains('swim')) return 'swim';
+    if (imagePath.contains('bike')) return 'bike';
+    if (imagePath.contains('run')) return 'run';
+    return 'swim'; // fallback
+  }
+
+  String _calculatePace(BuildContext context) {
+    final discipline = _getDisciplineFromImagePath();
+    final distances = _getDistances(raceType);
+    final distance = distances[discipline] ?? 0.0;
+
+    switch (discipline) {
+      case 'swim':
+        return _calculateSwimPace(time, distance);
+      case 'bike':
+        return _calculateBikePace(time, distance);
+      case 'run':
+        return _calculateRunPace(time, distance);
+      default:
+        return '';
+    }
+  }
+
+  String _getPaceUnit(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final discipline = _getDisciplineFromImagePath();
+
+    switch (discipline) {
+      case 'swim':
+        return localizations.pace_calculator_min_per_100m;
+      case 'bike':
+        return localizations.pace_calculator_km_per_h;
+      case 'run':
+        return localizations.pace_calculator_min_per_km;
+      default:
+        return '';
+    }
+  }
+
   RaceResult? _findResult() {
     if (results.isEmpty || date == null || location == null) return null;
 
@@ -885,20 +1089,44 @@ class _DisciplineRow extends StatelessWidget {
                         height: 40,
                         fit: BoxFit.contain,
                       ),
-                      // Time
-                      Text(
-                        time,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                      // Time and pace
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            time,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                          ),
+                          Builder(
+                            builder: (BuildContext context) {
+                              final pace = _calculatePace(context);
+                              final paceUnit = _getPaceUnit(context);
+                              if (pace.isNotEmpty && paceUnit.isNotEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 2.0),
+                                  child: Text(
+                                    '~$pace $paceUnit',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                   // Нижняя строка: дата слева, локация справа
                   if (date != null || location != null) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -916,7 +1144,9 @@ class _DisciplineRow extends StatelessWidget {
                           Expanded(
                             child: Text(
                               location!,
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontSize: 13,
+                              ),
                               textAlign: TextAlign.right,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1034,23 +1264,10 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
                       horizontal: 8.0,
                       vertical: 4.0,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          localizations.common_all,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedArrowRight01,
-                          color: theme.colorScheme.primary,
-                          size: 16,
-                        ),
-                      ],
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedArrowRight01,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -1134,4 +1351,3 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
     );
   }
 }
-
