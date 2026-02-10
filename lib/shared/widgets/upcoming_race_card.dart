@@ -28,17 +28,17 @@ class UpcomingRaceCard extends StatelessWidget {
     );
   }
 
-  String _getRaceTypeText(String raceType) {
+  String _getRaceTypePrefix(String raceType) {
     switch (raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '')) {
       case 'ironman':
-        return 'FULL 140.6';
+        return 'IM';
       case 'ironman70.3':
       case 'ironman703':
-        return 'HALF 70.3';
+        return '70.3';
       case '5150':
-        return 'Olympic';
+        return '5150';
       default:
-        return 'FULL 140.6';
+        return 'IM';
     }
   }
 
@@ -99,29 +99,9 @@ class UpcomingRaceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Race type text at the top (left aligned, bold)
-            Container(
-              padding: const EdgeInsets.only(bottom: 4),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: AppColors.ironmanRed,
-                    width: 2,
-                  ),
-                ),
-              ),
-              child: Text(
-                _getRaceTypeText(race.raceType),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 17,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Location as main title
+            // Location with race type prefix as main title
             Text(
-              race.location,
+              '${_getRaceTypePrefix(race.raceType)} ${race.location}',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
