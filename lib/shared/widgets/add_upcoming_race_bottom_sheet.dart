@@ -8,6 +8,7 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
 class AddUpcomingRaceBottomSheet extends ConsumerStatefulWidget {
   const AddUpcomingRaceBottomSheet({super.key});
@@ -41,11 +42,11 @@ class _AddUpcomingRaceBottomSheetState
   String _getRaceTypeDisplayText(String value) {
     switch (value) {
       case 'Ironman':
-        return 'FULL 140.6';
+        return 'IRONMAN';
       case 'Ironman 70.3':
-        return 'HALF 70.3';
+        return 'IRONMAN 70.3';
       case '5150':
-        return 'Olympic';
+        return '5150';
       default:
         return value;
     }
@@ -93,8 +94,7 @@ class _AddUpcomingRaceBottomSheetState
 
   String _formatDisplayDate(DateTime? date) {
     if (date == null) return '';
-    final locale = ref.read(localeProvider);
-    return DateFormat.yMd(locale.languageCode).format(date);
+    return DateFormat('dd.MM.yyyy').format(date);
   }
 
   Future<void> _saveRace() async {
@@ -238,7 +238,7 @@ class _AddUpcomingRaceBottomSheetState
                       labelText: localizations.add_result_race_type,
                       prefixIcon: HugeIcon(
                         icon: HugeIcons.strokeRoundedAward01,
-                        color: theme.colorScheme.primary,
+                        color: Colors.white,
                         size: 20,
                       ),
                       border: const OutlineInputBorder(),
@@ -277,7 +277,7 @@ class _AddUpcomingRaceBottomSheetState
                       hintText: localizations.add_result_location_hint,
                       prefixIcon: Icon(
                         Icons.location_on_outlined,
-                        color: theme.colorScheme.primary,
+                        color: Colors.white,
                         size: 20,
                       ),
                       border: const OutlineInputBorder(),
@@ -303,7 +303,7 @@ class _AddUpcomingRaceBottomSheetState
                         hintText: localizations.add_result_date_hint,
                         prefixIcon: Icon(
                           Icons.calendar_today_outlined,
-                          color: theme.colorScheme.primary,
+                          color: Colors.white,
                           size: 20,
                         ),
                         suffixIcon: const Icon(Icons.arrow_drop_down),
@@ -326,38 +326,38 @@ class _AddUpcomingRaceBottomSheetState
                   const SizedBox(height: 32),
 
                   // Save button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isSaving ? null : _saveRace,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                  _isSaving
+                      ? SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: AppButtonStyles.primaryGradient,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                              child: SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               ),
-                            )
-                          : Text(
-                              localizations.add_result_save,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
                             ),
-                    ),
-                  ),
+                          ),
+                        )
+                      : AppButtonStyles.gradientElevatedButton(
+                          text: localizations.add_result_save,
+                          onPressed: _saveRace,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                   const SizedBox(height: 32),
                 ],
               ),

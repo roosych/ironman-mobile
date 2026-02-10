@@ -1307,7 +1307,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
             const SizedBox(height: 16),
             // Кнопка добавления новой гонки
             Center(
-              child: AppButtonStyles.gradientOutlinedButton(
+              child: AppButtonStyles.gradientElevatedButton(
                 text: localizations.home_add_race,
                 onPressed: () => _addUpcomingRace(context),
                 icon: const Icon(Icons.add, size: 20, color: Colors.white),
