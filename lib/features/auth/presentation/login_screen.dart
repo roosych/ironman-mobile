@@ -11,6 +11,7 @@ import '../application/auth_state.dart';
 import 'email_not_verified_screen.dart';
 import '../../profile/presentation/profile_selection_screen.dart';
 import '../../dashboard/presentation/dashboard_screen.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -247,29 +248,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          FilledButton(
-                            onPressed: authState.isLoading ? null : _login,
-                            style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
+                          SizedBox(
+                            width: double.infinity,
                             child: authState.isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    decoration: AppButtonStyles.primaryGradientDecoration(
+                                      borderRadius: 12,
+                                    ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                   )
-                                : Text(
-                                    localizations.login_button,
-                                    style: const TextStyle(
+                                : AppButtonStyles.primaryGradientButton(
+                                    text: localizations.login_button,
+                                    onPressed: _login,
+                                    borderRadius: 12,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    textStyle: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 1,
+                                      color: Colors.white,
                                     ),
                                   ),
                           ),

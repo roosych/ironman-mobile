@@ -19,6 +19,7 @@ import 'package:ironman_mobile/features/upcoming_races/presentation/upcoming_rac
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
 // Вспомогательные функции для расчёта темпа
 Map<String, double> _getDistances(String raceType) {
@@ -503,7 +504,8 @@ class _MyResultsExpandableCardState
                             style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 16),
-                          ElevatedButton(
+                          AppButtonStyles.gradientElevatedButton(
+                            text: AppLocalizations.of(context)!.common_retry,
                             onPressed: () {
                               final profileId = widget.profileId;
                               if (profileId != null) {
@@ -512,9 +514,6 @@ class _MyResultsExpandableCardState
                                     .loadResults(profileId);
                               }
                             },
-                            child: Text(
-                              AppLocalizations.of(context)!.common_retry,
-                            ),
                           ),
                         ],
                       ),
@@ -653,44 +652,19 @@ class _PaceCalculatorCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // Кнопка справа — синий градиент
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/pace-calculator');
-                  },
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF5BA3F8),
-                          Color(0xFF2E6FCC),
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2E6FCC).withValues(alpha: 0.35),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      loc.home_pace_calculator_button,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
+              // Кнопка справа — градиентный стиль
+              AppButtonStyles.primaryGradientButton(
+                text: loc.home_pace_calculator_button,
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/pace-calculator');
+                },
+                borderRadius: 10,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                textStyle: theme.textTheme.labelLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  letterSpacing: 0.5,
                 ),
               ),
             ],
@@ -1333,15 +1307,13 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
             const SizedBox(height: 16),
             // Кнопка добавления новой гонки
             Center(
-              child: OutlinedButton.icon(
+              child: AppButtonStyles.gradientOutlinedButton(
+                text: localizations.home_add_race,
                 onPressed: () => _addUpcomingRace(context),
-                icon: const Icon(Icons.add, size: 20),
-                label: Text(localizations.home_add_race),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                icon: const Icon(Icons.add, size: 20, color: Colors.white),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
                 ),
               ),
             ),

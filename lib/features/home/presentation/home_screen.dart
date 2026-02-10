@@ -6,6 +6,7 @@ import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/settings/application/locale_notifier.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
 /// Home screen — initial screen of the app.
 class HomeScreen extends ConsumerWidget {
@@ -432,30 +433,52 @@ class PrimaryActionButton extends StatelessWidget {
       ),
     );
     if (isPrimary) {
-      return ElevatedButton(
+      return AppButtonStyles.gradientElevatedButton(
+        text: label,
         onPressed: onPressed,
-        child: child,
+        textStyle: textTheme.labelLarge?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1,
+        ),
       );
     }
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: _buttonPadding,
-          decoration: BoxDecoration(
-            color: AppColors.ironmanWhite,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        gradient: AppButtonStyles.primaryGradient,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryGradientShadow.withValues(alpha: 0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
-          child: child,
+        ],
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(2), // Thickness of gradient border
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.ironmanWhite,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: _buttonPadding,
+              child: Text(
+                label,
+                style: textTheme.labelLarge?.copyWith(
+                  color: AppColors.primaryGradientEnd,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

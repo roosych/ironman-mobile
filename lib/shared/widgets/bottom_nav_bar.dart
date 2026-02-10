@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -102,7 +103,7 @@ class BottomNavBar extends StatelessWidget {
                 icon: icon,
                 size: iconSize,
                 color: isSelected
-                    ? Colors.red
+                    ? AppButtonStyles.activeElementColor
                     : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 4),
@@ -113,7 +114,7 @@ class BottomNavBar extends StatelessWidget {
                     fontSize: fontSize,
                     fontWeight: FontWeight.w600,
                     color: isSelected
-                        ? Colors.red
+                        ? AppButtonStyles.activeElementColor
                         : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   textAlign: TextAlign.center,

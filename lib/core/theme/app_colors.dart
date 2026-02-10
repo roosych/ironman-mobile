@@ -11,6 +11,11 @@ class AppColors {
   static const Color ironmanWhite = Color(0xFFFFFFFF);
   static const Color ironmanTextSecondary = Color(0xFFB0B0B0);
 
+  // Градиентные цвета для активных элементов и кнопок
+  static const Color primaryGradientStart = Color(0xFF5BA3F8);
+  static const Color primaryGradientEnd = Color(0xFF2E6FCC);
+  static const Color primaryGradientShadow = Color(0xFF2E6FCC);
+
   // Дополнительные цвета
   static const Color resultsBackground = Color(0xFFEEEEEC);
   static const Color resultsBorder = Color(0xFF2A2A2A); // ironmanGray для рамок
