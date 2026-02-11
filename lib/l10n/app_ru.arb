@@ -213,7 +213,7 @@
   "@error_unexpected": {
     "description": "Неожиданная ошибка"
   },
-  "my_races_title": "События",
+  "my_races_title": "Предстоящие гонки",
   "my_races_no_races": "У вас пока нет предстоящих гонок",
   "my_races_delete": "Удалить",
   "notifications_title": "Уведомления",
@@ -326,6 +326,8 @@
   "home_card_profile_button": "ПРОФИЛЬ",
   "events_tab_active": "Активные",
   "events_tab_past": "Прошедшие",
-  "events_no_past_races": "Нет прошедших гонок"
+  "events_no_past_races": "Нет прошедших гонок",
+  "athlete_rating_title": "Рейтинг",
+  "athlete_rating_info": "Рейтинг рассчитывается по данным результатов данного приложения"
 }
 

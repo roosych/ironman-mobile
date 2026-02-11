@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../application/user_photos_notifier.dart';
 import '../application/user_photos_state.dart';
@@ -68,12 +70,17 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
               // Confirm button
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                  ),
+                child: AppButtonStyles.primaryGradientButton(
+                  text: localizations.photo_delete_button,
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(localizations.photo_delete_button),
+                  borderRadius: 12,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -154,9 +161,17 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
               // Confirm button
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: AppButtonStyles.primaryGradientButton(
+                  text: localizations.photo_set_button,
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(localizations.photo_set_button),
+                  borderRadius: 12,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -338,23 +353,12 @@ class _AddPhotoCard extends StatelessWidget {
             ? const Center(
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedImageAdd02,
-                    size: 32,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppLocalizations.of(context)!.photo_add_button,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                ],
+            : Center(
+                child: HugeIcon(
+                  icon: HugeIcons.strokeRoundedImageAdd02,
+                  size: 32,
+                  color: AppColors.ironmanWhite,
+                ),
               ),
       ),
     );

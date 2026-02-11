@@ -362,40 +362,11 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
-          // Рейтинг
-          if (athlete.ranking != null)
-            Column(
-              children: [
-                if (athlete.ranking!.ironman != null)
-                  Text(
-                    'FULL: ${athlete.ranking!.ironman!.position}/${athlete.ranking!.ironman!.total}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                if (athlete.ranking!.ironman != null &&
-                    athlete.ranking!.ironman703 != null)
-                  const SizedBox(height: 4),
-                if (athlete.ranking!.ironman703 != null)
-                  Text(
-                    'HALF: ${athlete.ranking!.ironman703!.position}/${athlete.ranking!.ironman703!.total}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-              ],
-            )
-          else
-            Text(
-              'PRO Athlete • Age Group 30-34',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
+          // Блок рейтинга (показываем только если есть данные рейтинга)
+          if (athlete.ranking != null) ...[
+            const SizedBox(height: 16),
+            _buildRatingBlock(context, theme, athlete),
+          ],
         ],
       ),
     );
@@ -1044,6 +1015,149 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           size: size * 0.5,
         ),
       ),
+    );
+  }
+
+  Widget _buildRatingBlock(BuildContext context, ThemeData theme, Athlete athlete) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок с иконкой подсказки
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  localizations.athlete_rating_title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Header with title and close button
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        localizations.athlete_rating_title,
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: HugeIcon(
+                                        icon: HugeIcons.strokeRoundedCancel01,
+                                        size: 24,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                // Content
+                                Text(
+                                  localizations.athlete_rating_info,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: HugeIcon(
+                    icon: HugeIcons.strokeRoundedInformationCircle,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Рейтинги
+            Column(
+              children: [
+                if (athlete.ranking!.ironman != null)
+                  _buildRatingRow(
+                    context,
+                    theme,
+                    'IRONMAN',
+                    athlete.ranking!.ironman!.position,
+                    athlete.ranking!.ironman!.total,
+                  ),
+                if (athlete.ranking!.ironman != null && athlete.ranking!.ironman703 != null)
+                  const SizedBox(height: 8),
+                if (athlete.ranking!.ironman703 != null)
+                  _buildRatingRow(
+                    context,
+                    theme,
+                    'IRONMAN 70.3',
+                    athlete.ranking!.ironman703!.position,
+                    athlete.ranking!.ironman703!.total,
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingRow(BuildContext context, ThemeData theme, String raceType, int position, int total) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          raceType,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: position.toString(),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: '/$total',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

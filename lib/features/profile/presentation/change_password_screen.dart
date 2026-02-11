@@ -4,6 +4,8 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_button_styles.dart';
 import '../application/change_password_notifier.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
@@ -101,7 +103,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     labelText: localizations.change_password_current,
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedLockPassword,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppColors.ironmanWhite,
                       size: 20,
                     ),
                     suffixIcon: IconButton(
@@ -109,7 +111,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         icon: _obscureCurrentPassword
                             ? HugeIcons.strokeRoundedView
                             : HugeIcons.strokeRoundedViewOff,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: AppColors.ironmanWhite,
                         size: 20,
                       ),
                       onPressed: () {
@@ -139,7 +141,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     labelText: localizations.change_password_new,
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedLockPassword,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppColors.ironmanWhite,
                       size: 20,
                     ),
                     suffixIcon: IconButton(
@@ -147,7 +149,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         icon: _obscureNewPassword
                             ? HugeIcons.strokeRoundedView
                             : HugeIcons.strokeRoundedViewOff,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: AppColors.ironmanWhite,
                         size: 20,
                       ),
                       onPressed: () {
@@ -184,7 +186,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     labelText: localizations.change_password_confirm,
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedLockPassword,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppColors.ironmanWhite,
                       size: 20,
                     ),
                     suffixIcon: IconButton(
@@ -192,7 +194,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         icon: _obscureConfirmPassword
                             ? HugeIcons.strokeRoundedView
                             : HugeIcons.strokeRoundedViewOff,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: AppColors.ironmanWhite,
                         size: 20,
                       ),
                       onPressed: () {
@@ -218,22 +220,35 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 const SizedBox(height: 32),
 
                 // Change password button
-                FilledButton(
-                  onPressed: state.isLoading ? null : _changePassword,
+                SizedBox(
+                  width: double.infinity,
                   child: state.isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: AppButtonStyles.primaryGradientDecoration(
+                            borderRadius: 12,
+                          ),
+                          child: const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         )
-                      : Text(
-                          localizations.change_password_button,
-                          style: const TextStyle(
+                      : AppButtonStyles.primaryGradientButton(
+                          text: localizations.change_password_button,
+                          onPressed: _changePassword,
+                          borderRadius: 12,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          textStyle: const TextStyle(
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1,
+                            color: Colors.white,
                           ),
                         ),
                 ),

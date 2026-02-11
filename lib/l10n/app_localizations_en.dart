@@ -631,7 +631,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred, please try again';
 
   @override
-  String get my_races_title => 'Events';
+  String get my_races_title => 'Upcoming Races';
 
   @override
   String get my_races_no_races => 'You don\'t have any upcoming races yet';
@@ -918,4 +918,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get events_no_past_races => 'No past races';
+
+  @override
+  String get athlete_rating_title => 'Rating';
+
+  @override
+  String get athlete_rating_info =>
+      'Rating is calculated based on results data from this application';
 }

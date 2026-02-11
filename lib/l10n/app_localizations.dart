@@ -1291,7 +1291,7 @@ abstract class AppLocalizations {
   /// My races screen title
   ///
   /// In en, this message translates to:
-  /// **'Events'**
+  /// **'Upcoming Races'**
   String get my_races_title;
 
   /// No races message for my races screen
@@ -1815,6 +1815,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No past races'**
   String get events_no_past_races;
+
+  /// No description provided for @athlete_rating_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get athlete_rating_title;
+
+  /// No description provided for @athlete_rating_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating is calculated based on results data from this application'**
+  String get athlete_rating_info;
 }
 
 class _AppLocalizationsDelegate

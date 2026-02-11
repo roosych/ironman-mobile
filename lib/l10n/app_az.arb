@@ -296,6 +296,11 @@
   "notification_permission_open_settings": "Parametrləri aç",
   "@notification_permission_open_settings": {
     "description": "Tətbiq parametrlərini açmaq üçün düymə mətni"
-  }
+  },
+  "events_tab_active": "Aktiv",
+  "events_tab_past": "Keçmiş",
+  "events_no_past_races": "Keçmiş yarışlar yoxdur",
+  "athlete_rating_title": "Reytinq",
+  "athlete_rating_info": "Reytinq bu tətbiqin nəticələr məlumatlarına əsasən hesablanır"
 }
 

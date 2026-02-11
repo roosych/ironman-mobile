@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
-import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../auth/application/auth_notifier.dart';
 import '../../auth/application/auth_state.dart';
@@ -299,30 +298,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               const SizedBox(height: 24),
               // Logout Button
-              OutlinedButton.icon(
+              OutlinedButton(
                 onPressed: authState.isLoading
                     ? null
                     : () {
                         ref.read(authProvider.notifier).logout();
                       },
-                icon: authState.isLoading
+                child: authState.isLoading
                     ? const SizedBox(
-                        height: 16,
-                        width: 16,
+                        height: 20,
+                        width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const HugeIcon(
-                        icon: HugeIcons.strokeRoundedLogout01,
-                        color: AppColors.ironmanRed,
-                        size: 20,
+                    : Text(
+                        localizations.logout_button,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
                       ),
-                label: Text(
-                  localizations.logout_button,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
               ),
             ],
           ),

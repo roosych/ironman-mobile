@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../core/theme/app_button_styles.dart';
 import '../application/edit_profile_notifier.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -112,7 +113,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   labelText: localizations.edit_profile_name,
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedUser,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.white,
                     size: 20,
                   ),
                   border: const OutlineInputBorder(),
@@ -134,7 +135,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     padding: const EdgeInsets.only(bottom: 60),
                     child: HugeIcon(
                       icon: HugeIcons.strokeRoundedEdit01,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Colors.white,
                       size: 20,
                     ),
                   ),
@@ -163,9 +164,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 decoration: InputDecoration(
                   labelText: 'Strava',
                   hintText: 'Strava ID',
-                  prefixIcon: Icon(
-                    Icons.directions_bike,
-                    color: const Color(0xFFFC4C02), // Strava orange
+                  prefixIcon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedBicycle,
+                    color: Colors.white,
                     size: 20,
                   ),
                   border: const OutlineInputBorder(),
@@ -186,7 +187,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   hintText: '@username',
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedInstagram,
-                    color: const Color(0xFFE4405F), // Instagram pink
+                    color: Colors.white,
                     size: 20,
                   ),
                   border: const OutlineInputBorder(),
@@ -207,7 +208,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   hintText: 'username',
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedFacebook01,
-                    color: const Color(0xFF1877F2), // Facebook blue
+                    color: Colors.white,
                     size: 20,
                   ),
                   border: const OutlineInputBorder(),
@@ -221,26 +222,37 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 32),
 
               // Save button
-              FilledButton(
-                onPressed: state.isSaving
-                    ? null
-                    : () {
-                        ref.read(editProfileProvider.notifier).saveProfile();
-                      },
+              SizedBox(
+                width: double.infinity,
                 child: state.isSaving
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: AppButtonStyles.primaryGradientDecoration(
+                          borderRadius: 12,
+                        ),
+                        child: const Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       )
-                    : Text(
-                        localizations.edit_profile_save_button,
-                        style: const TextStyle(
+                    : AppButtonStyles.primaryGradientButton(
+                        text: localizations.edit_profile_save_button,
+                        onPressed: () {
+                          ref.read(editProfileProvider.notifier).saveProfile();
+                        },
+                        borderRadius: 12,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1,
+                          color: Colors.white,
                         ),
                       ),
               ),

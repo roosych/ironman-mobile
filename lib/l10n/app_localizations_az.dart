@@ -913,11 +913,18 @@ class AppLocalizationsAz extends AppLocalizations {
   String get home_card_profile_button => 'PROFILE';
 
   @override
-  String get events_tab_active => 'Active';
+  String get events_tab_active => 'Aktiv';
 
   @override
-  String get events_tab_past => 'Past';
+  String get events_tab_past => 'Keçmiş';
 
   @override
-  String get events_no_past_races => 'No past races';
+  String get events_no_past_races => 'Keçmiş yarışlar yoxdur';
+
+  @override
+  String get athlete_rating_title => 'Reytinq';
+
+  @override
+  String get athlete_rating_info =>
+      'Reytinq bu tətbiqin nəticələr məlumatlarına əsasən hesablanır';
 }

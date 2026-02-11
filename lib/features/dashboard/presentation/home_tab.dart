@@ -281,13 +281,33 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             : null,
                       ),
                     ),
-                    // Notifications
-                    _NotificationButton(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                        );
-                      },
+                    // User Profile and Notifications
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // User Profile Menu
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const profile.ProfileScreen()),
+                            );
+                          },
+                          icon: HugeIcon(
+                            icon: HugeIcons.strokeRoundedUser,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 8), // Отступ между иконками
+                        // Notifications
+                        _NotificationButton(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -1363,8 +1383,9 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
               children: [
                 Text(
                   localizations.home_upcoming_races,
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
                 InkWell(

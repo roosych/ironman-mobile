@@ -278,7 +278,8 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
   }
 
   Widget _buildAthletesList(AthletesState state) {
-    if (state.isLoading && state.athletes.isEmpty) {
+    // Показываем индикатор загрузки если данные загружаются или список пуст и нет ошибки
+    if (state.isLoading || (state.athletes.isEmpty && !state.hasError)) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -304,15 +305,6 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
               ),
             ],
           ),
-        ),
-      );
-    }
-
-    if (state.isEmpty) {
-      return Center(
-        child: Text(
-          AppLocalizations.of(context)!.athletes_coming_soon,
-          style: Theme.of(context).textTheme.bodyLarge,
         ),
       );
     }
