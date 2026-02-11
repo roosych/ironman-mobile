@@ -14,7 +14,6 @@ import 'package:ironman_mobile/features/auth/presentation/login_screen.dart';
 import 'package:ironman_mobile/features/auth/presentation/register_screen.dart';
 import 'package:ironman_mobile/features/auth/presentation/email_not_verified_screen.dart';
 import 'package:ironman_mobile/features/auth/presentation/reset_password_screen.dart';
-import 'package:ironman_mobile/features/profile/presentation/profile_selection_screen.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:ironman_mobile/features/home/presentation/home_screen.dart';
 import 'package:ironman_mobile/features/home/presentation/pace_calculator_screen.dart';
@@ -88,14 +87,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
-    // ВАЖНО: Отслеживаем изменения authState для принудительной перерисовки AuthRouter
-    final authState = ref.watch(authProvider);
-    // Создаем динамический ключ на основе состояния для принудительной перерисовки
-    final routerKey = AuthRouter.getKey(authState);
-    debugPrint(
-      '=== MyApp: Building with authState - isAuthenticated: ${authState.isAuthenticated}, user: ${authState.user?.id} ===',
-    );
-    debugPrint('=== MyApp: Router key: ${routerKey.value} ===');
 
     return MaterialApp(
       navigatorKey: navigatorKey,
@@ -215,19 +206,17 @@ class MyApp extends ConsumerWidget {
         iconTheme: const IconThemeData(color: ironmanWhite),
         dividerTheme: const DividerThemeData(color: ironmanGray),
       ),
-      // ВАЖНО: Используем AuthRouter напрямую с динамическим ключом
-      // Ключ меняется при изменении состояния, что заставляет Flutter пересоздать виджет
-      home: AuthRouter(key: routerKey),
+      home: const AuthRouter(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/email-not-verified': (context) => const EmailNotVerifiedScreen(),
         '/reset-password': (context) => const ResetPasswordScreen(),
-        '/profile-selection': (context) => const ProfileSelectionScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/pace-calculator': (context) => const PaceCalculatorScreen(),
-        '/profile': (context) => const DashboardScreen(), // Redirect to dashboard for authenticated users
+        '/profile': (context) =>
+            const DashboardScreen(), // Redirect to dashboard for authenticated users
         '/results': (context) => const ResultsScreen(),
         '/ratings': (context) => const RatingsScreen(),
         '/athletes': (context) => const AthletesScreen(),
@@ -238,18 +227,6 @@ class MyApp extends ConsumerWidget {
 
 class AuthRouter extends ConsumerStatefulWidget {
   const AuthRouter({super.key});
-
-  // ВАЖНО: Используем ValueKey для принудительной перерисовки при изменении состояния
-  // Это гарантирует, что роутер пересоздастся при изменении authState
-  static ValueKey<String> getKey(AuthState state) {
-    final userKey = state.user?.id ?? 'null';
-    final authKey = state.isAuthenticated ? 'auth' : 'unauth';
-    final profileKey = state.user?.profile is Map<String, dynamic>
-        ? (state.user!.profile as Map<String, dynamic>)['id']?.toString() ??
-              'no_profile'
-        : 'no_profile';
-    return ValueKey('auth_router_${userKey}_${authKey}_$profileKey');
-  }
 
   @override
   ConsumerState<AuthRouter> createState() => _AuthRouterState();
@@ -268,6 +245,11 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
       },
     );
 
+    // Precache background image to prevent flickering
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('assets/images/bg.png'), context);
+    });
+
     // Restore session after initialization
     Future.microtask(() {
       ref.read(authProvider.notifier).restoreSession();
@@ -280,15 +262,11 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
     // Это гарантирует, что роутер перерисуется при изменении authState
     final authState = ref.watch(authProvider);
 
-    // Отладочный вывод для диагностики
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    debugPrint('=== AuthRouter build ($timestamp) ===');
+    debugPrint('=== AuthRouter.build() called ===');
     debugPrint('isAuthenticated: ${authState.isAuthenticated}');
+    debugPrint('isInitial: ${authState.isInitial}');
     debugPrint('isLoading: ${authState.isLoading}');
-    debugPrint('user: ${authState.user?.id}');
-    debugPrint('status: ${authState.status}');
-    debugPrint('user.profile: ${authState.user?.profile}');
-    debugPrint('authState.hashCode: ${authState.hashCode}');
+    debugPrint('user: ${authState.user?.email ?? 'null'}');
 
     // Загружаем upcoming события при восстановлении сессии или после логина
     // и очищаем результаты при смене пользователя
@@ -297,35 +275,19 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
       // Очищаем результаты при смене пользователя (логин/логаут)
       final previousUserId = previous?.user?.id;
       final nextUserId = next.user?.id;
-      final previousProfileId = previous?.user?.profile is Map<String, dynamic>
-          ? (previous!.user!.profile as Map<String, dynamic>)['id'] as int?
-          : null;
-      final nextProfileId = next.user?.profile is Map<String, dynamic>
-          ? (next.user!.profile as Map<String, dynamic>)['id'] as int?
-          : null;
 
-      // Если пользователь изменился (разные ID или profile ID) или произошел логаут
+      // Если пользователь изменился или произошел логаут
       // ВАЖНО: Проверяем смену пользователя даже если оба аутентифицированы
       final userChanged =
           (previousUserId != null &&
               nextUserId != null &&
               previousUserId != nextUserId) ||
-          (previousProfileId != null &&
-              nextProfileId != null &&
-              previousProfileId != nextProfileId) ||
           (previous?.isAuthenticated == true && !next.isAuthenticated) ||
           (previous?.isAuthenticated != true &&
               next.isAuthenticated &&
               previousUserId != nextUserId);
 
       if (userChanged) {
-        debugPrint('=== Clearing data due to user change ===');
-        debugPrint(
-          'Previous user ID: $previousUserId, Next user ID: $nextUserId',
-        );
-        debugPrint(
-          'Previous profile ID: $previousProfileId, Next profile ID: $nextProfileId',
-        );
         // Очищаем результаты предыдущего пользователя
         ref.read(raceResultsProvider.notifier).reset();
         ref.read(allRaceResultsProvider.notifier).reset();
@@ -333,28 +295,18 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
         ref.read(notificationsProvider.notifier).reset();
       }
 
-      // Загружаем upcoming события только для верифицированных пользователей с валидным профилем
+      // Загружаем upcoming события для всех верифицированных пользователей
       if ((previous?.isAuthenticated != true) &&
           next.isAuthenticated &&
           next.user?.verified == true) {
-        // Проверяем наличие валидного профиля перед загрузкой данных
-        bool hasValidProfile = false;
-        if (next.user?.profile is Map<String, dynamic>) {
-          final profile = next.user!.profile as Map<String, dynamic>;
-          final profileId = profile['id'];
-          hasValidProfile = profileId != null && profileId is int;
-        }
-
-        // Загружаем данные только если профиль валиден
-        if (hasValidProfile) {
-          ref
-              .read(globalUpcomingRacesProvider.notifier)
-              .loadUpcomingRaces(onlyFuture: true);
-        }
+        ref
+            .read(globalUpcomingRacesProvider.notifier)
+            .loadUpcomingRaces(onlyFuture: true);
       }
     });
 
     if (authState.isInitial) {
+      debugPrint('=== AuthRouter: Showing initial loader ===');
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -366,49 +318,22 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
 
     if (authState.isAuthenticated) {
       debugPrint('=== AuthRouter: User is authenticated ===');
-      debugPrint('isLoading: ${authState.isLoading}');
-      debugPrint('User: ${authState.user?.id}');
-      debugPrint('User verified: ${authState.user?.verified}');
+      // ВАЖНО: Не навигируем, пока данные загружаются
+      if (authState.isLoading) {
+        debugPrint(
+          '=== AuthRouter: Showing loading for authenticated user ===',
+        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
       if (authState.user != null && !authState.user!.verified) {
+        debugPrint('=== AuthRouter: Showing EmailNotVerifiedScreen ===');
         return const EmailNotVerifiedScreen();
-      }
-      // Проверяем наличие профиля - если нет, показываем экран выбора профиля
-      // Профиль считается валидным только если в нем есть поле 'id'
-      final user = authState.user;
-      bool hasProfile = false;
-      if (user?.profile is Map<String, dynamic>) {
-        final profile = user!.profile as Map<String, dynamic>;
-        // Профиль валиден только если в нем есть 'id' (это означает, что профиль реально привязан)
-        final profileId = profile['id'];
-        hasProfile = profileId != null && profileId is int;
-      }
-
-      // Отладочный вывод для диагностики
-      debugPrint('=== AuthRouter Profile Check ===');
-      debugPrint('User ID: ${user?.id}');
-      debugPrint('Profile: ${user?.profile}');
-      debugPrint('Profile type: ${user?.profile.runtimeType}');
-      debugPrint('Has Profile: $hasProfile');
-      if (user?.profile is Map<String, dynamic>) {
-        final profile = user!.profile as Map<String, dynamic>;
-        debugPrint('Profile keys: ${profile.keys}');
-        debugPrint('Profile id: ${profile['id']}');
-      }
-      debugPrint('================================');
-
-      if (user != null && !hasProfile) {
-        debugPrint('=== AuthRouter: Showing ProfileSelectionScreen ===');
-        return const ProfileSelectionScreen();
       }
       debugPrint('=== AuthRouter: Showing DashboardScreen ===');
       return const DashboardScreen();
     }
 
-    debugPrint(
-      '=== AuthRouter: User NOT authenticated, showing HomeScreen ===',
-    );
-    debugPrint('isAuthenticated: ${authState.isAuthenticated}');
-    debugPrint('isLoading: ${authState.isLoading}');
+    debugPrint('=== AuthRouter: Showing HomeScreen ===');
     return const HomeScreen();
   }
 }

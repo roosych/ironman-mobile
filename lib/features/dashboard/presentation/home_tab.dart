@@ -93,13 +93,17 @@ class HomeTab extends ConsumerStatefulWidget {
 }
 
 class _HomeTabState extends ConsumerState<HomeTab> {
-  // Убрана автоматическая загрузка результатов - данные берутся из profile.stats
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _loadResults();
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // Принудительно загружаем данные пользователя для получения актуальной статистики
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        debugPrint('HomeTab: initState - Refreshing user data');
+        ref.read(authProvider.notifier).refreshUser();
+      }
+    });
+  }
 
   // Загрузка результатов не нужна на главном экране - данные из profile.stats
   // void _loadResults() {
@@ -116,83 +120,82 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   //   }
   // }
 
-  // Извлечение данных из profile.stats
-  Map<String, dynamic>? _getProfileStats() {
-    final user = ref.watch(authProvider).user;
-    debugPrint('=== HomeTab: _getProfileStats ===');
-    debugPrint('User: ${user?.id}');
-    debugPrint('User profile: ${user?.profile}');
-    if (user?.profile is Map<String, dynamic>) {
-      final profile = user!.profile as Map<String, dynamic>;
-      final stats = profile['stats'] as Map<String, dynamic>?;
-      debugPrint('Profile stats: $stats');
-      if (stats != null) {
-        debugPrint('Stats keys: ${stats.keys}');
-        final summary = stats['summary'];
-        debugPrint('Summary: $summary');
-        if (summary is Map<String, dynamic>) {
-          debugPrint('Summary total_races: ${summary['total_races']}');
-        }
-      }
-      return stats;
-    }
-    debugPrint('Profile is not Map or null');
-    return null;
-  }
-
   int? _getTotalRaces() {
-    // Берем количество гонок из profile.stats.summary.total_races, которые приходят при авторизации
-    final stats = _getProfileStats();
-    if (stats != null) {
-      // Получаем summary из stats
-      final summary = stats['summary'];
-      if (summary is Map<String, dynamic>) {
-        // Пытаемся получить total_races из summary
-        final totalRaces = summary['total_races'];
-        debugPrint('=== HomeTab: _getTotalRaces ===');
-        debugPrint('Stats: $stats');
-        debugPrint('Summary: $summary');
-        debugPrint('total_races from summary: $totalRaces');
-        if (totalRaces is int) {
-          debugPrint('Returning total_races: $totalRaces');
-          return totalRaces;
-        }
-        if (totalRaces is num) {
-          final result = totalRaces.toInt();
-          debugPrint('Returning total_races (converted): $result');
-          return result;
-        }
-      } else {
-        debugPrint('Summary is not Map: ${summary.runtimeType}');
-      }
-    } else {
-      debugPrint('Stats is null');
+    final user = ref.watch(authProvider).user;
+    final profile = user?.profile;
+    final stats = profile?.stats;
+    final totalRaces = stats?.summary?.totalRaces;
+
+    debugPrint('=== HomeTab: _getTotalRaces ULTRA DETAILED DEBUG ===');
+    debugPrint('User: ${user != null ? "EXISTS" : "NULL"}');
+    debugPrint('User ID: ${user?.id}');
+    debugPrint('User name: ${user?.name}');
+    debugPrint('User verified: ${user?.verified}');
+    debugPrint('User email: ${user?.email}');
+    debugPrint('User toJson: ${user?.toJson()}');
+    debugPrint('Profile: ${profile != null ? "EXISTS" : "NULL"}');
+    debugPrint('Profile ID: ${profile?.id}');
+    debugPrint('Profile role: ${profile?.role}');
+    debugPrint('Profile toJson: ${profile?.toJson()}');
+    debugPrint('Stats: ${stats != null ? "EXISTS" : "NULL"}');
+    debugPrint('Stats summary: ${stats?.summary != null ? "EXISTS" : "NULL"}');
+    debugPrint('Stats summary totalRaces: $totalRaces');
+    debugPrint('Stats summary totalDistances: ${stats?.summary?.totalDistances}');
+    debugPrint('Stats bestTotalTime: ${stats?.bestTotalTime}');
+    debugPrint('Stats toJson: ${stats?.toJson()}');
+    debugPrint('Raw Stats object: $stats');
+
+    // Fallback 1: получаем количество из результатов гонок (через resultsState)
+    final resultsState = ref.watch(raceResultsProvider);
+    final approvedResultsCount = resultsState.results.where((r) => r.isApproved).length;
+    debugPrint('Fallback 1 - Approved results count from state: $approvedResultsCount');
+
+    // Fallback 2: получаем количество из race_results в профиле
+    final profileRaceResults = profile?.raceResults?.length ?? 0;
+    debugPrint('Fallback 2 - Profile race results count: $profileRaceResults');
+
+    // Fallback 3: используем ironman_races_count из профиля
+    final ironmanRacesCount = profile?.ironmanRacesCount ?? 0;
+    debugPrint('Fallback 3 - Profile ironman_races_count: $ironmanRacesCount');
+
+    debugPrint('======================================');
+
+    // Возвращаем статистику или лучший доступный fallback
+    if (totalRaces != null) {
+      return totalRaces;
+    } else if (profileRaceResults > 0) {
+      return profileRaceResults;
+    } else if (ironmanRacesCount > 0) {
+      return ironmanRacesCount;
+    } else if (approvedResultsCount > 0) {
+      return approvedResultsCount;
     }
-    // Если данных нет в stats, возвращаем null (покажем спиннер)
-    debugPrint('Returning null for total_races');
-    return null;
-  }
-
-  Map<String, dynamic>? _getPersonalBests() {
-    final stats = _getProfileStats();
-    final personalBests = stats?['personal_bests'];
-
-    // personal_bests может быть Map или List, обрабатываем оба случая
-    if (personalBests is Map<String, dynamic>) {
-      return personalBests;
-    }
-
-    // Если это List или другой тип, возвращаем null
     return null;
   }
 
   int? _getProfileId() {
     final user = ref.watch(authProvider).user;
-    if (user?.profile is Map<String, dynamic>) {
-      final profile = user!.profile as Map<String, dynamic>;
-      return profile['id'] as int?;
+    return user?.profile?.id;
+  }
+
+  Map<String, dynamic>? _getPersonalBests() {
+    final user = ref.watch(authProvider).user;
+    final profile = user?.profile;
+    final stats = profile?.stats;
+    final personalBests = stats?.personalBests;
+
+    try {
+      debugPrint('=== _getPersonalBests DEBUG ===');
+      debugPrint('User: ${user != null ? "EXISTS" : "NULL"}');
+      debugPrint('Profile: ${profile != null ? "EXISTS" : "NULL"}');
+      debugPrint('Stats: ${stats != null ? "EXISTS" : "NULL"}');
+      debugPrint('Personal bests from stats.personalBests: $personalBests');
+      debugPrint('RESOLUTION: Accessing personal_bests from correct location: stats.personalBests');
+    } catch (e) {
+      debugPrint('PersonalBests debug logging error (safe to ignore): $e');
     }
-    return null;
+
+    return personalBests;
   }
 
   @override
@@ -763,6 +766,197 @@ class _PaceCalculatorCard extends StatelessWidget {
   }
 }
 
+
+class _UpcomingRacesSection extends ConsumerStatefulWidget {
+  const _UpcomingRacesSection();
+
+  @override
+  ConsumerState<_UpcomingRacesSection> createState() =>
+      _UpcomingRacesSectionState();
+}
+
+class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
+  @override
+  void initState() {
+    super.initState();
+    // Загружаем гонки после построения виджета
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadAllRaces();
+      }
+    });
+  }
+
+  void _loadAllRaces() {
+    // Используем отдельный провайдер для главного экрана
+    ref
+        .read(globalUpcomingRacesProvider.notifier)
+        .loadUpcomingRaces(
+          onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
+        );
+  }
+
+  void _navigateToUpcomingRacesScreen(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const UpcomingRacesScreen()));
+  }
+
+  void _addUpcomingRace(BuildContext context) {
+    showAddUpcomingRaceBottomSheet(context);
+  }
+
+  List<dynamic> _getActiveRaces(List<dynamic> races) {
+    final now = DateTime.now();
+    return races.where((race) {
+      try {
+        final raceDate = DateTime.parse(race.raceDate);
+        return raceDate.isAfter(now) || _isSameDay(raceDate, now);
+      } catch (e) {
+        return false;
+      }
+    }).toList();
+  }
+
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  Widget _buildActiveRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
+    if (state.isLoading && state.races.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final activeRaces = _getActiveRaces(state.races);
+    // Берем только первые 5 активных гонок для отображения на главном экране
+    final limitedActiveRaces = activeRaces.take(5).toList();
+
+    if (limitedActiveRaces.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            localizations.home_no_upcoming_races,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final cardWidth = screenWidth * 0.9;
+        final cardSpacing = 12.0;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int index = 0; index < limitedActiveRaces.length; index++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: index < limitedActiveRaces.length - 1 ? cardSpacing : 0,
+                  ),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: UpcomingRaceCard(race: limitedActiveRaces[index]),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final state = ref.watch(globalUpcomingRacesProvider);
+
+    // Слушаем ошибки
+    ref.listen<UpcomingRacesState>(globalUpcomingRacesProvider, (
+      previous,
+      next,
+    ) {
+      if (next.hasError &&
+          next.error != null &&
+          previous?.error != next.error) {
+        ErrorHandler.showError(context, next.error!);
+      }
+    });
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header с заголовком и кнопкой "All >"
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  localizations.home_upcoming_races,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => _navigateToUpcomingRacesScreen(context),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 4.0,
+                    ),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedArrowRight01,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Upcoming races content (только активные)
+            _buildActiveRacesTab(context, state, localizations),
+
+            const SizedBox(height: 16),
+            // Кнопка добавления новой гонки
+            Center(
+              child: AppButtonStyles.gradientElevatedButton(
+                text: localizations.home_add_race,
+                onPressed: () => _addUpcomingRace(context),
+                icon: const Icon(Icons.add, size: 20, color: Colors.white),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PersonalBestsExpandableCard extends StatefulWidget {
   final Map<String, dynamic> personalBests;
   final int profileId;
@@ -1240,196 +1434,6 @@ class _DisciplineRow extends StatelessWidget {
   }
 }
 
-class _UpcomingRacesSection extends ConsumerStatefulWidget {
-  const _UpcomingRacesSection();
-
-  @override
-  ConsumerState<_UpcomingRacesSection> createState() =>
-      _UpcomingRacesSectionState();
-}
-
-class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
-  @override
-  void initState() {
-    super.initState();
-    // Загружаем гонки после построения виджета
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _loadAllRaces();
-      }
-    });
-  }
-
-  void _loadAllRaces() {
-    // Используем отдельный провайдер для главного экрана
-    ref
-        .read(globalUpcomingRacesProvider.notifier)
-        .loadUpcomingRaces(
-          onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
-        );
-  }
-
-  void _navigateToUpcomingRacesScreen(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const UpcomingRacesScreen()));
-  }
-
-  void _addUpcomingRace(BuildContext context) {
-    showAddUpcomingRaceBottomSheet(context);
-  }
-
-  List<dynamic> _getActiveRaces(List<dynamic> races) {
-    final now = DateTime.now();
-    return races.where((race) {
-      try {
-        final raceDate = DateTime.parse(race.raceDate);
-        return raceDate.isAfter(now) || _isSameDay(raceDate, now);
-      } catch (e) {
-        return false;
-      }
-    }).toList();
-  }
-
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  Widget _buildActiveRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
-    if (state.isLoading && state.races.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final activeRaces = _getActiveRaces(state.races);
-    // Берем только первые 5 активных гонок для отображения на главном экране
-    final limitedActiveRaces = activeRaces.take(5).toList();
-
-    if (limitedActiveRaces.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            localizations.home_no_upcoming_races,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
-        final cardWidth = screenWidth * 0.9;
-        final cardSpacing = 12.0;
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (int index = 0; index < limitedActiveRaces.length; index++)
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: index < limitedActiveRaces.length - 1 ? cardSpacing : 0,
-                  ),
-                  child: SizedBox(
-                    width: cardWidth,
-                    child: UpcomingRaceCard(race: limitedActiveRaces[index]),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context)!;
-    final state = ref.watch(globalUpcomingRacesProvider);
-
-    // Слушаем ошибки
-    ref.listen<UpcomingRacesState>(globalUpcomingRacesProvider, (
-      previous,
-      next,
-    ) {
-      if (next.hasError &&
-          next.error != null &&
-          previous?.error != next.error) {
-        ErrorHandler.showError(context, next.error!);
-      }
-    });
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header с заголовком и кнопкой "All >"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  localizations.home_upcoming_races,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                InkWell(
-                  onTap: () => _navigateToUpcomingRacesScreen(context),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedArrowRight01,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Upcoming races content (только активные)
-            _buildActiveRacesTab(context, state, localizations),
-
-            const SizedBox(height: 16),
-            // Кнопка добавления новой гонки
-            Center(
-              child: AppButtonStyles.gradientElevatedButton(
-                text: localizations.home_add_race,
-                onPressed: () => _addUpcomingRace(context),
-                icon: const Icon(Icons.add, size: 20, color: Colors.white),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _NotificationButton extends ConsumerWidget {
   final VoidCallback onTap;
 
@@ -1437,11 +1441,14 @@ class _NotificationButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
     final unreadCount = ref.watch(notificationsProvider.select((s) => s.unreadCount));
 
     // Ensure we have unread_count for the badge
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(notificationsProvider.notifier).load();
+      if (authState.isAuthenticated) {
+        ref.read(notificationsProvider.notifier).load();
+      }
     });
 
     return IconButton(

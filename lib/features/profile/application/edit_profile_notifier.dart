@@ -26,8 +26,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
     if (user == null) return;
 
     AthleteProfile athleteProfile = const AthleteProfile();
-    if (user.profile is Map<String, dynamic>) {
-      athleteProfile = AthleteProfile.fromJson(user.profile);
+    if (user.profile != null) {
+      athleteProfile = AthleteProfile.fromJson(user.profile!.toJson());
     }
 
     state = state.copyWith(
@@ -44,8 +44,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
       final user = await _api.getProfile();
 
       AthleteProfile athleteProfile = const AthleteProfile();
-      if (user.profile is Map<String, dynamic>) {
-        athleteProfile = AthleteProfile.fromJson(user.profile);
+      if (user.profile != null) {
+        athleteProfile = AthleteProfile.fromJson(user.profile!.toJson());
       }
 
       state = state.copyWith(
@@ -127,8 +127,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
       final user = await _api.getProfile();
 
       AthleteProfile athleteProfile = const AthleteProfile();
-      if (user.profile is Map<String, dynamic>) {
-        athleteProfile = AthleteProfile.fromJson(user.profile);
+      if (user.profile != null) {
+        athleteProfile = AthleteProfile.fromJson(user.profile!.toJson());
       }
 
       // Use message from API if available (already localized), otherwise use default

@@ -157,5 +157,6 @@ class AthletesApi {
       throw AthletesApiException('Произошла ошибка: ${e.toString()}');
     }
   }
+
 }
 

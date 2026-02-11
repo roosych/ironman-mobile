@@ -7,13 +7,16 @@ import 'package:ironman_mobile/features/rankings/application/rankings_notifier.d
 import 'package:ironman_mobile/features/rankings/application/rankings_state.dart';
 import 'package:ironman_mobile/features/rankings/domain/ranking.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/disciplines_comparison_widget.dart';
+import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
+import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
+import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 import 'package:intl/intl.dart';
 
 class RatingsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
   final bool isActive;
 
-  const RatingsScreen({super.key, this.onBack, this.isActive = false});
+  const RatingsScreen({super.key, this.onBack, this.isActive = true});
 
   @override
   ConsumerState<RatingsScreen> createState() => _RatingsScreenState();
@@ -31,8 +34,17 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
     _mainTabController = TabController(length: 2, vsync: this, initialIndex: 0);
     // Не добавляем слушатель сразу, чтобы избежать вызова при инициализации
     // Слушатель будет добавлен при первом показе экрана
-    // НЕ загружаем данные в initState, так как экран может быть не виден
-    // Загрузка будет происходить через dashboard_screen при переключении вкладок
+
+    // Если экран активен с самого начала (standalone mode), загружаем данные
+    if (widget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeIfNeeded();
+        final currentState = ref.read(rankingsProvider);
+        if (currentState.rankings.isEmpty && !currentState.isLoading && !currentState.hasError) {
+          ref.read(rankingsProvider.notifier).loadRankings(raceType: 'ironman', discipline: 'total');
+        }
+      });
+    }
   }
 
   void _initializeIfNeeded() {
@@ -83,6 +95,11 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
       {'value': 'bike', 'label': localizations.ratings_discipline_bike},
       {'value': 'run', 'label': localizations.ratings_discipline_run},
     ];
+  }
+
+  bool _isUserAuthenticated() {
+    final authState = ref.read(authProvider);
+    return authState.status == AuthStatus.authenticated && authState.user != null;
   }
 
   @override
@@ -309,6 +326,10 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
             ),
         ],
       ),
+      // Add bottom navigation for unauthenticated users
+      bottomNavigationBar: _isUserAuthenticated()
+          ? null
+          : const UnauthenticatedBottomNav(currentIndex: 1), // 1 = Ratings
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../auth/application/auth_notifier.dart';
-import '../../auth/application/auth_state.dart';
 import '../../profile/application/profile_avatar_notifier.dart';
 import '../../profile/presentation/photo_gallery_screen.dart';
 import '../../profile/presentation/edit_profile_screen.dart';
@@ -53,14 +52,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final displayName = _cachedUserName ?? user?.name ?? localizations.profile_user_fallback;
     final avatarUrl = _cachedAvatarUrl ?? user?.avatarUrl;
 
-    // Listen for logout
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.isUnauthenticated && previous?.isUnauthenticated != true) {
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/login', (route) => false);
-      }
-    });
 
     // Listen for avatar upload errors
     ref.listen(profileAvatarProvider, (previous, next) {

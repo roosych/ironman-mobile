@@ -33,7 +33,15 @@
       "Bash(./gradlew signingReport:*)",
       "Bash(keytool -list -v -keystore:*)",
       "Bash(where:*)",
-      "Bash(\"C:\\\\Program Files\\\\Common Files\\\\Oracle\\\\Java\\\\javapath\\\\keytool.exe\" -list -v -keystore \"%USERPROFILE%\\\\.android\\\\debug.keystore\" -alias androiddebugkey -storepass android -keypass android)"
+      "Bash(\"C:\\\\Program Files\\\\Common Files\\\\Oracle\\\\Java\\\\javapath\\\\keytool.exe\" -list -v -keystore \"%USERPROFILE%\\\\.android\\\\debug.keystore\" -alias androiddebugkey -storepass android -keypass android)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nImprove ratings screen UI and add athlete filtering infrastructure\n\n- Center hint text and remove close button on ratings screen\n- Add light gray border for inactive compare button\n- Update Ranking model with discipline fields \\(swim/bike/run seconds\\)\n- Add athlete filtering infrastructure for complete race results\n- Temporarily disable filtering to resolve loading issues\n\nThe filtering logic is prepared but disabled until API data structure is confirmed.\n\nCo-Authored-By: Claude Sonnet 4 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(nc:*)",
+      "Bash(powershell -command \"$lines = Get-Content ''lib\\\\features\\\\auth\\\\presentation\\\\login_screen.dart''; $lines[345]\")",
+      "Bash(powershell -command \"$lines = Get-Content ''lib\\\\features\\\\auth\\\\presentation\\\\login_screen.dart''; Write-Host $lines[345]\")"
     ]
   }
 }

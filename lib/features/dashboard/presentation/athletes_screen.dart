@@ -7,6 +7,9 @@ import 'package:ironman_mobile/features/dashboard/domain/athlete.dart';
 import 'package:ironman_mobile/features/dashboard/application/athletes_notifier.dart';
 import 'package:ironman_mobile/features/dashboard/application/athletes_state.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/athlete_profile_screen.dart';
+import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
+import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
+import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 
 class AthletesScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -25,8 +28,14 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    // НЕ загружаем данные в initState, так как экран может быть не виден
-    // Загрузка будет происходить через dashboard_screen при переключении вкладок
+
+    // Загружаем данные если экран используется как standalone (не через DashboardScreen)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final athletesState = ref.read(athletesProvider);
+      if (athletesState.athletes.isEmpty && !athletesState.isLoading && !athletesState.hasError) {
+        ref.read(athletesProvider.notifier).loadAthletes();
+      }
+    });
   }
 
   @override
@@ -49,6 +58,11 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
     }
 
     return filtered;
+  }
+
+  bool _isUserAuthenticated() {
+    final authState = ref.read(authProvider);
+    return authState.status == AuthStatus.authenticated && authState.user != null;
   }
 
   @override
@@ -137,6 +151,10 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             Expanded(child: _buildAthletesList(athletesState)),
           ],
         ),
+        // Add bottom navigation for unauthenticated users
+        bottomNavigationBar: _isUserAuthenticated()
+            ? null
+            : const UnauthenticatedBottomNav(currentIndex: 2), // 2 = Athletes
       ),
     );
   }

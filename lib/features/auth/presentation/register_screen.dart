@@ -85,12 +85,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         AlertHelper.showInfo(context, next.warning!);
       }
 
-      // Listen for logout
-      if (next.isUnauthenticated && previous?.isUnauthenticated != true) {
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/login', (route) => false);
-      }
 
       // Check if registration was successful
       // Проверяем успешную регистрацию по завершению загрузки без ошибки
@@ -175,10 +169,50 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
     }
 
-    return Stack(
-      children: [
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background image with gradient overlay
+          Transform.rotate(
+          angle: 3.14159, // 180 градусов (π радиан)
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg.png'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.matrix([
+                  0.299, 0.587, 0.114, 0, 0, // Red channel -> grayscale
+                  0.299, 0.587, 0.114, 0, 0, // Green channel -> grayscale
+                  0.299, 0.587, 0.114, 0, 0, // Blue channel -> grayscale
+                  0, 0, 0, 1, 0,             // Alpha channel unchanged
+                ]),
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.3),
+                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ],
+                  stops: const [0.0, 0.3, 0.7, 1.0],
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Main content
         Scaffold(
-          appBar: AppBar(),
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+          ),
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -189,14 +223,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Center(
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          width: 160,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
+                      // Center(
+                      //   child: Image.asset(
+                      //     'assets/images/logo.png',
+                      //     width: 160,
+                      //     fit: BoxFit.contain,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 12),
                       Text(
                         localizations.register_title,
                         textAlign: TextAlign.center,
@@ -414,7 +448,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             color: Colors.black.withValues(alpha: 0.5),
             child: const Center(child: CircularProgressIndicator()),
           ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -6,7 +6,6 @@ import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../main.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../auth/application/auth_notifier.dart';
-import '../../auth/application/auth_state.dart';
 import '../../dashboard/presentation/dashboard_screen.dart';
 import '../application/profile_selection_notifier.dart';
 
@@ -219,15 +218,6 @@ class _ProfileSelectionScreenState
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // Слушаем изменения в authProvider для перехода на экран логина после выхода
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.isUnauthenticated && previous?.isAuthenticated == true) {
-        // Пользователь вышел - перенаправляем на экран логина
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/login', (route) => false);
-      }
-    });
 
     return GestureDetector(
       onTap: () {

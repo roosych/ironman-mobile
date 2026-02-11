@@ -17,7 +17,27 @@ class AuthResponse {
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     final data = json['data'] as Map<String, dynamic>;
     final userJson = data['user'] as Map<String, dynamic>;
-    
+
+    try {
+      debugPrint('=== AuthResponse.fromJson: LOGIN RESPONSE DEBUG ===');
+      debugPrint('Full login response keys: ${json.keys}');
+      debugPrint('Data keys: ${data.keys}');
+      debugPrint('User JSON keys: ${userJson.keys}');
+      if (userJson['profile'] is Map) {
+        final profile = userJson['profile'] as Map<String, dynamic>;
+        debugPrint('Profile keys: ${profile.keys}');
+        debugPrint('Profile personal_bests: ${profile['personal_bests']}');
+        if (profile['stats'] is Map) {
+          final stats = profile['stats'] as Map<String, dynamic>;
+          debugPrint('Stats keys: ${stats.keys}');
+          debugPrint('Stats personal_bests: ${stats['personal_bests']}');
+        }
+      }
+      debugPrint('============================================');
+    } catch (e) {
+      debugPrint('Debug logging error (safe to ignore): $e');
+    }
+
     return AuthResponse(
       user: User.fromJson(userJson),
       token: data['token'] as String,
@@ -67,12 +87,6 @@ class AuthApi {
     String? locale,
   }) async {
     try {
-      final fullUrl = '${ApiClient.baseUrl}/auth/login';
-      debugPrint('=== LOGIN REQUEST ===');
-      debugPrint('Full URL: $fullUrl');
-      debugPrint('Base URL: ${ApiClient.baseUrl}');
-      debugPrint('Email: $email');
-      debugPrint('====================');
 
       final data = <String, dynamic>{
         'email': email,
@@ -86,12 +100,6 @@ class AuthApi {
         '/auth/login',
         data: data,
       );
-
-      debugPrint('=== LOGIN RESPONSE SUCCESS ===');
-      debugPrint('Status: ${response.statusCode}');
-      debugPrint('Headers: ${response.headers}');
-      debugPrint('Data keys: ${response.data?.keys}');
-      debugPrint('=====================');
 
       final json = response.data!;
 
@@ -110,30 +118,10 @@ class AuthApi {
 
       throw _parseError(json);
     } on DioException catch (e) {
-      // Детальное логирование для отладки
-      debugPrint('=== LOGIN ERROR ===');
-      debugPrint('Error type: ${e.type}');
-      debugPrint('Error message: ${e.message}');
-      debugPrint('Request URL: ${e.requestOptions.uri}');
-      debugPrint('Request path: ${e.requestOptions.path}');
-      debugPrint('Base URL: ${ApiClient.baseUrl}');
-      debugPrint('Request headers: ${e.requestOptions.headers}');
-      debugPrint('Request data: ${e.requestOptions.data}');
-      if (e.error != null) {
-        debugPrint('Error details: ${e.error}');
-        debugPrint('Error toString: ${e.error.toString()}');
-      }
-      if (e.response != null) {
-        debugPrint('Response status: ${e.response!.statusCode}');
-        debugPrint('Response data: ${e.response!.data}');
-      }
-      debugPrint('===================');
       throw _handleDioError(e);
     } catch (e, stackTrace) {
-      debugPrint('=== UNEXPECTED ERROR ===');
-      debugPrint('Error: $e');
+      debugPrint('Unexpected error during login: $e');
       debugPrint('Stack trace: $stackTrace');
-      debugPrint('=======================');
       rethrow;
     }
   }
@@ -181,11 +169,12 @@ class AuthApi {
   }
 
   /// Get current user profile
-  /// GET /user/profile
+  /// GET /auth/user
   Future<User> getCurrentUser() async {
     try {
-      final response = await _client.get<Map<String, dynamic>>('/user/profile');
+      final response = await _client.get<Map<String, dynamic>>('/auth/user');
       final json = response.data!;
+
       if (json['success'] == true) {
         final data = json['data'] as Map<String, dynamic>;
         return User.fromJson(data);

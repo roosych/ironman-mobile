@@ -3,6 +3,7 @@ class Athlete {
   final int id;
   final String name;
   final String? avatar;
+  final String? countryIso;
   final RaceCounts raceCounts;
   final int? ironmanNumber;
   final String? bio;
@@ -13,6 +14,7 @@ class Athlete {
     required this.id,
     required this.name,
     this.avatar,
+    this.countryIso,
     required this.raceCounts,
     this.ironmanNumber,
     this.bio,
@@ -25,6 +27,7 @@ class Athlete {
       id: json['id'] as int,
       name: json['name'] as String,
       avatar: json['avatar'] as String?,
+      countryIso: json['country_iso'] as String?,
       raceCounts: RaceCounts.fromJson(
         json['race_counts'] as Map<String, dynamic>,
       ),

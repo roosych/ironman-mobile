@@ -32,7 +32,9 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
     // Ensure we have unread_count early for the badge
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(notificationsProvider.notifier).load();
+      if (authState.isAuthenticated) {
+        ref.read(notificationsProvider.notifier).load();
+      }
     });
 
     return AppBar(

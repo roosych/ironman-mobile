@@ -4,7 +4,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../application/auth_notifier.dart';
-import '../application/auth_state.dart';
 
 class EmailNotVerifiedScreen extends ConsumerWidget {
   const EmailNotVerifiedScreen({super.key});
@@ -15,15 +14,6 @@ class EmailNotVerifiedScreen extends ConsumerWidget {
     final userEmail = authState.user?.email ?? '';
     final localizations = AppLocalizations.of(context)!;
 
-    // Listen for logout
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.isUnauthenticated && previous?.isUnauthenticated != true) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login',
-          (route) => false,
-        );
-      }
-    });
 
     return Stack(
       children: [

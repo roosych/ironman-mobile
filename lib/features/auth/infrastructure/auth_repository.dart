@@ -168,25 +168,7 @@ class AuthRepository {
   }
 
   Future<bool> hasSession() async {
-    final hasToken = await _storage.hasToken();
-    
-    // Инициализируем FCM в фоне только если есть активная сессия и пользователь верифицирован
-    // Это не блокирует проверку сессии
-    if (hasToken) {
-      final user = await getSavedUser();
-      if (user?.verified == true) {
-        // Инициализируем FCM в фоне (не блокируем hasSession)
-        Future.microtask(() async {
-          try {
-            await FcmService().initialize();
-          } catch (e) {
-            debugPrint('FCM: Error initializing on session restore: $e');
-          }
-        });
-      }
-    }
-    
-    return hasToken;
+    return await _storage.hasToken();
   }
 
   Future<User?> getSavedUser() async {
@@ -230,29 +212,25 @@ class AuthRepository {
     debugPrint('=== getProfile: User from ProfileApi ===');
     debugPrint('Profile from API: ${user.profile}');
     debugPrint('Profile type: ${user.profile.runtimeType}');
-    
+
     // ВАЖНО: Проверяем профиль ДО обогащения аватаром
     // Если профиль null или не имеет 'id', устанавливаем его в null
-    dynamic finalProfile = user.profile;
-    if (finalProfile is Map<String, dynamic>) {
-      final profileId = finalProfile['id'];
-      if (profileId == null || profileId is! int) {
-        // Профиль не валиден (нет id) - устанавливаем null
-        debugPrint('Profile has no valid id, setting to null');
-        finalProfile = null;
-      } else {
-        debugPrint('Profile has valid id: $profileId');
-      }
-    } else if (finalProfile == null) {
-      debugPrint('Profile is null from API');
+    final profileData = user.profile;
+    final isValidProfile = profileData?.id != null;
+
+    if (!isValidProfile) {
+      // Профиль не валиден (нет id) - устанавливаем null
+      debugPrint('Profile has no valid id, setting to null');
+    } else {
+      debugPrint('Profile has valid id: ${profileData!.id}');
     }
-    
+
     // Обогащаем аватаром только если профиль валиден
     User finalUser;
-    if (finalProfile != null) {
-      finalUser = await _enrichWithAvatar(user.copyWith(profile: finalProfile));
+    if (isValidProfile) {
+      finalUser = await _enrichWithAvatar(user);
     } else {
-      finalUser = user.copyWith(profile: null);
+      finalUser = user.copyWith(clearProfile: true);
     }
     
     await _storage.saveUser(finalUser.toJson());
@@ -260,7 +238,7 @@ class AuthRepository {
     debugPrint('=== getProfile: Final User ===');
     debugPrint('Final profile: ${finalUser.profile}');
     debugPrint('Final profile type: ${finalUser.profile.runtimeType}');
-    debugPrint('Has profile id: ${finalUser.profile is Map<String, dynamic> ? (finalUser.profile as Map<String, dynamic>)['id'] : null}');
+    debugPrint('Has profile id: ${finalUser.profile?.id}');
     
     return finalUser;
   }
@@ -272,29 +250,25 @@ class AuthRepository {
     debugPrint('=== refreshUser: User from API ===');
     debugPrint('Profile from API: ${user.profile}');
     debugPrint('Profile type: ${user.profile.runtimeType}');
-    
+
     // ВАЖНО: Проверяем профиль ДО обогащения аватаром
     // Если профиль null или не имеет 'id', устанавливаем его в null
-    dynamic finalProfile = user.profile;
-    if (finalProfile is Map<String, dynamic>) {
-      final profileId = finalProfile['id'];
-      if (profileId == null || profileId is! int) {
-        // Профиль не валиден (нет id) - устанавливаем null
-        debugPrint('Profile has no valid id, setting to null');
-        finalProfile = null;
-      } else {
-        debugPrint('Profile has valid id: $profileId');
-      }
-    } else if (finalProfile == null) {
-      debugPrint('Profile is null from API');
+    final profileData = user.profile;
+    final isValidProfile = profileData?.id != null;
+
+    if (!isValidProfile) {
+      // Профиль не валиден (нет id) - устанавливаем null
+      debugPrint('Profile has no valid id, setting to null');
+    } else {
+      debugPrint('Profile has valid id: ${profileData!.id}');
     }
-    
+
     // Обогащаем аватаром только если профиль валиден
     User finalUser;
-    if (finalProfile != null) {
-      finalUser = await _enrichWithAvatar(user.copyWith(profile: finalProfile));
+    if (isValidProfile) {
+      finalUser = await _enrichWithAvatar(user);
     } else {
-      finalUser = user.copyWith(profile: null);
+      finalUser = user.copyWith(clearProfile: true);
     }
     
     await _storage.saveUser(finalUser.toJson());
@@ -302,7 +276,7 @@ class AuthRepository {
     debugPrint('=== refreshUser: Final User ===');
     debugPrint('Final profile: ${finalUser.profile}');
     debugPrint('Final profile type: ${finalUser.profile.runtimeType}');
-    debugPrint('Has profile id: ${finalUser.profile is Map<String, dynamic> ? (finalUser.profile as Map<String, dynamic>)['id'] : null}');
+    debugPrint('Has profile id: ${finalUser.profile?.id}');
     
     return finalUser;
   }

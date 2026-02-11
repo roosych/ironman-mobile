@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
+import 'profile.dart';
+
 class User {
   final int id;
   final String name;
   final String email;
   final bool verified;
-  final dynamic profile;
+  final Profile? profile;
   final String? avatarUrl;
   final String? locale;
 
@@ -18,30 +21,61 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    final profile = json['profile'];
+    final profileData = json['profile'];
+    Profile? profile;
+
+    // DEBUG: Log profile data parsing
+    try {
+      debugPrint('=== User.fromJson: Profile Data Debug ===');
+      debugPrint('Profile data type: ${profileData.runtimeType}');
+      if (profileData is Map<String, dynamic>) {
+        debugPrint('Profile data keys: ${profileData.keys}');
+        debugPrint('Profile id: ${profileData['id']}');
+        debugPrint('Profile role: ${profileData['role']}');
+      }
+    } catch (e) {
+      debugPrint('User debug logging error (safe to ignore): $e');
+    }
+
+    // Parse profile if present and valid
+    if (profileData is Map<String, dynamic>) {
+      try {
+        profile = Profile.fromJson(profileData);
+        debugPrint('Profile parsed successfully: id=${profile.id}, role=${profile.role}');
+      } catch (e) {
+        // If profile parsing fails, set to null to maintain backwards compatibility
+        debugPrint('Profile parsing FAILED: $e');
+        profile = null;
+      }
+    } else {
+      debugPrint('Profile data is not Map<String, dynamic> or is null');
+    }
+
+    debugPrint('Final profile: $profile');
+    debugPrint('===========================================');
 
     // Extract avatarUrl from multiple possible sources
     String? avatarUrl = json['avatarUrl'] as String?; // From stored user data
 
-    if (avatarUrl == null && profile is Map<String, dynamic>) {
+    if (avatarUrl == null && profileData is Map<String, dynamic>) {
       // Try different possible paths in API response
-      avatarUrl = profile['avatar_url'] as String?;
-      avatarUrl ??= profile['avatarUrl'] as String?;
+      avatarUrl = profileData['avatar_url'] as String?;
+      avatarUrl ??= profileData['avatarUrl'] as String?;
 
       // Check if avatar is an object with url
-      final avatar = profile['avatar'];
+      final avatar = profileData['avatar'];
       if (avatarUrl == null && avatar is Map<String, dynamic>) {
         avatarUrl = avatar['url'] as String?;
       }
 
       // Check avatar_photo object
-      final avatarPhoto = profile['avatar_photo'];
+      final avatarPhoto = profileData['avatar_photo'];
       if (avatarUrl == null && avatarPhoto is Map<String, dynamic>) {
         avatarUrl = avatarPhoto['url'] as String?;
       }
 
       // Check photos array for avatar
-      final photos = profile['photos'];
+      final photos = profileData['photos'];
       if (avatarUrl == null && photos is List) {
         for (final photo in photos) {
           if (photo is Map<String, dynamic> && photo['is_avatar'] == true) {
@@ -69,7 +103,7 @@ class User {
       'name': name,
       'email': email,
       'verified': verified,
-      'profile': profile,
+      'profile': profile?.toJson(),
       'avatarUrl': avatarUrl,
       'locale': locale,
     };
@@ -80,9 +114,10 @@ class User {
     String? name,
     String? email,
     bool? verified,
-    dynamic profile,
+    Profile? profile,
     String? avatarUrl,
     String? locale,
+    bool clearProfile = false,
     bool clearAvatarUrl = false,
     bool clearLocale = false,
   }) {
@@ -91,7 +126,7 @@ class User {
       name: name ?? this.name,
       email: email ?? this.email,
       verified: verified ?? this.verified,
-      profile: profile ?? this.profile,
+      profile: clearProfile ? null : (profile ?? this.profile),
       avatarUrl: clearAvatarUrl ? null : (avatarUrl ?? this.avatarUrl),
       locale: clearLocale ? null : (locale ?? this.locale),
     );

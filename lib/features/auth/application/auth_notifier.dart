@@ -6,6 +6,10 @@ import '../infrastructure/auth_api.dart';
 import '../infrastructure/auth_repository.dart';
 import 'auth_state.dart';
 import '../../settings/application/locale_notifier.dart';
+import '../../../core/services/fcm_service.dart';
+import '../../../main.dart';
+import '../../results/application/race_results_notifier.dart';
+import '../../rankings/application/rankings_notifier.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(ref: ref);
@@ -52,18 +56,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // ВАЖНО: Проверяем профиль из локального хранилища
         // Если профиль не валиден (нет id), устанавливаем null
         User? finalUser = user;
-        if (user != null && user.profile is Map<String, dynamic>) {
+        if (user != null && user.profile != null) {
           try {
-            final profile = user.profile as Map<String, dynamic>;
-            final profileId = profile['id'];
-            if (profileId == null || profileId is! int) {
+            final profile = user.profile!;
+            if (profile.id == null) {
               // Профиль не валиден - устанавливаем null
-              finalUser = user.copyWith(profile: null);
+              finalUser = user.copyWith(clearProfile: true);
             }
           } catch (e) {
             debugPrint('Error processing user profile on session restore: $e');
             // В случае ошибки обработки профиля, устанавливаем null
-            finalUser = user.copyWith(profile: null);
+            finalUser = user.copyWith(clearProfile: true);
           }
         }
 
@@ -74,14 +77,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
             final refreshedUser = await _repository.refreshUser();
 
             // Проверяем профиль и обновляем состояние
-            dynamic finalProfile = refreshedUser.profile;
-            if (finalProfile is Map<String, dynamic>) {
-              final profileId = finalProfile['id'];
-              if (profileId == null || profileId is! int) {
-                finalProfile = null;
-              }
+            final profileData = refreshedUser.profile;
+            if (profileData != null && profileData.id == null) {
+              finalUser = refreshedUser.copyWith(clearProfile: true);
+            } else {
+              finalUser = refreshedUser;
             }
-            finalUser = refreshedUser.copyWith(profile: finalProfile);
           } catch (e) {
             // Игнорируем ошибки при обновлении профиля - используем данные из локального хранилища
             debugPrint('Failed to refresh user profile on session restore: $e');
@@ -101,6 +102,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
         } catch (e) {
           debugPrint('Error syncing locale on session restore: $e');
           // Игнорируем ошибки синхронизации locale
+        }
+
+        // Инициализируем FCM для верифицированных пользователей
+        if (finalUser?.verified == true) {
+          Future.microtask(() async {
+            try {
+              await FcmService().initialize();
+            } catch (e) {
+              debugPrint('FCM: Error initializing on session restore: $e');
+            }
+          });
         }
       } else {
         state = state.copyWith(
@@ -167,117 +179,57 @@ class AuthNotifier extends StateNotifier<AuthState> {
       User finalUser = result.user;
       bool hasValidProfile = false;
 
-      debugPrint('=== Login: Starting profile check ===');
-      debugPrint('User from login response - ID: ${result.user.id}');
-      debugPrint(
-        'User from login response - verified: ${result.user.verified}',
-      );
-      debugPrint('User from login response - profile: ${result.user.profile}');
-
       // Для верифицированных пользователей ВСЕГДА синхронно проверяем профиль через API
       // Это гарантирует актуальность данных
       if (result.user.verified) {
-        debugPrint('=== Login: Checking profile for verified user ===');
-        debugPrint('Profile from login response: ${result.user.profile}');
-
         try {
           // Синхронно проверяем профиль через API для актуальности
-          debugPrint(
-            '=== Login: Calling refreshUser() to get fresh profile data ===',
-          );
           final refreshedUser = await _repository.refreshUser();
 
-          debugPrint('=== Login: refreshUser() completed ===');
-          debugPrint('Refreshed user ID: ${refreshedUser.id}');
-          debugPrint('Refreshed user verified: ${refreshedUser.verified}');
-          debugPrint('Profile from refreshUser(): ${refreshedUser.profile}');
-          debugPrint('Profile type: ${refreshedUser.profile.runtimeType}');
-
           // Проверяем наличие валидного профиля (должен быть id)
-          if (refreshedUser.profile is Map<String, dynamic>) {
-            debugPrint('=== Login: Profile is Map, checking id ===');
-            final profile = refreshedUser.profile as Map<String, dynamic>;
-            final profileId = profile['id'];
-            debugPrint('Profile ID from refreshUser(): $profileId');
-            debugPrint('Profile keys: ${profile.keys}');
+          final profileData = refreshedUser.profile;
+          if (profileData != null) {
+            final profileId = profileData.id;
 
-            if (profileId != null && profileId is int) {
+            if (profileId != null) {
               // Профиль валиден - используем его
-              debugPrint('=== Login: Profile ID is valid: $profileId ===');
               hasValidProfile = true;
               finalUser = refreshedUser;
-              debugPrint(
-                '=== Login: Profile is VALID - will show Dashboard ===',
-              );
-              debugPrint('FinalUser ID: ${finalUser.id}');
-              debugPrint(
-                'FinalUser profile ID: ${(finalUser.profile as Map<String, dynamic>)['id']}',
-              );
             } else {
               // Профиль не валиден (нет id) - устанавливаем null
               hasValidProfile = false;
               // ВАЖНО: Явно устанавливаем profile в null
-              finalUser = refreshedUser.copyWith(profile: null);
-              debugPrint(
-                'Profile is INVALID (no id) - setting to null, will show ProfileSelection',
-              );
-              debugPrint(
-                'FinalUser profile after setting to null: ${finalUser.profile}',
-              );
+              finalUser = refreshedUser.copyWith(clearProfile: true);
             }
           } else {
             // Профиль null - нет профиля
             hasValidProfile = false;
-            // ВАЖНО: Убеждаемся, что profile явно null
-            finalUser = refreshedUser.profile == null
-                ? refreshedUser
-                : refreshedUser.copyWith(profile: null);
-            debugPrint('Profile is NULL - will show ProfileSelection');
-            debugPrint('FinalUser profile: ${finalUser.profile}');
+            finalUser = refreshedUser;
           }
         } catch (e) {
           // Если не удалось обновить из API, устанавливаем профиль в null
           // НЕ используем данные из ответа логина, так как они могут быть устаревшими
-          debugPrint('=== ERROR: Failed to refresh user after login ===');
-          debugPrint('Error: $e');
-          debugPrint('Setting profile to null to force profile check');
+          debugPrint('Failed to refresh user after login: $e');
           hasValidProfile = false;
           // Используем данные из ответа логина, но с profile = null
           // ВАЖНО: Убеждаемся, что profile явно установлен в null
-          finalUser = result.user.copyWith(profile: null);
-          debugPrint(
-            'Will show ProfileSelection (profile set to null due to error)',
-          );
-          debugPrint('FinalUser profile after error: ${finalUser.profile}');
+          finalUser = result.user.copyWith(clearProfile: true);
         }
       } else {
         // Для неверифицированных пользователей проверяем профиль из ответа логина
-        if (result.user.profile is Map<String, dynamic>) {
-          final profile = result.user.profile as Map<String, dynamic>;
-          final profileId = profile['id'];
-          hasValidProfile = profileId != null && profileId is int;
-        } else {
-          hasValidProfile = false;
-        }
+        final profileData = result.user.profile;
+        hasValidProfile = profileData?.id != null;
+        finalUser = result.user;
       }
 
       // ВАЖНО: Сохраняем пользователя в локальное хранилище ТОЛЬКО после проверки профиля
       // Это гарантирует, что мы сохраняем актуальные данные и не сохраняем устаревшие
       // Если профиль был удален вручную из базы, мы сохраним пользователя с profile: null
-      debugPrint('=== Login: Saving user to storage after profile check ===');
-      debugPrint('FinalUser ID: ${finalUser.id}');
-      debugPrint('FinalUser verified: ${finalUser.verified}');
-      debugPrint('hasValidProfile: $hasValidProfile');
-      debugPrint('User profile before save: ${finalUser.profile}');
-      debugPrint('User profile type: ${finalUser.profile.runtimeType}');
       await _repository.saveUser(finalUser);
-      debugPrint('=== Login: User saved to storage ===');
 
       // Дополнительная проверка: убеждаемся, что сохранено правильно
       final savedUser = await _repository.getSavedUser();
-      debugPrint('User profile after save: ${savedUser?.profile}');
-      if (savedUser != null && savedUser.profile != finalUser.profile) {
-        debugPrint('WARNING: Saved user profile differs from finalUser!');
+      if (savedUser != null && savedUser.profile?.id != finalUser.profile?.id) {
         // Пересохраняем для гарантии
         await _repository.saveUser(finalUser);
       }
@@ -285,19 +237,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // ВАЖНО: Убеждаемся, что profile явно null, если его нет
       // Это критично для правильной работы роутера
       if (!hasValidProfile && finalUser.profile != null) {
-        debugPrint(
-          'WARNING: Profile should be null but is not! Forcing to null...',
-        );
-        finalUser = finalUser.copyWith(profile: null);
+        finalUser = finalUser.copyWith(clearProfile: true);
         await _repository.saveUser(finalUser);
       }
 
       // ВАЖНО: Обновляем состояние с финальным пользователем
       // Создаем НОВЫЙ объект состояния явно, чтобы гарантировать обновление в Riverpod
-      debugPrint('=== Updating state after login ===');
-      debugPrint('Before update - isAuthenticated: ${state.isAuthenticated}');
-      debugPrint('Before update - user: ${state.user?.id}');
-      debugPrint('Before update - status: ${state.status}');
 
       // Создаем новый объект состояния явно для гарантии обновления
       // ВАЖНО: Не сохраняем warning в состоянии, чтобы не показывать snackbar на главном экране
@@ -312,37 +257,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // ВАЖНО: Используем прямое присваивание для гарантии обновления в Riverpod
       state = newState;
 
-      debugPrint('=== State updated (sync) ===');
-      debugPrint('New state - isAuthenticated: ${state.isAuthenticated}');
-      debugPrint('New state - user: ${state.user?.id}');
-      debugPrint('New state - status: ${state.status}');
-      debugPrint('New state hashCode: ${state.hashCode}');
-
       // Синхронизируем locale с пользователем из API
       _syncLocaleWithUser(finalUser);
-
-      debugPrint('=== Final state after login ===');
-      debugPrint('User ID: ${finalUser.id}');
-      debugPrint('Profile: ${finalUser.profile}');
-      debugPrint('Profile type: ${finalUser.profile.runtimeType}');
-      debugPrint('Has valid profile: $hasValidProfile');
-      debugPrint('After update - isAuthenticated: ${state.isAuthenticated}');
-      debugPrint('After update - status: ${state.status}');
-      debugPrint('After update - user: ${state.user?.id}');
-      debugPrint('After update - user.profile: ${state.user?.profile}');
-      debugPrint(
-        'Will show: ${hasValidProfile ? "Dashboard" : "ProfileSelection"}',
-      );
 
       // ВАЖНО: Принудительно обновляем состояние через несколько способов
       // для гарантии, что роутер увидит изменения
 
       // 1. Обновление через microtask (немедленно)
       Future.microtask(() {
-        debugPrint('=== Microtask: Forcing state update ===');
-        debugPrint('Current state - isAuthenticated: ${state.isAuthenticated}');
-        debugPrint('Current state - user: ${state.user?.id}');
-
         // Принудительно создаем новый объект состояния для гарантии обновления
         final forcedState = AuthState(
           user: finalUser,
@@ -353,19 +275,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         // Обновляем состояние принудительно
         state = forcedState;
-
-        debugPrint('=== Microtask: State forced update complete ===');
-        debugPrint('Forced state - isAuthenticated: ${state.isAuthenticated}');
-        debugPrint('Forced state - user: ${state.user?.id}');
-        debugPrint('Forced state hashCode: ${state.hashCode}');
       });
 
       // 2. Обновление через PostFrameCallback (после отрисовки кадра)
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        debugPrint('=== PostFrameCallback: Forcing state update ===');
-        debugPrint('Current state - isAuthenticated: ${state.isAuthenticated}');
-        debugPrint('Current state - user: ${state.user?.id}');
-
         // Принудительно создаем новый объект состояния для гарантии обновления
         final forcedState = AuthState(
           user: finalUser,
@@ -376,11 +289,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         // Обновляем состояние принудительно
         state = forcedState;
-
-        debugPrint('=== PostFrameCallback: State forced update complete ===');
-        debugPrint('Forced state - isAuthenticated: ${state.isAuthenticated}');
-        debugPrint('Forced state - user: ${state.user?.id}');
-        debugPrint('Forced state hashCode: ${state.hashCode}');
       });
     } on AuthApiException catch (e) {
       // Сохраняем время ошибки для блокировки повторных запросов
@@ -481,25 +389,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    debugPrint('=== AUTH: logout() started ===');
     // Prevent double-click
-    if (state.isLoading) return;
+    if (state.isLoading) {
+      debugPrint('=== AUTH: logout() blocked - already loading ===');
+      return;
+    }
 
-    debugPrint('=== AuthNotifier: Starting logout ===');
-    debugPrint('Current state - isAuthenticated: ${state.isAuthenticated}');
-    debugPrint('Current state - user: ${state.user?.id}');
-
-    state = state.copyWith(isLoading: true, clearError: true);
+    // ВАЖНО: Сразу устанавливаем unauthenticated состояние, чтобы предотвратить
+    // API запросы во время logout процесса
+    debugPrint('=== AUTH: Setting unauthenticated + loading state ===');
+    state = const AuthState(
+      status: AuthStatus.unauthenticated,
+      isLoading: true,
+    );
+    debugPrint('=== AUTH: State set to unauthenticated + loading ===');
 
     try {
+      debugPrint('=== AUTH: Calling repository.logout() ===');
       await _repository.logout();
+      debugPrint('=== AUTH: repository.logout() completed ===');
+    } catch (e) {
+      debugPrint('=== AUTH: Error in repository.logout(): $e ===');
     } finally {
+      debugPrint('=== AUTH: Setting final logout state ===');
       // ВАЖНО: Полностью сбрасываем состояние при выходе
       // Создаем НОВЫЙ объект состояния явно для гарантии обновления в Riverpod
       // Это гарантирует, что все данные очищены и при следующем входе
       // не будут использоваться старые данные
-      debugPrint('=== AuthNotifier: Resetting state after logout ===');
-      debugPrint('Before logout - isAuthenticated: ${state.isAuthenticated}');
-      debugPrint('Before logout - user: ${state.user?.id}');
 
       // Создаем новый объект состояния для гарантии обновления
       final logoutState = const AuthState(
@@ -508,12 +425,35 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       state = logoutState;
+      debugPrint('=== AUTH: Final logout state set - isLoading = false ===');
 
-      debugPrint('After logout - isAuthenticated: ${state.isAuthenticated}');
-      debugPrint('After logout - user: ${state.user}');
-      debugPrint('After logout - status: ${state.status}');
-      debugPrint('=== AuthNotifier: Logout complete ===');
+      // ВАЖНО: Очищаем состояние провайдеров с приватными данными при logout
+      debugPrint('=== AUTH: Clearing private provider states ===');
+      try {
+        if (_ref != null) {
+          // Очищаем только приватные данные пользователя (результаты)
+          _ref.read(raceResultsProvider.notifier).reset();
+          // Очищаем выбор атлетов для сравнения, но оставляем сами рейтинги (публичные данные)
+          _ref.read(rankingsProvider.notifier).clearSelection();
+          debugPrint('=== AUTH: Private provider states cleared successfully ===');
+        }
+      } catch (e) {
+        debugPrint('=== AUTH: Error clearing provider states: $e ===');
+      }
+
+      // ВАЖНО: Очищаем навигационный стек после logout
+      Future.microtask(() {
+        try {
+          if (navigatorKey.currentState?.canPop() == true) {
+            debugPrint('=== AUTH: Clearing navigation stack after logout ===');
+            navigatorKey.currentState?.popUntil((route) => route.isFirst);
+          }
+        } catch (e) {
+          debugPrint('=== AUTH: Error clearing navigation stack: $e ===');
+        }
+      });
     }
+    debugPrint('=== AUTH: logout() completed ===');
   }
 
   /// Force logout without calling the API.
@@ -521,8 +461,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Used when the session has already been invalidated server-side (401).
   /// This method only clears the local state without making API calls.
   void forceLogout() {
-    debugPrint('AuthNotifier: Force logout triggered');
     state = const AuthState(status: AuthStatus.unauthenticated);
+
+    // Очищаем состояние провайдеров с приватными данными
+    try {
+      if (_ref != null) {
+        // Очищаем только приватные данные пользователя (результаты)
+        _ref.read(raceResultsProvider.notifier).reset();
+        // Очищаем выбор атлетов для сравнения, но оставляем сами рейтинги (публичные данные)
+        _ref.read(rankingsProvider.notifier).clearSelection();
+      }
+    } catch (e) {
+      debugPrint('Error clearing provider states in forceLogout: $e');
+    }
   }
 
   void clearError() {

@@ -83,6 +83,9 @@ dependencies:
   # Skeleton Loading
   skeletonizer: ^2.1.2
 
+  # Country Flags
+  country_flags: ^3.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

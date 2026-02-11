@@ -9,7 +9,6 @@ import '../../settings/application/locale_notifier.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
 import 'email_not_verified_screen.dart';
-import '../../profile/presentation/profile_selection_screen.dart';
 import '../../dashboard/presentation/dashboard_screen.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 
@@ -75,32 +74,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       // ВАЖНО: Навигация после успешного логина
       // Проверяем, что пользователь стал аутентифицированным
-      if (previous?.isAuthenticated != true && 
-          next.isAuthenticated && 
+      if (previous?.isAuthenticated != true &&
+          next.isAuthenticated &&
           !next.isLoading &&
           !next.isInitial &&
           context.mounted) {
         // Определяем целевой экран на основе состояния пользователя
         Widget targetScreen;
-        
+
         if (next.user != null && !next.user!.verified) {
           targetScreen = const EmailNotVerifiedScreen();
         } else {
-          // Проверяем наличие профиля
-          bool hasProfile = false;
-          if (next.user?.profile is Map<String, dynamic>) {
-            final profile = next.user!.profile as Map<String, dynamic>;
-            final profileId = profile['id'];
-            hasProfile = profileId != null && profileId is int;
-          }
-          
-          if (next.user != null && !hasProfile) {
-            targetScreen = const ProfileSelectionScreen();
-          } else {
-            targetScreen = const DashboardScreen();
-          }
+          targetScreen = const DashboardScreen();
         }
-        
+
         // Выполняем навигацию после отрисовки кадра
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (context.mounted) {
@@ -113,73 +100,113 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: Colors.white,
-            size: 24,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: _LanguageDropdown(
-              currentLocale: locale,
-              onLocaleChanged: (Locale newLocale) async {
-                // Hide all current SnackBars before language change
-                ScaffoldMessenger.of(context).clearSnackBars();
-                
-                await ref.read(localeProvider.notifier).setLocale(newLocale);
-                
-                // Wait for Flutter to rebuild with new locale
-                if (context.mounted) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) {
-                      final updatedLocalizations = AppLocalizations.of(context);
-                      if (updatedLocalizations != null) {
-                        AlertHelper.showInfo(context, updatedLocalizations.settings_language_changed);
-                      }
-                    }
-                  });
-                }
-              },
+      body: Stack(
+        children: [
+          // Background image with gradient overlay
+          Transform.rotate(
+            angle: 3.14159, // 180 градусов (π радиан)
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg.png'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.matrix([
+                    0.299, 0.587, 0.114, 0, 0, // Red channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Green channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Blue channel -> grayscale
+                    0, 0, 0, 1, 0,             // Alpha channel unchanged
+                  ]),
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.3),
+                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
+                      Theme.of(context).scaffoldBackgroundColor,
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  ),
+                ),
+              ),
             ),
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      width: 180,
-                      fit: BoxFit.contain,
+          // Main content
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedArrowLeft01,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: _LanguageDropdown(
+                    currentLocale: locale,
+                    onLocaleChanged: (Locale newLocale) async {
+                      // Hide all current SnackBars before language change
+                      ScaffoldMessenger.of(context).clearSnackBars();
+
+                      await ref.read(localeProvider.notifier).setLocale(newLocale);
+
+                      // Wait for Flutter to rebuild with new locale
+                      if (context.mounted) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (context.mounted) {
+                            final updatedLocalizations = AppLocalizations.of(context);
+                            if (updatedLocalizations != null) {
+                              AlertHelper.showInfo(context, updatedLocalizations.settings_language_changed);
+                            }
+                          }
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                  // Center(
+                  //   child: Image.asset(
+                  //     'assets/images/logo.png',
+                  //     width: 180,
+                  //     fit: BoxFit.contain,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16),
+                  Text(
+                    localizations.login_title,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.6),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Text(
-                  //   'Sign in to your account',
-                  //   textAlign: TextAlign.center,
-                  //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  //         color: Theme.of(context)
-                  //             .colorScheme
-                  //             .onSurface
-                  //             .withValues(alpha: 0.6),
-                  //       ),
-                  // ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
@@ -311,10 +338,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                 ],
+                ),
               ),
             ),
           ),
         ),
+          ), // Close the inner Scaffold widget
+        ],
       ),
     );
   }

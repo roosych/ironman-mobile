@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
+import 'package:ironman_mobile/shared/data/countries.dart';
 import 'package:ironman_mobile/features/dashboard/domain/athlete.dart';
 import 'package:ironman_mobile/features/dashboard/application/athlete_detail_notifier.dart';
 import 'package:ironman_mobile/features/dashboard/application/athlete_detail_state.dart';
@@ -362,6 +364,36 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+          // Флаг и название страны (показываем только если есть country_iso)
+          if (athlete.countryIso != null) ...[
+            const SizedBox(height: 8),
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Флаг
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CountryFlag.fromCountryCode(
+                      athlete.countryIso!.toUpperCase(),
+                      height: 20,
+                      width: 30,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Название страны
+                  Text(
+                    (Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!).toUpperCase(),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.ironmanWhite,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           // Блок рейтинга (показываем только если есть данные рейтинга)
           if (athlete.ranking != null) ...[
             const SizedBox(height: 16),

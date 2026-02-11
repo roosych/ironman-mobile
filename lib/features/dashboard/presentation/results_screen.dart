@@ -4,10 +4,12 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
+import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 import 'package:ironman_mobile/features/results/application/race_results_notifier.dart';
 import 'package:ironman_mobile/features/results/application/race_results_state.dart';
 import 'package:ironman_mobile/shared/widgets/result_card.dart';
 import 'package:ironman_mobile/features/results/presentation/add_result_screen.dart';
+import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -20,30 +22,36 @@ class ResultsScreen extends ConsumerStatefulWidget {
 
 class _ResultsScreenState extends ConsumerState<ResultsScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
   String _searchQuery = '';
   late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    // Начинаем с таба "Все результаты" (index 0 после перестановки)
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    _searchController = TextEditingController();
-    WidgetsBinding.instance.addObserver(this);
-    _tabController.addListener(_onTabChanged);
-    // Загружаем все результаты по умолчанию после построения виджета
+    // Проверяем авторизацию для определения количества табов
+    final isAuthenticated = _isUserAuthenticated();
+    final tabCount = isAuthenticated ? 2 : 0; // 0 табов для неавторизованных
+    if (tabCount > 0) {
+      _tabController = TabController(length: tabCount, vsync: this, initialIndex: 0);
+      _tabController!.addListener(_onTabChanged);
+    }
+
+    // Загружаем все результаты для всех пользователей (авторизованных и неавторизованных)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllResults();
       }
     });
+    _searchController = TextEditingController();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _onTabChanged() {
-    if (!_tabController.indexIsChanging) {
+    if (_isUserAuthenticated() && _tabController != null && !_tabController!.indexIsChanging) {
       // Load my results when switching to "My Results" tab (index 1)
-      if (_tabController.index == 1) {
+      // Only for authenticated users
+      if (_tabController!.index == 1) {
         // Используем addPostFrameCallback чтобы избежать модификации провайдера во время построения
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
@@ -75,8 +83,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   @override
   void dispose() {
-    _tabController.removeListener(_onTabChanged);
-    _tabController.dispose();
+    if (_tabController != null) {
+      _tabController!.removeListener(_onTabChanged);
+      _tabController!.dispose();
+    }
     _searchController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -87,9 +97,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     if (state == AppLifecycleState.resumed) {
       // Используем addPostFrameCallback чтобы избежать модификации провайдера во время жизненного цикла
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+        if (mounted && _isUserAuthenticated() && _tabController != null) {
           _loadAllResults();
-          if (_tabController.index == 1) {
+          if (_tabController!.index == 1) {
             _loadResults();
           }
         }
@@ -104,6 +114,41 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       return profile['id'] as int?;
     }
     return null;
+  }
+
+  bool _isUserAuthenticated() {
+    final authState = ref.read(authProvider);
+    return authState.status == AuthStatus.authenticated && authState.user != null;
+  }
+
+  List<Widget> _buildTabs(BuildContext context) {
+    final tabs = <Widget>[
+      Tab(
+        text: AppLocalizations.of(context)!.results_all_athletes,
+      ),
+    ];
+
+    if (_isUserAuthenticated()) {
+      tabs.add(
+        Tab(
+          text: AppLocalizations.of(context)!.results_my_results,
+        ),
+      );
+    }
+
+    return tabs;
+  }
+
+  List<Widget> _buildTabViews(RaceResultsState allResultsState, RaceResultsState myResultsState) {
+    final views = <Widget>[
+      _buildAllAthletesTab(allResultsState),
+    ];
+
+    if (_isUserAuthenticated()) {
+      views.add(_buildMyResultsTab(myResultsState));
+    }
+
+    return views;
   }
 
   void _loadResults() {
@@ -163,6 +208,119 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     final myResultsState = ref.watch(raceResultsProvider);
     final allResultsState = ref.watch(allRaceResultsProvider);
 
+    // Listen for auth status changes to recreate tabs if needed
+    ref.listen(authProvider, (previous, next) {
+      if (mounted && previous?.status != next.status) {
+        final wasAuthenticated = previous?.status == AuthStatus.authenticated;
+        final isAuthenticated = _isUserAuthenticated();
+
+        if (wasAuthenticated && _tabController != null) {
+          // User logged out - dispose existing controller
+          _tabController!.removeListener(_onTabChanged);
+          _tabController!.dispose();
+          _tabController = null;
+        }
+
+        if (isAuthenticated) {
+          // User logged in - create controller
+          final tabCount = 2;
+          _tabController = TabController(length: tabCount, vsync: this, initialIndex: 0);
+          _tabController!.addListener(_onTabChanged);
+        }
+
+        setState(() {}); // Rebuild to show new content
+      }
+    });
+
+    // Show different content based on authentication status
+    if (!_isUserAuthenticated()) {
+      // For unauthenticated users, show only "All Results" without tabs
+      return GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              AppLocalizations.of(context)!.results_title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
+            backgroundColor: AppColors.ironmanBlack,
+            foregroundColor: AppColors.ironmanWhite,
+            leading: widget.onBack != null
+                ? IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: widget.onBack,
+                  )
+                : null,
+          ),
+          body: Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)!.athletes_search_hint,
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                    prefixIcon: HugeIcon(
+                      icon: HugeIcons.strokeRoundedSearch01,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      size: 24,
+                    ),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: HugeIcon(
+                              icon: HugeIcons.strokeRoundedCancel01,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _searchQuery = '';
+                                _searchController.clear();
+                              });
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+              // Results content
+              Expanded(
+                child: _buildAllAthletesTab(allResultsState),
+              ),
+            ],
+          ),
+          // Add bottom navigation for unauthenticated users
+          bottomNavigationBar: const UnauthenticatedBottomNav(currentIndex: 0), // 0 = Results
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: () {
         // Скрываем клавиатуру при тапе вне поля ввода
@@ -170,10 +328,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
-        floatingActionButton: AnimatedBuilder(
-          animation: _tabController,
+        floatingActionButton: _tabController != null ? AnimatedBuilder(
+          animation: _tabController!,
           builder: (context, child) {
-            return _tabController.index == 1
+            return _tabController!.index == 1
                 ? FloatingActionButton(
                     onPressed: () {
                       Navigator.of(context).push(
@@ -189,7 +347,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   )
                 : const SizedBox.shrink();
           },
-        ),
+        ) : null,
         body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -296,7 +454,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                           ),
                           padding: const EdgeInsets.all(4),
                           child: TabBar(
-                            controller: _tabController,
+                            controller: _tabController!,
                             labelColor: Colors.white,
                             labelStyle: const TextStyle(
                               fontSize: 15,
@@ -319,18 +477,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                               horizontal: 20,
                             ),
                             indicatorPadding: EdgeInsets.zero,
-                            tabs: [
-                              Tab(
-                                text: AppLocalizations.of(
-                                  context,
-                                )!.results_all_athletes,
-                              ),
-                              Tab(
-                                text: AppLocalizations.of(
-                                  context,
-                                )!.results_my_results,
-                              ),
-                            ],
+                            tabs: _buildTabs(context),
                           ),
                         ),
                       ),
@@ -342,19 +489,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ];
         },
         body: TabBarView(
-          controller: _tabController,
+          controller: _tabController!,
           physics: const BouncingScrollPhysics(),
-          children: [
-            // Tab 1: Все результаты
-            _buildAllAthletesTab(allResultsState),
-            // Tab 2: Мои результаты
-            _buildMyResultsTab(myResultsState),
-          ],
+          children: _buildTabViews(allResultsState, myResultsState),
         ),
       ),
       ),
     );
   }
+
 
   Widget _buildMyResultsTab(RaceResultsState state) {
     // Фильтруем только подтвержденные результаты и применяем поиск
