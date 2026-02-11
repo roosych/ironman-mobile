@@ -378,10 +378,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get register_title => 'Создать аккаунт';
 
   @override
-  String get register_name => 'Имя';
+  String get register_name => 'Имя Фамилия';
 
   @override
-  String get register_name_required => 'Введите имя';
+  String get register_name_required => 'Введите имя и фамилию';
 
   @override
   String get register_confirm_password => 'Подтвердите пароль';
@@ -411,6 +411,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get register_success_sign_in => 'ВОЙТИ';
+
+  @override
+  String get register_select_country => 'Выберите страну';
+
+  @override
+  String get register_search_countries => 'Поиск стран';
 
   @override
   String get settings_language_changed => 'Язык изменён';

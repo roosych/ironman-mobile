@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
+import 'package:ironman_mobile/shared/data/countries.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
 
@@ -26,6 +29,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _registrationSuccess = false;
   Timer? _debounceTimer;
   DateTime? _lastRegisterAttempt;
+  Country? _selectedCountry;
 
   @override
   void dispose() {
@@ -68,6 +72,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   void _goToLogin() {
     Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+
+  void _showCountrySelector() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CountrySelector(
+        onCountrySelected: (country) {
+          setState(() {
+            _selectedCountry = country;
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -270,6 +289,55 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
+                              // Country selector
+                              GestureDetector(
+                                onTap: authState.isLoading ? null : _showCountrySelector,
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    labelText: localizations.register_select_country,
+                                    prefixIcon: HugeIcon(
+                                      icon: HugeIcons.strokeRoundedLocation01,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      size: 20,
+                                    ),
+                                    suffixIcon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                    enabled: !authState.isLoading,
+                                  ),
+                                  isEmpty: _selectedCountry == null,
+                                  child: _selectedCountry != null
+                                      ? SizedBox(
+                                          height: 24, // Match TextFormField content height
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(2),
+                                                child: CountryFlag.fromCountryCode(
+                                                  _selectedCountry!.isoCode,
+                                                  height: 16,
+                                                  width: 24,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  _selectedCountry!.name,
+                                                  style: Theme.of(context).textTheme.bodyLarge,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : const SizedBox(height: 24), // Consistent height even when empty
+                                ),
+                              ),
+                              const SizedBox(height: 16),
                               TextFormField(
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
@@ -447,6 +515,169 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           Container(
             color: Colors.black.withValues(alpha: 0.5),
             child: const Center(child: CircularProgressIndicator()),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CountrySelector extends StatefulWidget {
+  final Function(Country) onCountrySelected;
+
+  const _CountrySelector({
+    required this.onCountrySelected,
+  });
+
+  @override
+  State<_CountrySelector> createState() => _CountrySelectorState();
+}
+
+class _CountrySelectorState extends State<_CountrySelector> {
+  final _searchController = TextEditingController();
+  List<Country> _filteredCountries = Countries.all;
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    // Set new timer with 300ms delay
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      final query = _searchController.text.toLowerCase().trim();
+      if (mounted) {
+        setState(() {
+          if (query.isEmpty) {
+            _filteredCountries = Countries.all;
+          } else {
+            _filteredCountries = Countries.all
+                .where((country) => country.name.toLowerCase().contains(query))
+                .toList();
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: Border.all(
+          color: AppColors.ironmanGray,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  localizations.register_select_country,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedCancel01,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          // Search field
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _searchController,
+              builder: (context, value, child) {
+                return TextFormField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: localizations.register_search_countries,
+                    prefixIcon: const HugeIcon(
+                      icon: HugeIcons.strokeRoundedSearch01,
+                      size: 20,
+                      color: AppColors.ironmanTextSecondary,
+                    ),
+                    suffixIcon: value.text.isNotEmpty
+                        ? IconButton(
+                            icon: HugeIcon(
+                              icon: HugeIcons.strokeRoundedCancel01,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                            },
+                          )
+                        : null,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Countries list
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredCountries.length,
+              itemExtent: 72.0, // Fixed height for better performance
+              itemBuilder: (context, index) {
+                final country = _filteredCountries[index];
+                return ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CountryFlag.fromCountryCode(
+                      country.isoCode,
+                      height: 24,
+                      width: 32,
+                    ),
+                  ),
+                  title: Text(country.name),
+                  onTap: () {
+                    widget.onCountrySelected(country);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

@@ -377,10 +377,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get register_title => 'Create account';
 
   @override
-  String get register_name => 'Name';
+  String get register_name => 'Full name';
 
   @override
-  String get register_name_required => 'Enter name';
+  String get register_name_required => 'Enter full name';
 
   @override
   String get register_confirm_password => 'Confirm password';
@@ -410,6 +410,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get register_success_sign_in => 'SIGN IN';
+
+  @override
+  String get register_select_country => 'Select country';
+
+  @override
+  String get register_search_countries => 'Search countries';
 
   @override
   String get settings_language_changed => 'Language changed';

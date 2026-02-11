@@ -808,16 +808,16 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get register_title;
 
-  /// Name field label
+  /// Full name field label
   ///
   /// In en, this message translates to:
-  /// **'Name'**
+  /// **'Full name'**
   String get register_name;
 
   /// Name validation error
   ///
   /// In en, this message translates to:
-  /// **'Enter name'**
+  /// **'Enter full name'**
   String get register_name_required;
 
   /// Confirm password field label
@@ -873,6 +873,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SIGN IN'**
   String get register_success_sign_in;
+
+  /// Country selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Select country'**
+  String get register_select_country;
+
+  /// Country search field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search countries'**
+  String get register_search_countries;
 
   /// Language changed notification message
   ///

@@ -465,11 +465,11 @@
   "@register_title": {
     "description": "Registration screen title"
   },
-  "register_name": "Name",
+  "register_name": "Full name",
   "@register_name": {
-    "description": "Name field label"
+    "description": "Full name field label"
   },
-  "register_name_required": "Enter name",
+  "register_name_required": "Enter full name",
   "@register_name_required": {
     "description": "Name validation error"
   },
@@ -508,6 +508,14 @@
   "register_success_sign_in": "SIGN IN",
   "@register_success_sign_in": {
     "description": "Sign in button on success screen"
+  },
+  "register_select_country": "Select country",
+  "@register_select_country": {
+    "description": "Country selector label"
+  },
+  "register_search_countries": "Search countries",
+  "@register_search_countries": {
+    "description": "Country search field placeholder"
   },
   "settings_language_changed": "Language changed",
   "@settings_language_changed": {

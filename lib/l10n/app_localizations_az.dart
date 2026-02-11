@@ -379,10 +379,10 @@ class AppLocalizationsAz extends AppLocalizations {
   String get register_title => 'Hesab yarat';
 
   @override
-  String get register_name => 'Ad';
+  String get register_name => 'Ad Soyad';
 
   @override
-  String get register_name_required => 'Ad daxil edin';
+  String get register_name_required => 'Ad və soyadınızı daxil edin';
 
   @override
   String get register_confirm_password => 'Şifrəni təsdiqləyin';
@@ -411,6 +411,12 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get register_success_sign_in => 'DAXİL OL';
+
+  @override
+  String get register_select_country => 'Ölkəni seçin';
+
+  @override
+  String get register_search_countries => 'Ölkələri axtarın';
 
   @override
   String get settings_language_changed => 'Dil dəyişdirildi';
