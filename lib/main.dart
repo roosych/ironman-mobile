@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,25 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Global error handling to catch crashes
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('=== FLUTTER ERROR CAUGHT ===');
+    debugPrint('Error: ${details.exception}');
+    debugPrint('Stack trace: ${details.stack}');
+    debugPrint('Library: ${details.library}');
+    debugPrint('Context: ${details.context}');
+    debugPrint('========================');
+    FlutterError.presentError(details);
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('=== PLATFORM ERROR CAUGHT ===');
+    debugPrint('Error: $error');
+    debugPrint('Stack trace: $stack');
+    debugPrint('========================');
+    return true;
+  };
 
   // Initialize AppConfig FIRST - before any other services
   AppConfig.initialize();

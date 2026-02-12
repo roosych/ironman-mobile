@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/infrastructure/auth_api.dart';
@@ -34,18 +35,12 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
 
       debugPrint('ChangePasswordNotifier: State cleared, calling API...');
 
-      // Timeout wrapper around API call
-      final message = await Future.any([
-        _api.changePassword(
-          currentPassword: currentPassword,
-          newPassword: newPassword,
-          newPasswordConfirmation: newPasswordConfirmation,
-        ),
-        Future.delayed(const Duration(seconds: 15), () {
-          debugPrint('ChangePasswordNotifier: API call timeout after 15 seconds');
-          throw Exception('API_TIMEOUT');
-        }),
-      ]);
+      // Safe API call with multiple layers of protection
+      final message = await _safeApiCall(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        newPasswordConfirmation: newPasswordConfirmation,
+      );
 
       debugPrint('ChangePasswordNotifier: Password change successful, message: $message');
 
@@ -117,6 +112,64 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
       state = state.copyWith(clearSuccessMessage: true);
     } catch (e) {
       debugPrint('ChangePasswordNotifier: Error clearing success message: $e');
+    }
+  }
+
+  /// Safe API call with crash protection
+  Future<String> _safeApiCall({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    debugPrint('ChangePasswordNotifier: _safeApiCall starting');
+
+    try {
+      // Create a completer for better control
+      final completer = Completer<String>();
+
+      // Start the API call in a separate "zone" with error handling
+      runZonedGuarded(() async {
+        try {
+          debugPrint('ChangePasswordNotifier: Starting API call in protected zone');
+
+          final result = await _api.changePassword(
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+            newPasswordConfirmation: newPasswordConfirmation,
+          );
+
+          debugPrint('ChangePasswordNotifier: API call completed successfully in zone');
+          if (!completer.isCompleted) {
+            completer.complete(result);
+          }
+        } catch (e, stackTrace) {
+          debugPrint('ChangePasswordNotifier: Error in protected zone: $e');
+          debugPrint('ChangePasswordNotifier: Zone stack trace: $stackTrace');
+          if (!completer.isCompleted) {
+            completer.completeError(e, stackTrace);
+          }
+        }
+      }, (error, stackTrace) {
+        debugPrint('ChangePasswordNotifier: Zone error handler caught: $error');
+        debugPrint('ChangePasswordNotifier: Zone error stack trace: $stackTrace');
+        if (!completer.isCompleted) {
+          completer.completeError(Exception('ZONE_ERROR: $error'), stackTrace);
+        }
+      });
+
+      // Add timeout
+      return await Future.any([
+        completer.future,
+        Future.delayed(const Duration(seconds: 15), () {
+          debugPrint('ChangePasswordNotifier: API call timeout after 15 seconds');
+          throw Exception('API_TIMEOUT');
+        }),
+      ]);
+
+    } catch (e, stackTrace) {
+      debugPrint('ChangePasswordNotifier: _safeApiCall outer catch: $e');
+      debugPrint('ChangePasswordNotifier: _safeApiCall stack trace: $stackTrace');
+      rethrow;
     }
   }
 }
