@@ -20,13 +20,13 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
       : _api = api ?? AuthApi(),
         super(const ChangePasswordState());
 
-  /// Change user password
+  /// Change user password - simplified version
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    debugPrint('ChangePasswordNotifier: Starting password change');
+    debugPrint('ChangePasswordNotifier: Starting password change (simplified)');
 
     try {
       // Clear any previous state
@@ -36,55 +36,35 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         clearSuccessMessage: true,
       );
 
-      debugPrint('ChangePasswordNotifier: State cleared, calling API...');
+      debugPrint('ChangePasswordNotifier: State cleared, calling direct HTTP...');
 
-      // Safe API call with multiple layers of protection
-      final message = await _safeApiCall(
+      // Direct HTTP call without complex protection layers
+      final message = await _directHttpCall(
         currentPassword: currentPassword,
         newPassword: newPassword,
         newPasswordConfirmation: newPasswordConfirmation,
       );
 
-      debugPrint('ChangePasswordNotifier: Password change successful, message: $message');
-
-      if (!mounted) {
-        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping success state update');
-        return;
-      }
+      debugPrint('ChangePasswordNotifier: Password change successful');
 
       state = state.copyWith(
         isLoading: false,
-        successMessage: message, // Already localized from API
+        successMessage: message,
       );
 
-      debugPrint('ChangePasswordNotifier: Success state updated');
-    } on AuthApiException catch (e) {
-      debugPrint('ChangePasswordNotifier: AuthApiException caught: ${e.firstError}');
-
-      if (!mounted) {
-        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping error state update');
-        return;
-      }
-
-      state = state.copyWith(
-        isLoading: false,
-        error: e.firstError, // Already localized from API
-      );
-
-      debugPrint('ChangePasswordNotifier: Error state updated');
     } catch (e, stackTrace) {
-      debugPrint('ChangePasswordNotifier: Unexpected error caught: $e');
+      debugPrint('ChangePasswordNotifier: Error caught: $e');
       debugPrint('ChangePasswordNotifier: Error type: ${e.runtimeType}');
       debugPrint('ChangePasswordNotifier: Stack trace: $stackTrace');
 
-      if (!mounted) {
-        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping error state update');
-        return;
-      }
-
-      String errorMessage = 'NETWORK_ERROR';
-      if (e.toString().contains('API_TIMEOUT')) {
-        errorMessage = 'API call timed out';
+      // Extract error message
+      String errorMessage = 'Network error occurred';
+      if (e.toString().contains('Current password is incorrect')) {
+        errorMessage = 'Current password is incorrect';
+      } else if (e.toString().contains('timeout')) {
+        errorMessage = 'Request timed out';
+      } else {
+        errorMessage = e.toString().replaceAll('Exception: ', '').replaceAll('AuthApiException (', '').replaceAll(')', '');
       }
 
       state = state.copyWith(
@@ -92,7 +72,7 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         error: errorMessage,
       );
 
-      debugPrint('ChangePasswordNotifier: Generic error state updated');
+      debugPrint('ChangePasswordNotifier: Error state updated with: $errorMessage');
     } finally {
       debugPrint('ChangePasswordNotifier: Password change operation completed');
     }
@@ -118,71 +98,14 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     }
   }
 
-  /// Safe API call with crash protection using native HTTP instead of Dio
-  Future<String> _safeApiCall({
+
+  /// Direct HTTP call without exceptions - returns error messages directly
+  Future<String> _directHttpCall({
     required String currentPassword,
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    debugPrint('ChangePasswordNotifier: _safeApiCall starting with native HTTP');
-
-    try {
-      // Create a completer for better control
-      final completer = Completer<String>();
-
-      // Start the API call in a separate "zone" with error handling
-      runZonedGuarded(() async {
-        try {
-          debugPrint('ChangePasswordNotifier: Starting native HTTP API call in protected zone');
-
-          final result = await _nativeHttpChangePassword(
-            currentPassword: currentPassword,
-            newPassword: newPassword,
-            newPasswordConfirmation: newPasswordConfirmation,
-          );
-
-          debugPrint('ChangePasswordNotifier: Native HTTP API call completed successfully in zone');
-          if (!completer.isCompleted) {
-            completer.complete(result);
-          }
-        } catch (e, stackTrace) {
-          debugPrint('ChangePasswordNotifier: Error in protected zone: $e');
-          debugPrint('ChangePasswordNotifier: Zone stack trace: $stackTrace');
-          if (!completer.isCompleted) {
-            completer.completeError(e, stackTrace);
-          }
-        }
-      }, (error, stackTrace) {
-        debugPrint('ChangePasswordNotifier: Zone error handler caught: $error');
-        debugPrint('ChangePasswordNotifier: Zone error stack trace: $stackTrace');
-        if (!completer.isCompleted) {
-          completer.completeError(Exception('ZONE_ERROR: $error'), stackTrace);
-        }
-      });
-
-      // Add timeout
-      return await Future.any([
-        completer.future,
-        Future.delayed(const Duration(seconds: 15), () {
-          debugPrint('ChangePasswordNotifier: API call timeout after 15 seconds');
-          throw Exception('API_TIMEOUT');
-        }),
-      ]);
-
-    } catch (e, stackTrace) {
-      debugPrint('ChangePasswordNotifier: _safeApiCall outer catch: $e');
-      debugPrint('ChangePasswordNotifier: _safeApiCall stack trace: $stackTrace');
-      rethrow;
-    }
-  }
-
-  /// Native HTTP implementation to bypass Dio
-  Future<String> _nativeHttpChangePassword({
-    required String currentPassword,
-    required String newPassword,
-    required String newPasswordConfirmation,
-  }) async {
-    debugPrint('ChangePasswordNotifier: _nativeHttpChangePassword starting');
+    debugPrint('ChangePasswordNotifier: _directHttpCall starting');
 
     try {
       // Get token (simplified version without SecureStorage)
@@ -205,8 +128,6 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
       });
 
       debugPrint('ChangePasswordNotifier: Sending HTTP PUT request');
-      debugPrint('Headers: $headers');
-      debugPrint('Body: $body');
 
       final client = http.Client();
 
@@ -221,19 +142,15 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         debugPrint('Status code: ${response.statusCode}');
         debugPrint('Response body: ${response.body}');
 
-        debugPrint('ChangePasswordNotifier: Processing response...');
-
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
-          debugPrint('ChangePasswordNotifier: 200 response parsed: $jsonResponse');
           if (jsonResponse['success'] == true) {
             return jsonResponse['message'] ?? 'Password changed successfully';
           } else {
-            throw AuthApiException(jsonResponse['message'] ?? 'Unknown error');
+            throw Exception(jsonResponse['message'] ?? 'Unknown error');
           }
         } else if (response.statusCode == 403) {
           final jsonResponse = jsonDecode(response.body);
-          debugPrint('ChangePasswordNotifier: 403 response parsed: $jsonResponse');
 
           // Handle errors field structure
           if (jsonResponse['errors'] != null) {
@@ -241,25 +158,22 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
             if (errors['current_password'] != null) {
               final currentPasswordErrors = errors['current_password'] as List;
               final errorMessage = currentPasswordErrors.first ?? 'Current password is incorrect';
-              debugPrint('ChangePasswordNotifier: Throwing AuthApiException: $errorMessage');
-              throw AuthApiException(errorMessage);
+              debugPrint('ChangePasswordNotifier: 403 error: $errorMessage');
+              throw Exception('Current password is incorrect');
             }
           }
 
           // Fallback to message field or default
-          final errorMessage = jsonResponse['message'] ?? 'Incorrect current password';
-          debugPrint('ChangePasswordNotifier: Throwing fallback AuthApiException: $errorMessage');
-          throw AuthApiException(errorMessage);
+          throw Exception('Incorrect current password');
         } else {
-          debugPrint('ChangePasswordNotifier: Other HTTP error: ${response.statusCode}');
-          throw AuthApiException('HTTP ${response.statusCode}: ${response.body}');
+          throw Exception('HTTP ${response.statusCode}: Server error');
         }
       } finally {
         client.close();
       }
 
     } catch (e, stackTrace) {
-      debugPrint('ChangePasswordNotifier: _nativeHttpChangePassword error: $e');
+      debugPrint('ChangePasswordNotifier: _directHttpCall error: $e');
       debugPrint('ChangePasswordNotifier: Stack trace: $stackTrace');
       rethrow;
     }
