@@ -22,9 +22,9 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    try {
-      debugPrint('ChangePasswordNotifier: Starting password change');
+    debugPrint('ChangePasswordNotifier: Starting password change');
 
+    try {
       // Clear any previous state
       state = state.copyWith(
         isLoading: true,
@@ -32,34 +32,71 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         clearSuccessMessage: true,
       );
 
-      // Get localized success message from API
-      final message = await _api.changePassword(
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-        newPasswordConfirmation: newPasswordConfirmation,
-      );
+      debugPrint('ChangePasswordNotifier: State cleared, calling API...');
 
-      debugPrint('ChangePasswordNotifier: Password change successful');
+      // Timeout wrapper around API call
+      final message = await Future.any([
+        _api.changePassword(
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          newPasswordConfirmation: newPasswordConfirmation,
+        ),
+        Future.delayed(const Duration(seconds: 15), () {
+          debugPrint('ChangePasswordNotifier: API call timeout after 15 seconds');
+          throw Exception('API_TIMEOUT');
+        }),
+      ]);
+
+      debugPrint('ChangePasswordNotifier: Password change successful, message: $message');
+
+      if (!mounted) {
+        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping success state update');
+        return;
+      }
 
       state = state.copyWith(
         isLoading: false,
         successMessage: message, // Already localized from API
       );
+
+      debugPrint('ChangePasswordNotifier: Success state updated');
     } on AuthApiException catch (e) {
-      debugPrint('ChangePasswordNotifier: AuthApiException: ${e.firstError}');
+      debugPrint('ChangePasswordNotifier: AuthApiException caught: ${e.firstError}');
+
+      if (!mounted) {
+        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping error state update');
+        return;
+      }
 
       state = state.copyWith(
         isLoading: false,
         error: e.firstError, // Already localized from API
       );
+
+      debugPrint('ChangePasswordNotifier: Error state updated');
     } catch (e, stackTrace) {
-      debugPrint('ChangePasswordNotifier: Unexpected error: $e');
-      debugPrint('Stack trace: $stackTrace');
+      debugPrint('ChangePasswordNotifier: Unexpected error caught: $e');
+      debugPrint('ChangePasswordNotifier: Error type: ${e.runtimeType}');
+      debugPrint('ChangePasswordNotifier: Stack trace: $stackTrace');
+
+      if (!mounted) {
+        debugPrint('ChangePasswordNotifier: Widget unmounted, skipping error state update');
+        return;
+      }
+
+      String errorMessage = 'NETWORK_ERROR';
+      if (e.toString().contains('API_TIMEOUT')) {
+        errorMessage = 'API call timed out';
+      }
 
       state = state.copyWith(
         isLoading: false,
-        error: 'NETWORK_ERROR', // Will be localized by ErrorHandler
+        error: errorMessage,
       );
+
+      debugPrint('ChangePasswordNotifier: Generic error state updated');
+    } finally {
+      debugPrint('ChangePasswordNotifier: Password change operation completed');
     }
   }
 
