@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import '../../auth/infrastructure/auth_api.dart';
 import 'change_password_state.dart';
 
 final changePasswordProvider =
