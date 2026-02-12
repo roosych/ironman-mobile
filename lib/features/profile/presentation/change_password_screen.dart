@@ -147,20 +147,26 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         // Handle success message
         if (next.successMessage != null &&
             previous?.successMessage != next.successMessage) {
-          debugPrint('Showing success message: ${next.successMessage}');
+          debugPrint('Handling success: ${next.successMessage}');
+
+          // Clear success first to prevent re-triggering
+          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
+
           AlertHelper.showSuccess(context, next.successMessage!).catchError((error) {
             debugPrint('Error showing success alert: $error');
           });
 
-          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
-
           // Clear form and navigate back after a short delay
           Future.delayed(const Duration(milliseconds: 1500), () {
             if (mounted && context.mounted) {
-              _currentPasswordController.clear();
-              _newPasswordController.clear();
-              _confirmPasswordController.clear();
-              Navigator.of(context).pop();
+              try {
+                _currentPasswordController.clear();
+                _newPasswordController.clear();
+                _confirmPasswordController.clear();
+                Navigator.of(context).pop();
+              } catch (e) {
+                debugPrint('Error during success cleanup: $e');
+              }
             }
           });
         }
@@ -169,41 +175,31 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         if (next.error != null && previous?.error != next.error) {
           debugPrint('Handling error: ${next.error}');
 
-          try {
-            String errorMessage = next.error!;
+          String errorMessage = next.error!;
 
-            // Use more specific error message for current password errors
-            if (errorMessage.toLowerCase().contains('current') ||
-                errorMessage.toLowerCase().contains('incorrect') ||
-                errorMessage.toLowerCase().contains('wrong') ||
-                (errorMessage.toLowerCase().contains('password') &&
-                 errorMessage.toLowerCase().contains('invalid'))) {
-              debugPrint('Using specific error message for current password');
-              errorMessage = localizations.change_password_current_incorrect;
-            }
-
-            debugPrint('Showing error alert with message: $errorMessage');
-
-            // Use post frame callback to ensure dialog shows after build is complete
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted && context.mounted) {
-                AlertHelper.showError(
-                  context,
-                  errorMessage,
-                  buttonText: localizations.error_ok,
-                ).catchError((error) {
-                  debugPrint('Error showing error alert: $error');
-                });
-              }
-            });
-
-            // Clear error state after showing
-            ref.read(changePasswordProvider.notifier).clearError();
-          } catch (errorHandlingError) {
-            debugPrint('Error during error message handling: $errorHandlingError');
-            // Emergency fallback - just clear the error
-            ref.read(changePasswordProvider.notifier).clearError();
+          // Use more specific error message for current password errors
+          if (errorMessage.toLowerCase().contains('current') ||
+              errorMessage.toLowerCase().contains('incorrect') ||
+              errorMessage.toLowerCase().contains('wrong') ||
+              (errorMessage.toLowerCase().contains('password') &&
+               errorMessage.toLowerCase().contains('invalid'))) {
+            debugPrint('Using specific error message for current password');
+            errorMessage = localizations.change_password_current_incorrect;
           }
+
+          debugPrint('Showing error alert with message: $errorMessage');
+
+          // Clear error first to prevent re-triggering
+          ref.read(changePasswordProvider.notifier).clearError();
+
+          // Show alert after clearing error
+          AlertHelper.showError(
+            context,
+            errorMessage,
+            buttonText: localizations.error_ok,
+          ).catchError((error) {
+            debugPrint('Error showing error alert: $error');
+          });
         }
       } catch (e, stackTrace) {
         debugPrint('Critical error in changePasswordProvider listener: $e');
