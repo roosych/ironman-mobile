@@ -480,6 +480,11 @@ class _MyResultsExpandableCardState
     }
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
@@ -702,6 +707,11 @@ class _PaceCalculatorCard extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       color: Colors.white,
       child: InkWell(
@@ -891,6 +901,11 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
     });
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -977,6 +992,11 @@ class _PersonalBestsExpandableCardState
     final localizations = AppLocalizations.of(context)!;
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
@@ -1317,7 +1337,7 @@ class _DisciplineRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.ironmanGray, width: 1),
+          border: Border.all(color: AppColors.resultsBorder, width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

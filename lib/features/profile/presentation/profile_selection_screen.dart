@@ -91,7 +91,10 @@ class _ProfileSelectionScreenState
 
       // Показываем сообщение об успехе
       if (mounted) {
-        AlertHelper.showSuccess(context, localizations.profile_selection_link_success);
+        AlertHelper.showSuccess(
+          context,
+          localizations.profile_selection_link_success,
+        );
       }
 
       // Перенаправляем на главный экран после успешного присоединения профиля
@@ -145,7 +148,10 @@ class _ProfileSelectionScreenState
 
       // Показываем сообщение об успехе
       if (mounted) {
-        AlertHelper.showSuccess(context, localizations.profile_selection_create_success);
+        AlertHelper.showSuccess(
+          context,
+          localizations.profile_selection_create_success,
+        );
       }
 
       // Перенаправляем на главный экран после успешного создания профиля
@@ -217,7 +223,6 @@ class _ProfileSelectionScreenState
     final authState = ref.watch(authProvider);
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
 
     return GestureDetector(
       onTap: () {

@@ -496,6 +496,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get change_password_error_title => 'Ошибка';
 
   @override
+  String get delete_account_warning =>
+      'Удаление аккаунта приведет к безвозвратной потере всех данных, включая результаты, статистику и личную информацию.';
+
+  @override
+  String get delete_account_button => 'УДАЛИТЬ АККАУНТ';
+
+  @override
+  String get delete_account_confirm_title => 'Удалить аккаунт?';
+
+  @override
+  String get delete_account_confirm_description =>
+      'Это действие нельзя отменить. Все ваши данные будут удалены навсегда.';
+
+  @override
+  String get delete_account_confirm_button => 'УДАЛИТЬ';
+
+  @override
   String get add_result_title => 'Добавить результат';
 
   @override
@@ -934,4 +951,20 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get athlete_rating_info =>
       'Рейтинг рассчитывается по данным результатов данного приложения';
+
+  @override
+  String get reset_password_title => 'Сброс пароля';
+
+  @override
+  String get reset_password_description =>
+      'Введите email, и мы отправим ссылку для сброса пароля.';
+
+  @override
+  String get reset_password_send_button => 'ОТПРАВИТЬ ПИСЬМО';
+
+  @override
+  String get reset_password_remember => 'Вспомнили пароль?';
+
+  @override
+  String get reset_password_sign_in => 'Войти';
 }

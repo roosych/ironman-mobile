@@ -92,6 +92,12 @@ class UpcomingRaceCard extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
+      color: theme.colorScheme.outlineVariant,
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16.0),

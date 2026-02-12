@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import '../../../core/network/api_client.dart';
+import '../../../core/storage/secure_storage.dart';
 import '../../auth/domain/user.dart';
 import '../domain/athlete_profile.dart';
 import '../domain/user_photo.dart';
@@ -353,6 +356,96 @@ class ProfileApi {
       }
       
       throw ProfileApiException('NETWORK_SERVER_ERROR_${statusCode ?? "unknown"}');
+    }
+  }
+
+  /// Change user password using plain HTTP client (bypass Dio issues)
+  /// PUT /user/password
+  /// Returns structured response with success status and message
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    debugPrint('🔥🔥🔥 ProfileApi.changePassword: PLAIN HTTP VERSION 🔥🔥🔥');
+    debugPrint('ProfileApi.changePassword: STARTING');
+
+    try {
+      // Get token from secure storage
+      final storage = SecureStorage();
+      final token = await storage.getToken();
+      debugPrint('ProfileApi.changePassword: Token retrieved');
+
+      // Prepare request
+      final url = Uri.parse('http://172.28.4.136:8000/api/v1/user/password');
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept-Language': 'en',
+        'Connection': 'close',
+      };
+
+      final body = jsonEncode({
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_password_confirmation': newPasswordConfirmation,
+      });
+
+      debugPrint('ProfileApi.changePassword: Sending plain HTTP PUT...');
+      debugPrint('ProfileApi.changePassword: URL: $url');
+
+      // Send request with timeout
+      final client = http.Client();
+      try {
+        final response = await client.put(
+          url,
+          headers: headers,
+          body: body,
+        ).timeout(Duration(seconds: 10));
+
+        debugPrint('ProfileApi.changePassword: Response received!');
+        debugPrint('ProfileApi.changePassword: Status code: ${response.statusCode}');
+        debugPrint('ProfileApi.changePassword: Response body: ${response.body}');
+
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+        if (response.statusCode == 200 && data['success'] == true) {
+          debugPrint('ProfileApi.changePassword: Success!');
+          return {
+            'success': true,
+            'message': data['message'] ?? 'Password successfully changed.'
+          };
+        } else if (response.statusCode == 403 || response.statusCode == 422) {
+          debugPrint('ProfileApi.changePassword: Validation error');
+
+          final errors = data['errors'] as Map<String, dynamic>?;
+          String errorMessage = 'Validation error';
+
+          if (errors != null && errors.isNotEmpty) {
+            final firstKey = errors.keys.first;
+            final firstErrorList = errors[firstKey] as List<dynamic>?;
+            if (firstErrorList != null && firstErrorList.isNotEmpty) {
+              errorMessage = firstErrorList.first.toString();
+            }
+          } else if (data['message'] != null) {
+            errorMessage = data['message'].toString();
+          }
+
+          return {'success': false, 'message': errorMessage};
+        } else {
+          return {'success': false, 'message': 'Server error: ${response.statusCode}'};
+        }
+      } finally {
+        client.close();
+      }
+
+    } catch (e) {
+      debugPrint('ProfileApi.changePassword: Plain HTTP error: $e');
+      if (e.toString().contains('timeout')) {
+        return {'success': false, 'message': 'Request timed out'};
+      }
+      return {'success': false, 'message': 'Network error: $e'};
     }
   }
 

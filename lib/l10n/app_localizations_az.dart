@@ -495,6 +495,23 @@ class AppLocalizationsAz extends AppLocalizations {
   String get change_password_error_title => 'Xəta';
 
   @override
+  String get delete_account_warning =>
+      'Hesabınızı silmək bütün məlumatlarınızı, o cümlədən nəticələri, statistikaları və şəxsi məlumatları həmişəlik ləğv edəcək.';
+
+  @override
+  String get delete_account_button => 'HESABI SİL';
+
+  @override
+  String get delete_account_confirm_title => 'Hesabı silinsin?';
+
+  @override
+  String get delete_account_confirm_description =>
+      'Bu əməliyyatı geri qaytarmaq olmaz. Bütün məlumatlarınız həmişəlik silinəcək.';
+
+  @override
+  String get delete_account_confirm_button => 'SİL';
+
+  @override
   String get add_result_title => 'Nəticə əlavə et';
 
   @override
@@ -933,4 +950,20 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get athlete_rating_info =>
       'Reytinq bu tətbiqin nəticələr məlumatlarına əsasən hesablanır';
+
+  @override
+  String get reset_password_title => 'Parolun sıfırlanması';
+
+  @override
+  String get reset_password_description =>
+      'E-mailinizi daxil edin və biz sizə parolun sıfırlanması üçün keçid göndərəcəyik.';
+
+  @override
+  String get reset_password_send_button => 'E-MAIL GÖNDƏR';
+
+  @override
+  String get reset_password_remember => 'Parolunuzu xatırladınız?';
+
+  @override
+  String get reset_password_sign_in => 'Daxil ol';
 }

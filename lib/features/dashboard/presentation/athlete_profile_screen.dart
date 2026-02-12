@@ -775,6 +775,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     child: ResultCard(
                       result: approvedResults[index],
                       isMyResults: true,
+                      showBorder: false,
                     ),
                   );
                 },
@@ -1053,12 +1054,19 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
   Widget _buildRatingBlock(BuildContext context, ThemeData theme, Athlete athlete) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide.none,
+        ),
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Заголовок с иконкой подсказки
             Row(
@@ -1156,7 +1164,8 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildRatingRow(BuildContext context, ThemeData theme, String raceType, int position, int total) {
@@ -1250,6 +1259,11 @@ class _PersonalBestsCard extends StatelessWidget {
     final runRace = _getRace('run');
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

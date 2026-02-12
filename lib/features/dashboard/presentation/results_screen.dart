@@ -576,6 +576,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               child: ResultCard(
                 result: filteredResults[index],
                 isMyResults: true,
+                showBorder: false,
               ),
             );
           },
@@ -658,7 +659,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
-              child: ResultCard(result: filteredResults[index]),
+              child: ResultCard(
+                result: filteredResults[index],
+                showBorder: false,
+              ),
             );
           },
         ),

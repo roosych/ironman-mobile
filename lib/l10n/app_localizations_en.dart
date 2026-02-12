@@ -496,6 +496,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change_password_error_title => 'Error';
 
   @override
+  String get delete_account_warning =>
+      'Deleting your account will permanently remove all your data, including results, statistics, and personal information.';
+
+  @override
+  String get delete_account_button => 'DELETE ACCOUNT';
+
+  @override
+  String get delete_account_confirm_title => 'Delete Account?';
+
+  @override
+  String get delete_account_confirm_description =>
+      'This action cannot be undone. All your data will be permanently deleted.';
+
+  @override
+  String get delete_account_confirm_button => 'DELETE';
+
+  @override
   String get add_result_title => 'Add Result';
 
   @override
@@ -931,4 +948,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get athlete_rating_info =>
       'Rating is calculated based on results data from this application';
+
+  @override
+  String get reset_password_title => 'Reset Password';
+
+  @override
+  String get reset_password_description =>
+      'Enter your email and we\'ll send you a link to reset your password.';
+
+  @override
+  String get reset_password_send_button => 'SEND EMAIL';
+
+  @override
+  String get reset_password_remember => 'Remember your password?';
+
+  @override
+  String get reset_password_sign_in => 'Sign in';
 }

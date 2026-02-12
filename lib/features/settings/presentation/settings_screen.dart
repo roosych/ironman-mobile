@@ -195,6 +195,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide.none,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

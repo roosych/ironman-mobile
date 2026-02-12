@@ -617,6 +617,26 @@
   "@change_password_error_title": {
     "description": "Error dialog title"
   },
+  "delete_account_warning": "Deleting your account will permanently remove all your data, including results, statistics, and personal information.",
+  "@delete_account_warning": {
+    "description": "Warning message for account deletion"
+  },
+  "delete_account_button": "DELETE ACCOUNT",
+  "@delete_account_button": {
+    "description": "Delete account button text"
+  },
+  "delete_account_confirm_title": "Delete Account?",
+  "@delete_account_confirm_title": {
+    "description": "Delete account confirmation dialog title"
+  },
+  "delete_account_confirm_description": "This action cannot be undone. All your data will be permanently deleted.",
+  "@delete_account_confirm_description": {
+    "description": "Delete account confirmation dialog description"
+  },
+  "delete_account_confirm_button": "DELETE",
+  "@delete_account_confirm_button": {
+    "description": "Delete account confirmation button text"
+  },
   "add_result_title": "Add Result",
   "@add_result_title": {
     "description": "Add result screen title"

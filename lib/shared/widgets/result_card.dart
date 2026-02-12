@@ -3,12 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/shared/widgets/result_detail_screen.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
 
 class ResultCard extends ConsumerWidget {
   final RaceResult result;
   final bool isMyResults;
+  final bool showBorder;
 
-  const ResultCard({super.key, required this.result, this.isMyResults = false});
+  const ResultCard({
+    super.key,
+    required this.result,
+    this.isMyResults = false,
+    this.showBorder = true,
+  });
 
   String _formatDate(String isoDate, WidgetRef ref) {
     try {
@@ -34,6 +41,16 @@ class ResultCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: showBorder
+            ? BorderSide(
+                color: AppColors.resultsBorder,
+                width: 1,
+              )
+            : BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {

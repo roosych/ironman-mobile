@@ -100,6 +100,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       const SizedBox(height: 32),
                       // Form card
                       Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide.none,
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: Column(

@@ -101,11 +101,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide.none,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
               // Name field
               TextFormField(
                 controller: _nameController,
@@ -257,6 +265,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
               ),
             ],
+              ),
+            ),
           ),
         ),
       ),

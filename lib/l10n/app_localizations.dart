@@ -1036,6 +1036,36 @@ abstract class AppLocalizations {
   /// **'Error'**
   String get change_password_error_title;
 
+  /// Warning message for account deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your account will permanently remove all your data, including results, statistics, and personal information.'**
+  String get delete_account_warning;
+
+  /// Delete account button text
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE ACCOUNT'**
+  String get delete_account_button;
+
+  /// Delete account confirmation dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account?'**
+  String get delete_account_confirm_title;
+
+  /// Delete account confirmation dialog description
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone. All your data will be permanently deleted.'**
+  String get delete_account_confirm_description;
+
+  /// Delete account confirmation button text
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE'**
+  String get delete_account_confirm_button;
+
   /// Add result screen title
   ///
   /// In en, this message translates to:
@@ -1839,6 +1869,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rating is calculated based on results data from this application'**
   String get athlete_rating_info;
+
+  /// No description provided for @reset_password_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get reset_password_title;
+
+  /// No description provided for @reset_password_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and we\'ll send you a link to reset your password.'**
+  String get reset_password_description;
+
+  /// No description provided for @reset_password_send_button.
+  ///
+  /// In en, this message translates to:
+  /// **'SEND EMAIL'**
+  String get reset_password_send_button;
+
+  /// No description provided for @reset_password_remember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember your password?'**
+  String get reset_password_remember;
+
+  /// No description provided for @reset_password_sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get reset_password_sign_in;
 }
 
 class _AppLocalizationsDelegate

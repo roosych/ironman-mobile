@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../storage/secure_storage.dart';
 import '../session/session_manager.dart';
@@ -106,35 +107,61 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    debugPrint('⚡⚡⚡ AuthInterceptor.onRequest NEW VERSION START ⚡⚡⚡');
+    debugPrint('=== AuthInterceptor.onRequest START ===');
+    debugPrint('Path: ${options.path}');
+
+    debugPrint('Getting token from SecureStorage...');
     final token = await _storage.getToken();
+    debugPrint('Token retrieved, length: ${token?.length ?? 0}');
+
     if (token != null && token.isNotEmpty) {
+      debugPrint('Adding Authorization header...');
       options.headers['Authorization'] = 'Bearer $token';
+    } else {
+      debugPrint('No token found');
     }
-    
+
     // Добавляем заголовок Accept-Language
+    debugPrint('Getting locale from SharedPreferences...');
     try {
       final prefs = await SharedPreferences.getInstance();
       final locale = prefs.getString('app_locale') ?? 'en';
       // Поддерживаем только ru и en для бэкенда
       final backendLocale = (locale == 'ru' || locale == 'en') ? locale : 'en';
       options.headers['Accept-Language'] = backendLocale;
-    } catch (_) {
+      debugPrint('Set Accept-Language: $backendLocale');
+    } catch (e) {
+      debugPrint('Error getting locale: $e');
       // Fallback на английский язык при ошибке
       options.headers['Accept-Language'] = 'en';
     }
-    
+
+    debugPrint('Calling handler.next()...');
     handler.next(options);
+    debugPrint('=== AuthInterceptor.onRequest END ===');
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    debugPrint('=== AuthInterceptor.onError ===');
+    debugPrint('Path: ${err.requestOptions.path}');
+    debugPrint('Status Code: ${err.response?.statusCode}');
+    debugPrint('Error Type: ${err.type}');
+    debugPrint('Response Data: ${err.response?.data}');
+
     // Check for 401 Unauthenticated (skip auth endpoints and session restoration)
     if (_isUnauthenticatedError(err) &&
         !_isAuthEndpoint(err.requestOptions.path) &&
         !_isSessionRestorationRequest(err.requestOptions.path)) {
+      debugPrint('Triggering session expiry for: ${err.requestOptions.path}');
       // Trigger session expiry handling (non-blocking)
       SessionManager().handleSessionExpired();
+    } else {
+      debugPrint('Not triggering session expiry (auth endpoint or 401)');
     }
+
+    debugPrint('Passing error to next handler...');
     handler.next(err);
   }
 
@@ -148,6 +175,8 @@ class _AuthInterceptor extends QueuedInterceptorsWrapper {
       '/auth/register',
       '/auth/forgot-password',
       '/auth/reset-password',
+      // Password change (can return 403 for wrong current password)
+      '/user/password',       // смена пароля
       // Non-critical GETs where 401 не должен ронять сессию
       '/user/photos',         // аватарка
       '/user/fcm-token',      // регистрация/удаление FCM токена
