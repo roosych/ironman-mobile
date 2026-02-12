@@ -226,37 +226,78 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.ironmanBlack,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: AppColors.ironmanWhite,
-            size: 24,
-          ),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: Text(
-          loc.pace_calculator_appbar_title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.ironmanWhite,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedRefresh,
-              color: AppColors.ironmanWhite,
-              size: 24,
+      body: Stack(
+        children: [
+          // Background image with gradient overlay
+          Transform.rotate(
+            angle: 3.14159, // 180 градусов (π радиан)
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg.png'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.matrix([
+                    0.299, 0.587, 0.114, 0, 0, // Red channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Green channel -> grayscale
+                    0.299, 0.587, 0.114, 0, 0, // Blue channel -> grayscale
+                    0, 0, 0, 1, 0,             // Alpha channel unchanged
+                  ]),
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      AppColors.ironmanBlack.withValues(alpha: 0.3),
+                      AppColors.ironmanBlack.withValues(alpha: 0.7),
+                      AppColors.ironmanBlack,
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  ),
+                ),
+              ),
             ),
-            onPressed: _clearAllTimes,
-            tooltip: 'Очистить все значения',
           ),
-        ],
-      ),
-      body: SafeArea(
+          // Main content
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedArrowLeft01,
+                  color: AppColors.ironmanWhite,
+                  size: 24,
+                ),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+              title: Text(
+                loc.pace_calculator_appbar_title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.ironmanWhite,
+                ),
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedRefresh,
+                    color: AppColors.ironmanWhite,
+                    size: 24,
+                  ),
+                  onPressed: _clearAllTimes,
+                  tooltip: 'Очистить все значения',
+                ),
+              ],
+            ),
+            body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -380,6 +421,9 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
             ),
           ],
         ),
+            ),
+          ),
+        ],
       ),
     );
   }
