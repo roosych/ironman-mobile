@@ -216,6 +216,8 @@ class AuthApi {
     required String newPasswordConfirmation,
   }) async {
     try {
+      debugPrint('AuthApi.changePassword: Starting API call');
+
       final response = await _client.put<Map<String, dynamic>>(
         '/user/password',
         data: {
@@ -225,30 +227,48 @@ class AuthApi {
         },
       );
 
+      debugPrint('AuthApi.changePassword: Response received');
+      debugPrint('Response data: ${response.data}');
+
       final json = response.data!;
       if (json['success'] == true) {
+        debugPrint('AuthApi.changePassword: Success response');
         // Return localized message from API
         return json['message'] as String? ?? 'Password changed successfully';
       } else {
+        debugPrint('AuthApi.changePassword: Error in response data');
         throw _parseError(json);
       }
     } on DioException catch (e) {
+      debugPrint('AuthApi.changePassword: DioException caught');
+      debugPrint('Status code: ${e.response?.statusCode}');
+      debugPrint('Response data: ${e.response?.data}');
+
       // Handle specific status codes
       if (e.response?.statusCode == 403) {
+        debugPrint('AuthApi.changePassword: 403 Forbidden - incorrect password');
         // Try to get message from response (already localized)
         final json = e.response?.data as Map<String, dynamic>?;
         final message = json?['message'] as String?;
         if (message != null) {
+          debugPrint('AuthApi.changePassword: Using message from 403 response: $message');
           throw AuthApiException(message);
         }
         // Fallback to errors if no message
+        debugPrint('AuthApi.changePassword: No message in 403 response, using _handleDioError');
         throw _handleDioError(e);
       }
       if (e.response?.statusCode == 422) {
+        debugPrint('AuthApi.changePassword: 422 Validation error');
         // Validation errors - parse field errors (already localized)
         throw _handleDioError(e);
       }
+      debugPrint('AuthApi.changePassword: Other DioException, using _handleDioError');
       throw _handleDioError(e);
+    } catch (e, stackTrace) {
+      debugPrint('AuthApi.changePassword: Unexpected error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
@@ -267,18 +287,26 @@ class AuthApi {
   }
 
   AuthApiException _handleDioError(DioException e) {
+    debugPrint('AuthApi._handleDioError: Processing DioException');
+    debugPrint('Exception type: ${e.type}');
+    debugPrint('Status code: ${e.response?.statusCode}');
+    debugPrint('Response data: ${e.response?.data}');
+
     // Если есть ответ от сервера, используем локализованные сообщения из API
     if (e.response?.data != null && e.response?.data is Map) {
+      debugPrint('AuthApi._handleDioError: Response data is Map');
       final json = e.response!.data as Map<String, dynamic>;
-      
+
       // Проверяем наличие errors (локализованные ошибки валидации)
       if (json['errors'] != null) {
+        debugPrint('AuthApi._handleDioError: Found errors field, parsing');
         return _parseError(json);
       }
-      
+
       // Проверяем наличие message (локализованное сообщение об ошибке)
       final message = json['message'] as String?;
       if (message != null) {
+        debugPrint('AuthApi._handleDioError: Using message from response: $message');
         return AuthApiException(message);
       }
     }
@@ -286,21 +314,27 @@ class AuthApi {
     // Для сетевых ошибок (когда нет ответа от сервера) возвращаем общее сообщение
     // Эти ошибки не локализуются на бэкенде, так как сервер недоступен
     // В этом случае можно использовать локализацию Flutter на клиенте
+    debugPrint('AuthApi._handleDioError: Processing network/connection errors');
+
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
+        debugPrint('AuthApi._handleDioError: Timeout error');
         // Возвращаем сообщение, которое будет локализовано на клиенте через ErrorHandler
         return const AuthApiException('NETWORK_TIMEOUT');
       case DioExceptionType.connectionError:
+        debugPrint('AuthApi._handleDioError: Connection error');
         // Возвращаем сообщение, которое будет локализовано на клиенте через ErrorHandler
         return const AuthApiException('NETWORK_CONNECTION_ERROR');
       case DioExceptionType.badResponse:
+        debugPrint('AuthApi._handleDioError: Bad response error');
         final statusCode = e.response?.statusCode;
-        
+
         // Обработка HTTP 429 (Too Many Requests / Throttle)
         // Проверяем, есть ли локализованное сообщение в ответе
         if (statusCode == 429) {
+          debugPrint('AuthApi._handleDioError: 429 Too Many Requests');
           final json = e.response?.data as Map<String, dynamic>?;
           final message = json?['message'] as String?;
           if (message != null) {
@@ -309,17 +343,21 @@ class AuthApi {
           // Если нет сообщения от сервера, возвращаем общее сообщение
           return const AuthApiException('NETWORK_TOO_MANY_REQUESTS');
         }
-        
+
         // Для других ошибок badResponse проверяем, есть ли сообщение от сервера
+        debugPrint('AuthApi._handleDioError: Other bad response (status: $statusCode)');
         final json = e.response?.data as Map<String, dynamic>?;
         final message = json?['message'] as String?;
         if (message != null) {
+          debugPrint('AuthApi._handleDioError: Using message from bad response: $message');
           return AuthApiException(message);
         }
-        
+
         // Если нет сообщения от сервера, возвращаем общее сообщение
+        debugPrint('AuthApi._handleDioError: No message in bad response, using generic error');
         return AuthApiException('NETWORK_SERVER_ERROR_${statusCode ?? "unknown"}');
       default:
+        debugPrint('AuthApi._handleDioError: Default/unknown error type');
         return const AuthApiException('NETWORK_ERROR');
     }
   }
