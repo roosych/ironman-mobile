@@ -23,17 +23,30 @@ class CenterAlert extends StatelessWidget {
     String? buttonText,
     VoidCallback? onPressed,
   }) {
-    return showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black54,
-      builder: (context) => CenterAlert(
-        message: message,
-        type: type,
-        buttonText: buttonText,
-        onPressed: onPressed ?? () => Navigator.of(context).pop(),
-      ),
-    );
+    try {
+      debugPrint('CenterAlert.show called with type: $type, message: $message');
+
+      if (!context.mounted) {
+        debugPrint('Context not mounted in CenterAlert.show');
+        return Future.value();
+      }
+
+      return showDialog(
+        context: context,
+        barrierDismissible: true,
+        barrierColor: Colors.black54,
+        builder: (context) => CenterAlert(
+          message: message,
+          type: type,
+          buttonText: buttonText,
+          onPressed: onPressed ?? () => Navigator.of(context).pop(),
+        ),
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error in CenterAlert.show: $e');
+      debugPrint('Stack trace: $stackTrace');
+      return Future.value();
+    }
   }
 
   Color _getBackgroundColor(BuildContext context) {

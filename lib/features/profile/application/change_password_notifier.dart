@@ -22,7 +22,14 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     required String newPasswordConfirmation,
   }) async {
     try {
-      state = state.copyWith(isLoading: true, clearError: true);
+      debugPrint('ChangePasswordNotifier: Starting password change');
+
+      // Clear any previous state
+      state = state.copyWith(
+        isLoading: true,
+        clearError: true,
+        clearSuccessMessage: true,
+      );
 
       // Get localized success message from API
       final message = await _api.changePassword(
@@ -31,16 +38,23 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         newPasswordConfirmation: newPasswordConfirmation,
       );
 
+      debugPrint('ChangePasswordNotifier: Password change successful');
+
       state = state.copyWith(
         isLoading: false,
         successMessage: message, // Already localized from API
       );
     } on AuthApiException catch (e) {
+      debugPrint('ChangePasswordNotifier: AuthApiException: ${e.firstError}');
+
       state = state.copyWith(
         isLoading: false,
         error: e.firstError, // Already localized from API
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('ChangePasswordNotifier: Unexpected error: $e');
+      debugPrint('Stack trace: $stackTrace');
+
       state = state.copyWith(
         isLoading: false,
         error: 'NETWORK_ERROR', // Will be localized by ErrorHandler
@@ -50,12 +64,22 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
 
   /// Clear error message
   void clearError() {
-    state = state.copyWith(clearError: true);
+    try {
+      debugPrint('ChangePasswordNotifier: Clearing error');
+      state = state.copyWith(clearError: true);
+    } catch (e) {
+      debugPrint('ChangePasswordNotifier: Error clearing error: $e');
+    }
   }
 
   /// Clear success message
   void clearSuccessMessage() {
-    state = state.copyWith(clearSuccessMessage: true);
+    try {
+      debugPrint('ChangePasswordNotifier: Clearing success message');
+      state = state.copyWith(clearSuccessMessage: true);
+    } catch (e) {
+      debugPrint('ChangePasswordNotifier: Error clearing success message: $e');
+    }
   }
 }
 

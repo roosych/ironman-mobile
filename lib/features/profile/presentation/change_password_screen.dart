@@ -132,46 +132,90 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
     // Listen for state changes
     ref.listen(changePasswordProvider, (previous, next) {
-      if (!mounted || !context.mounted) return;
+      debugPrint('=== ChangePassword State Listener ===');
+      debugPrint('Mounted: $mounted, Context mounted: ${context.mounted}');
+      debugPrint('Previous error: ${previous?.error}');
+      debugPrint('Next error: ${next.error}');
+      debugPrint('Next success: ${next.successMessage}');
 
-      // Handle success message
-      if (next.successMessage != null &&
-          previous?.successMessage != next.successMessage) {
-        AlertHelper.showSuccess(context, next.successMessage!);
-        ref.read(changePasswordProvider.notifier).clearSuccessMessage();
-
-        // Clear form and navigate back after a short delay
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          if (mounted && context.mounted) {
-            _currentPasswordController.clear();
-            _newPasswordController.clear();
-            _confirmPasswordController.clear();
-            Navigator.of(context).pop();
-          }
-        });
+      if (!mounted || !context.mounted) {
+        debugPrint('Widget not mounted, skipping state handling');
+        return;
       }
 
-      // Handle error message
-      if (next.error != null && previous?.error != next.error) {
-        String errorMessage = next.error!;
+      try {
+        // Handle success message
+        if (next.successMessage != null &&
+            previous?.successMessage != next.successMessage) {
+          debugPrint('Showing success message: ${next.successMessage}');
+          AlertHelper.showSuccess(context, next.successMessage!).catchError((error) {
+            debugPrint('Error showing success alert: $error');
+          });
 
-        // Use more specific error message for current password errors
-        if (errorMessage.toLowerCase().contains('current') ||
-            errorMessage.toLowerCase().contains('incorrect') ||
-            errorMessage.toLowerCase().contains('wrong') ||
-            (errorMessage.toLowerCase().contains('password') &&
-             errorMessage.toLowerCase().contains('invalid'))) {
-          errorMessage = localizations.change_password_current_incorrect;
+          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
+
+          // Clear form and navigate back after a short delay
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            if (mounted && context.mounted) {
+              _currentPasswordController.clear();
+              _newPasswordController.clear();
+              _confirmPasswordController.clear();
+              Navigator.of(context).pop();
+            }
+          });
         }
 
-        AlertHelper.showError(
-          context,
-          errorMessage,
-          buttonText: localizations.error_ok,
-        );
+        // Handle error message
+        if (next.error != null && previous?.error != next.error) {
+          debugPrint('Handling error: ${next.error}');
 
-        // Clear error state after showing
-        ref.read(changePasswordProvider.notifier).clearError();
+          try {
+            String errorMessage = next.error!;
+
+            // Use more specific error message for current password errors
+            if (errorMessage.toLowerCase().contains('current') ||
+                errorMessage.toLowerCase().contains('incorrect') ||
+                errorMessage.toLowerCase().contains('wrong') ||
+                (errorMessage.toLowerCase().contains('password') &&
+                 errorMessage.toLowerCase().contains('invalid'))) {
+              debugPrint('Using specific error message for current password');
+              errorMessage = localizations.change_password_current_incorrect;
+            }
+
+            debugPrint('Showing error alert with message: $errorMessage');
+
+            // Use post frame callback to ensure dialog shows after build is complete
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && context.mounted) {
+                AlertHelper.showError(
+                  context,
+                  errorMessage,
+                  buttonText: localizations.error_ok,
+                ).catchError((error) {
+                  debugPrint('Error showing error alert: $error');
+                });
+              }
+            });
+
+            // Clear error state after showing
+            ref.read(changePasswordProvider.notifier).clearError();
+          } catch (errorHandlingError) {
+            debugPrint('Error during error message handling: $errorHandlingError');
+            // Emergency fallback - just clear the error
+            ref.read(changePasswordProvider.notifier).clearError();
+          }
+        }
+      } catch (e, stackTrace) {
+        debugPrint('Critical error in changePasswordProvider listener: $e');
+        debugPrint('Stack trace: $stackTrace');
+
+        // Emergency cleanup
+        try {
+          ref.read(changePasswordProvider.notifier).clearError();
+          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
+        } catch (cleanupError) {
+          debugPrint('Error during emergency cleanup: $cleanupError');
+        }
       }
     });
 

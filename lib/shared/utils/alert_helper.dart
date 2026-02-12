@@ -11,16 +11,29 @@ class AlertHelper {
     String? buttonText,
     VoidCallback? onPressed,
   }) {
-    if (!context.mounted) return Future.value();
-    
-    final localizations = AppLocalizations.of(context);
-    return CenterAlert.show(
-      context,
-      message: message,
-      type: AlertType.error,
-      buttonText: buttonText ?? localizations?.error_ok ?? 'OK',
-      onPressed: onPressed,
-    );
+    try {
+      debugPrint('AlertHelper.showError called with message: $message');
+
+      if (!context.mounted) {
+        debugPrint('Context not mounted, skipping error alert');
+        return Future.value();
+      }
+
+      final localizations = AppLocalizations.of(context);
+      debugPrint('Localizations loaded: ${localizations != null}');
+
+      return CenterAlert.show(
+        context,
+        message: message,
+        type: AlertType.error,
+        buttonText: buttonText ?? localizations?.error_ok ?? 'OK',
+        onPressed: onPressed,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error in AlertHelper.showError: $e');
+      debugPrint('Stack trace: $stackTrace');
+      return Future.value();
+    }
   }
 
   /// Показывает алерт об успехе
