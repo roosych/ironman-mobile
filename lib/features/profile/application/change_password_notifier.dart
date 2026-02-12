@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -14,11 +13,7 @@ final changePasswordProvider =
 
 /// Handles password change operations
 class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
-  final AuthApi _api;
-
-  ChangePasswordNotifier({AuthApi? api})
-      : _api = api ?? AuthApi(),
-        super(const ChangePasswordState());
+  ChangePasswordNotifier() : super(const ChangePasswordState());
 
   /// Change user password - simplified version
   Future<void> changePassword({
