@@ -221,8 +221,11 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
         debugPrint('Status code: ${response.statusCode}');
         debugPrint('Response body: ${response.body}');
 
+        debugPrint('ChangePasswordNotifier: Processing response...');
+
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
+          debugPrint('ChangePasswordNotifier: 200 response parsed: $jsonResponse');
           if (jsonResponse['success'] == true) {
             return jsonResponse['message'] ?? 'Password changed successfully';
           } else {
@@ -230,8 +233,25 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
           }
         } else if (response.statusCode == 403) {
           final jsonResponse = jsonDecode(response.body);
-          throw AuthApiException(jsonResponse['message'] ?? 'Incorrect current password');
+          debugPrint('ChangePasswordNotifier: 403 response parsed: $jsonResponse');
+
+          // Handle errors field structure
+          if (jsonResponse['errors'] != null) {
+            final errors = jsonResponse['errors'] as Map<String, dynamic>;
+            if (errors['current_password'] != null) {
+              final currentPasswordErrors = errors['current_password'] as List;
+              final errorMessage = currentPasswordErrors.first ?? 'Current password is incorrect';
+              debugPrint('ChangePasswordNotifier: Throwing AuthApiException: $errorMessage');
+              throw AuthApiException(errorMessage);
+            }
+          }
+
+          // Fallback to message field or default
+          final errorMessage = jsonResponse['message'] ?? 'Incorrect current password';
+          debugPrint('ChangePasswordNotifier: Throwing fallback AuthApiException: $errorMessage');
+          throw AuthApiException(errorMessage);
         } else {
+          debugPrint('ChangePasswordNotifier: Other HTTP error: ${response.statusCode}');
           throw AuthApiException('HTTP ${response.statusCode}: ${response.body}');
         }
       } finally {
