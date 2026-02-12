@@ -21,9 +21,9 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
-
     try {
+      state = state.copyWith(isLoading: true, clearError: true);
+
       // Get localized success message from API
       final message = await _api.changePassword(
         currentPassword: currentPassword,
