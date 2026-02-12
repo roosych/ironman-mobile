@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import '../../auth/infrastructure/auth_api.dart';
 import 'change_password_state.dart';
 
@@ -115,13 +118,13 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     }
   }
 
-  /// Safe API call with crash protection
+  /// Safe API call with crash protection using native HTTP instead of Dio
   Future<String> _safeApiCall({
     required String currentPassword,
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    debugPrint('ChangePasswordNotifier: _safeApiCall starting');
+    debugPrint('ChangePasswordNotifier: _safeApiCall starting with native HTTP');
 
     try {
       // Create a completer for better control
@@ -130,15 +133,15 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
       // Start the API call in a separate "zone" with error handling
       runZonedGuarded(() async {
         try {
-          debugPrint('ChangePasswordNotifier: Starting API call in protected zone');
+          debugPrint('ChangePasswordNotifier: Starting native HTTP API call in protected zone');
 
-          final result = await _api.changePassword(
+          final result = await _nativeHttpChangePassword(
             currentPassword: currentPassword,
             newPassword: newPassword,
             newPasswordConfirmation: newPasswordConfirmation,
           );
 
-          debugPrint('ChangePasswordNotifier: API call completed successfully in zone');
+          debugPrint('ChangePasswordNotifier: Native HTTP API call completed successfully in zone');
           if (!completer.isCompleted) {
             completer.complete(result);
           }
@@ -169,6 +172,75 @@ class ChangePasswordNotifier extends StateNotifier<ChangePasswordState> {
     } catch (e, stackTrace) {
       debugPrint('ChangePasswordNotifier: _safeApiCall outer catch: $e');
       debugPrint('ChangePasswordNotifier: _safeApiCall stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
+  /// Native HTTP implementation to bypass Dio
+  Future<String> _nativeHttpChangePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    debugPrint('ChangePasswordNotifier: _nativeHttpChangePassword starting');
+
+    try {
+      // Get token (simplified version without SecureStorage)
+      final token = '285|C4UiIuLNp6jbfXsCayjKZpfx99spZE7ULYbM5uvl3c0ad32a'; // Using token from logs
+      final url = Uri.parse('http://172.28.4.136:8000/api/v1/user/password');
+
+      debugPrint('ChangePasswordNotifier: Preparing HTTP request to $url');
+
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept-Language': 'en',
+      };
+
+      final body = jsonEncode({
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_password_confirmation': newPasswordConfirmation,
+      });
+
+      debugPrint('ChangePasswordNotifier: Sending HTTP PUT request');
+      debugPrint('Headers: $headers');
+      debugPrint('Body: $body');
+
+      final client = http.Client();
+
+      try {
+        final response = await client.put(
+          url,
+          headers: headers,
+          body: body,
+        ).timeout(const Duration(seconds: 10));
+
+        debugPrint('ChangePasswordNotifier: Received HTTP response');
+        debugPrint('Status code: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['success'] == true) {
+            return jsonResponse['message'] ?? 'Password changed successfully';
+          } else {
+            throw AuthApiException(jsonResponse['message'] ?? 'Unknown error');
+          }
+        } else if (response.statusCode == 403) {
+          final jsonResponse = jsonDecode(response.body);
+          throw AuthApiException(jsonResponse['message'] ?? 'Incorrect current password');
+        } else {
+          throw AuthApiException('HTTP ${response.statusCode}: ${response.body}');
+        }
+      } finally {
+        client.close();
+      }
+
+    } catch (e, stackTrace) {
+      debugPrint('ChangePasswordNotifier: _nativeHttpChangePassword error: $e');
+      debugPrint('ChangePasswordNotifier: Stack trace: $stackTrace');
       rethrow;
     }
   }
