@@ -7,6 +7,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/shared/data/countries.dart';
+import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
@@ -231,6 +232,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowLeft01,
+                color: Colors.white,
+                size: 24,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: const LanguageSelector(),
+              ),
+            ],
           ),
           body: SafeArea(
             child: Center(

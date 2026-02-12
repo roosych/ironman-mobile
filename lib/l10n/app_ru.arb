@@ -330,6 +330,11 @@
   "events_tab_past": "Прошедшие",
   "events_no_past_races": "Нет прошедших гонок",
   "athlete_rating_title": "Рейтинг",
-  "athlete_rating_info": "Рейтинг рассчитывается по данным результатов данного приложения"
+  "athlete_rating_info": "Рейтинг рассчитывается по данным результатов данного приложения",
+  "reset_password_title": "Сброс пароля",
+  "reset_password_description": "Введите email, и мы отправим ссылку для сброса пароля.",
+  "reset_password_send_button": "ОТПРАВИТЬ ПИСЬМО",
+  "reset_password_remember": "Вспомнили пароль?",
+  "reset_password_sign_in": "Войти"
 }
 

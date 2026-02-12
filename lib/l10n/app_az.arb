@@ -303,6 +303,11 @@
   "events_tab_past": "Keçmiş",
   "events_no_past_races": "Keçmiş yarışlar yoxdur",
   "athlete_rating_title": "Reytinq",
-  "athlete_rating_info": "Reytinq bu tətbiqin nəticələr məlumatlarına əsasən hesablanır"
+  "athlete_rating_info": "Reytinq bu tətbiqin nəticələr məlumatlarına əsasən hesablanır",
+  "reset_password_title": "Parolun sıfırlanması",
+  "reset_password_description": "E-mailinizi daxil edin və biz sizə parolun sıfırlanması üçün keçid göndərəcəyik.",
+  "reset_password_send_button": "E-MAIL GÖNDƏR",
+  "reset_password_remember": "Parolunuzu xatırladınız?",
+  "reset_password_sign_in": "Daxil ol"
 }
 

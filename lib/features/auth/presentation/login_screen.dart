@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
-import 'package:ironman_mobile/shared/utils/alert_helper.dart';
-import '../../settings/application/locale_notifier.dart';
+import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
 import 'email_not_verified_screen.dart';
@@ -63,7 +62,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final locale = ref.watch(localeProvider);
     final localizations = AppLocalizations.of(context)!;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
@@ -154,27 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: 16.0),
-                  child: _LanguageDropdown(
-                    currentLocale: locale,
-                    onLocaleChanged: (Locale newLocale) async {
-                      // Hide all current SnackBars before language change
-                      ScaffoldMessenger.of(context).clearSnackBars();
-
-                      await ref.read(localeProvider.notifier).setLocale(newLocale);
-
-                      // Wait for Flutter to rebuild with new locale
-                      if (context.mounted) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (context.mounted) {
-                            final updatedLocalizations = AppLocalizations.of(context);
-                            if (updatedLocalizations != null) {
-                              AlertHelper.showInfo(context, updatedLocalizations.settings_language_changed);
-                            }
-                          }
-                        });
-                      }
-                    },
-                  ),
+                  child: const LanguageSelector(),
                 ),
               ],
             ),
@@ -350,65 +328,3 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-class _LanguageDropdown extends StatelessWidget {
-  final Locale currentLocale;
-  final ValueChanged<Locale> onLocaleChanged;
-
-  const _LanguageDropdown({
-    required this.currentLocale,
-    required this.onLocaleChanged,
-  });
-
-  static String _getLanguageName(Locale locale) {
-    switch (locale.languageCode) {
-      case 'ru':
-        return 'Русский';
-      case 'az':
-        return 'Azərbaycan';
-      case 'en':
-      default:
-        return 'English';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<Locale>(
-      value: currentLocale,
-      icon: const HugeIcon(
-        icon: HugeIcons.strokeRoundedArrowDown01,
-        size: 20,
-        color: Colors.white70,
-      ),
-      underline: Container(),
-      dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
-      items: const [
-        Locale('az'),
-        Locale('en'),
-        Locale('ru'),
-      ].map<DropdownMenuItem<Locale>>((Locale locale) {
-        return DropdownMenuItem<Locale>(
-          value: locale,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _getLanguageName(locale),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-      onChanged: (Locale? newLocale) {
-        if (newLocale != null) {
-          onLocaleChanged(newLocale);
-        }
-      },
-    );
-  }
-}

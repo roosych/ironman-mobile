@@ -1036,6 +1036,11 @@
   "events_tab_past": "Past",
   "events_no_past_races": "No past races",
   "athlete_rating_title": "Rating",
-  "athlete_rating_info": "Rating is calculated based on results data from this application"
+  "athlete_rating_info": "Rating is calculated based on results data from this application",
+  "reset_password_title": "Reset Password",
+  "reset_password_description": "Enter your email and we'll send you a link to reset your password.",
+  "reset_password_send_button": "SEND EMAIL",
+  "reset_password_remember": "Remember your password?",
+  "reset_password_sign_in": "Sign in"
 }
 
