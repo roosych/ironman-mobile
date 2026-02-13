@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../storage/secure_storage.dart';
 import '../session/session_manager.dart';
 import '../config/app_config.dart';
+import 'interceptors/global_error_interceptor.dart';
 
 class ApiClient {
   /// Базовый URL API сервера
@@ -18,14 +20,18 @@ class ApiClient {
       _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
-          connectTimeout: Duration(seconds: AppConfig.connectTimeout),
-          receiveTimeout: Duration(seconds: AppConfig.receiveTimeout),
+          // МАКСИМАЛЬНО агрессивные timeouts - должны сработать раньше Timer
+          connectTimeout: const Duration(seconds: 2),
+          receiveTimeout: const Duration(seconds: 3),
+          sendTimeout: const Duration(seconds: 2),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
         ),
       ) {
+    // Добавляем глобальный обработчик ошибок ПЕРВЫМ (высший приоритет)
+    _dio.interceptors.add(GlobalErrorInterceptor());
     _dio.interceptors.add(_AuthInterceptor(_storage));
     if (AppConfig.enableRequestLogging) {
       _dio.interceptors.add(
@@ -42,18 +48,68 @@ class ApiClient {
 
   Dio get dio => _dio;
 
+  /// Простая обертка для безопасных запросов
+  Future<Response<T>> _safeRequest<T>(Future<Response<T>> Function() request) async {
+    try {
+      debugPrint('🌐 SafeRequest: Выполняем запрос...');
+      final response = await request();
+      debugPrint('✅ SafeRequest: Запрос выполнен успешно');
+      return response;
+    } catch (e, stackTrace) {
+      debugPrint('🔴 SafeRequest: Ошибка: ${e.runtimeType} - $e');
+      debugPrint('📚 Stack trace: $stackTrace');
+
+      // Конвертируем в безопасную DioException
+      final safeError = _createSafeError(e);
+      debugPrint('🛡️ Бросаем безопасную ошибку: ${safeError.message}');
+      throw safeError;
+    }
+  }
+
+  /// Создает безопасную DioException из любой ошибки
+  DioException _createSafeError(dynamic error) {
+    if (error is DioException) {
+      // Если это уже DioException, возвращаем как есть
+      return error;
+    }
+
+    // Для всех остальных ошибок создаем DioException с понятным сообщением
+    String userMessage = 'Проблема с подключением к серверу.';
+    DioExceptionType errorType = DioExceptionType.unknown;
+
+    final errorString = error.toString().toLowerCase();
+
+    if (errorString.contains('timeout')) {
+      userMessage = 'Сервер не отвечает. Проверьте подключение к интернету.';
+      errorType = DioExceptionType.connectionTimeout;
+    } else if (errorString.contains('connection') || errorString.contains('network')) {
+      userMessage = 'Проблема с подключением к серверу.';
+      errorType = DioExceptionType.connectionError;
+    } else if (errorString.contains('socket')) {
+      userMessage = 'Проблема с сетевым соединением.';
+      errorType = DioExceptionType.connectionError;
+    }
+
+    return DioException(
+      requestOptions: RequestOptions(path: 'safe-error'),
+      type: errorType,
+      message: userMessage,
+      error: error,
+    );
+  }
+
   Future<Response<T>> post<T>(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return _dio.post<T>(
+    return _safeRequest<T>(() => _dio.post<T>(
       path,
       data: data,
       queryParameters: queryParameters,
       options: options,
-    );
+    ));
   }
 
   Future<Response<T>> get<T>(
@@ -61,11 +117,11 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return _dio.get<T>(
+    return _safeRequest<T>(() => _dio.get<T>(
       path,
       queryParameters: queryParameters,
       options: options,
-    );
+    ));
   }
 
   Future<Response<T>> put<T>(
@@ -74,12 +130,12 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return _dio.put<T>(
+    return _safeRequest<T>(() => _dio.put<T>(
       path,
       data: data,
       queryParameters: queryParameters,
       options: options,
-    );
+    ));
   }
 
   Future<Response<T>> delete<T>(
@@ -88,12 +144,12 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return _dio.delete<T>(
+    return _safeRequest<T>(() => _dio.delete<T>(
       path,
       data: data,
       queryParameters: queryParameters,
       options: options,
-    );
+    ));
   }
 }
 

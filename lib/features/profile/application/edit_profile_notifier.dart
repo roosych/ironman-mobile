@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/application/auth_notifier.dart';
 import '../domain/athlete_profile.dart';
@@ -32,6 +34,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
 
     state = state.copyWith(
       name: user.name,
+      countryIso: user.profile?.countryIso,
+      ironmanNumber: user.profile?.ironmanNumber,
       athleteProfile: athleteProfile,
     );
   }
@@ -51,6 +55,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
       state = state.copyWith(
         isLoading: false,
         name: user.name,
+        countryIso: user.profile?.countryIso,
+        ironmanNumber: user.profile?.ironmanNumber,
         athleteProfile: athleteProfile,
       );
 
@@ -110,20 +116,40 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
     );
   }
 
+  /// Update country
+  void updateCountry(String countryIso) {
+    state = state.copyWith(
+      countryIso: countryIso,
+    );
+  }
+
+  /// Update ironman number
+  void updateIronmanNumber(int? ironmanNumber) {
+    state = state.copyWith(
+      ironmanNumber: ironmanNumber,
+    );
+  }
+
   /// Save profile changes
   Future<void> saveProfile() async {
+    debugPrint('🚀 EditProfileNotifier.saveProfile: НАЧИНАЕМ');
     state = state.copyWith(isSaving: true, clearError: true);
 
     try {
-      // Update profile and get localized success message from API
+      debugPrint('📤 Отправляем запрос через безопасный ApiClient...');
+
+      // Теперь все ошибки обрабатываются в ApiClient.safeRequest
       final updateResult = await _api.updateProfile(
         name: state.name,
+        countryIso: state.countryIso?.toUpperCase(),
+        ironmanNumber: state.ironmanNumber,
         bio: state.athleteProfile.bio,
         socialLinks: state.athleteProfile.socialLinks,
       );
 
-      // After successful save, load fresh profile data from API
-      // This ensures we have the latest data including name and profile
+      debugPrint('✅ Ответ получен успешно!');
+
+      // Load fresh profile data from API
       final user = await _api.getProfile();
 
       AthleteProfile athleteProfile = const AthleteProfile();
@@ -131,29 +157,40 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
         athleteProfile = AthleteProfile.fromJson(user.profile!.toJson());
       }
 
-      // Use message from API if available (already localized), otherwise use default
       final successMessage = updateResult['message'] as String? ?? 'Profile saved successfully';
 
       state = state.copyWith(
         isSaving: false,
         name: user.name,
+        countryIso: user.profile?.countryIso,
+        ironmanNumber: user.profile?.ironmanNumber,
         athleteProfile: athleteProfile,
-        successMessage: successMessage, // Already localized from API
+        successMessage: successMessage,
       );
 
-      // Update auth state with fresh data from server (persists to storage)
-      // This ensures all screens that read from authProvider will see updated data
+      // Update auth state with fresh data from server
       await _ref.read(authProvider.notifier).updateUser(user);
-    } on ProfileApiException catch (e) {
-      state = state.copyWith(
-        isSaving: false,
-        error: e.message, // Already localized from API
-      );
+      debugPrint('🎉 ПРОФИЛЬ УСПЕШНО СОХРАНЕН!');
+
     } catch (e) {
+      debugPrint('🔥 ПОЙМАЛИ ОШИБКУ: ${e.runtimeType} - $e');
+
+      // Все ошибки уже обработаны в ApiClient и GlobalErrorInterceptor
+      // Просто извлекаем понятное сообщение
+      String errorMessage = 'Произошла ошибка при сохранении профиля';
+
+      if (e is ProfileApiException) {
+        errorMessage = e.message;
+      } else if (e is DioException && e.message != null) {
+        errorMessage = e.message!;
+      }
+
       state = state.copyWith(
         isSaving: false,
-        error: 'NETWORK_ERROR', // Will be localized by ErrorHandler
+        error: errorMessage,
       );
+
+      debugPrint('📱 Показываем ошибку пользователю: $errorMessage');
     }
   }
 

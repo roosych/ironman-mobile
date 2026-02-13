@@ -858,7 +858,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get notification_permission_open_settings => 'Parametrləri aç';
 
   @override
-  String get pace_calculator_done => 'Done';
+  String get pace_calculator_done => 'Hazır';
 
   @override
   String get pace_calculator_tab_full => 'IRONMAN';
@@ -870,70 +870,70 @@ class AppLocalizationsAz extends AppLocalizations {
   String get pace_calculator_tab_5150 => '5150';
 
   @override
-  String get pace_calculator_appbar_title => 'Pace Calculator';
+  String get pace_calculator_appbar_title => 'Sürət Kalkulatoru';
 
   @override
-  String get pace_calculator_total_race_time => 'TOTAL RACE TIME';
+  String get pace_calculator_total_race_time => 'ÜMUMİ YARIŞ VAXTİ';
 
   @override
   String get pace_calculator_km_unit => 'km';
 
   @override
-  String get pace_calculator_min_per_100m => 'min / 100m';
+  String get pace_calculator_min_per_100m => 'dəq / 100m';
 
   @override
-  String get pace_calculator_km_per_h => 'km / h';
+  String get pace_calculator_km_per_h => 'km / saat';
 
   @override
-  String get pace_calculator_min_per_km => 'min / km';
+  String get pace_calculator_min_per_km => 'dəq / km';
 
   @override
-  String get pace_calculator_swim_time => 'Swim';
+  String get pace_calculator_swim_time => 'Üzmə';
 
   @override
   String get pace_calculator_t1_time => 'T1';
 
   @override
-  String get pace_calculator_bike_time => 'Bike';
+  String get pace_calculator_bike_time => 'Velosiped';
 
   @override
   String get pace_calculator_t2_time => 'T2';
 
   @override
-  String get pace_calculator_run_time => 'Run';
+  String get pace_calculator_run_time => 'Qaçış';
 
   @override
-  String get home_pace_calculator_title => 'Pace Calculator';
+  String get home_pace_calculator_title => 'Sürət Kalkulatoru';
 
   @override
-  String get home_pace_calculator_subtitle => 'Swimming • Cycling • Running';
+  String get home_pace_calculator_subtitle => 'Üzmə • Velosiped • Qaçış';
 
   @override
-  String get home_pace_calculator_button => 'CALCULATE';
+  String get home_pace_calculator_button => 'HESABLA';
 
   @override
-  String get home_card_pace_title => 'Pace Calculator';
+  String get home_card_pace_title => 'Sürət Kalkulatoru';
 
   @override
-  String get home_card_pace_subtitle => 'SWIMMING • CYCLING • RUNNING';
+  String get home_card_pace_subtitle => 'ÜZMƏ • VELOSİPED • QAÇIŞ';
 
   @override
-  String get home_card_pace_helper => 'Race tools';
+  String get home_card_pace_helper => 'Yarış alətləri';
 
   @override
-  String get home_card_pace_button => 'CALCULATE';
+  String get home_card_pace_button => 'HESABLA';
 
   @override
-  String get home_card_profile_title => 'Athlete Cabinet';
+  String get home_card_profile_title => 'Atlet Kabineti';
 
   @override
-  String get home_card_profile_subtitle => 'RESULTS • RATINGS • PROFILE';
+  String get home_card_profile_subtitle => 'NƏTİCƏLƏR • REYTİNQ • PROFİL';
 
   @override
-  String get home_card_profile_helper => 'Competitive results';
+  String get home_card_profile_helper => 'Yarış nəticələri';
 
   @override
-  String get home_card_profile_button => 'PROFILE';
+  String get home_card_profile_button => 'PROFİL';
 
   @override
   String get events_tab_active => 'Aktiv';

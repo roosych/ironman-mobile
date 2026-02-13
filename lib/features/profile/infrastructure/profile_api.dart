@@ -91,35 +91,41 @@ class ProfileApi {
   /// Returns a map with 'data' and 'message' (localized from API)
   Future<Map<String, dynamic>> updateProfile({
     required String name,
+    String? countryIso,
+    int? ironmanNumber,
     required String? bio,
     required SocialLinks socialLinks,
   }) async {
+    debugPrint('🌐 ProfileApi.updateProfile: СТАРТ');
+    final requestData = {
+      'name': name,
+      'country_iso': countryIso,
+      'ironman_number': ironmanNumber,
+      'bio': bio,
+      'social_links': socialLinks.toJson(),
+    };
+    debugPrint('📤 Данные запроса: $requestData');
+
     try {
-      final response = await _client.put(
-        '/user/profile',
-        data: {
-          'name': name,
-          'bio': bio,
-          'social_links': socialLinks.toJson(),
-        },
-      );
+      debugPrint('🚀 Отправляем PUT запрос через ApiClient...');
+
+      final response = await _client.put('/user/profile', data: requestData);
+
+      debugPrint('📥 Ответ получен: ${response.statusCode}');
       final data = response.data as Map<String, dynamic>;
 
       if (data['success'] == true) {
-        // Return both data and message (message is already localized from API)
         return {
           'data': data['data'] as Map<String, dynamic>? ?? {},
           'message': data['message'] as String?,
         };
       }
-      
-      // If success is false, try to get localized error message
+
       final errorMessage = data['message'] as String?;
       if (errorMessage != null) {
         throw ProfileApiException(errorMessage);
       }
-      
-      // Check for errors field (localized validation errors)
+
       final errors = data['errors'] as Map<String, dynamic>?;
       if (errors != null && errors.isNotEmpty) {
         final firstError = errors.values.first;
@@ -127,40 +133,20 @@ class ProfileApi {
           throw ProfileApiException(firstError.first.toString());
         }
       }
-      
+
       throw ProfileApiException('Failed to update profile');
-    } on DioException catch (e) {
-      debugPrint('ProfileApi.updateProfile DioException: $e');
-      
-      // For network errors without server response, use client-side localization
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        throw ProfileApiException('NETWORK_TIMEOUT');
+    } catch (e) {
+      debugPrint('🔴 ProfileApi.updateProfile error: ${e.runtimeType} - $e');
+
+      if (e is DioException && e.message != null) {
+        throw ProfileApiException(e.message!);
       }
-      if (e.type == DioExceptionType.connectionError) {
-        throw ProfileApiException('NETWORK_CONNECTION_ERROR');
+
+      if (e is ProfileApiException) {
+        rethrow;
       }
-      
-      // For server errors, try to get localized message from response
-      final statusCode = e.response?.statusCode;
-      final responseData = e.response?.data as Map<String, dynamic>?;
-      
-      // Check for localized message
-      final message = responseData?['message'] as String?;
-      if (message != null) {
-        throw ProfileApiException(message);
-      }
-      
-      // Check for localized errors
-      final errors = responseData?['errors'] as Map<String, dynamic>?;
-      if (errors != null && errors.isNotEmpty) {
-        final firstError = errors.values.first;
-        if (firstError is List && firstError.isNotEmpty) {
-          throw ProfileApiException(firstError.first.toString());
-        }
-      }
-      
-      throw ProfileApiException('NETWORK_SERVER_ERROR_${statusCode ?? "unknown"}');
+
+      throw ProfileApiException('Произошла ошибка при обновлении профиля');
     }
   }
 

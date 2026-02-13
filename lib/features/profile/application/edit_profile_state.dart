@@ -7,6 +7,8 @@ class EditProfileState {
   final String? error;
   final String? successMessage;
   final String name;
+  final String? countryIso;
+  final int? ironmanNumber;
   final AthleteProfile athleteProfile;
 
   const EditProfileState({
@@ -15,6 +17,8 @@ class EditProfileState {
     this.error,
     this.successMessage,
     this.name = '',
+    this.countryIso,
+    this.ironmanNumber,
     this.athleteProfile = const AthleteProfile(),
   });
 
@@ -24,9 +28,13 @@ class EditProfileState {
     String? error,
     String? successMessage,
     String? name,
+    String? countryIso,
+    int? ironmanNumber,
     AthleteProfile? athleteProfile,
     bool clearError = false,
     bool clearSuccessMessage = false,
+    bool clearCountryIso = false,
+    bool clearIronmanNumber = false,
   }) {
     return EditProfileState(
       isLoading: isLoading ?? this.isLoading,
@@ -35,6 +43,8 @@ class EditProfileState {
       successMessage:
           clearSuccessMessage ? null : (successMessage ?? this.successMessage),
       name: name ?? this.name,
+      countryIso: clearCountryIso ? null : (countryIso ?? this.countryIso),
+      ironmanNumber: clearIronmanNumber ? null : (ironmanNumber ?? this.ironmanNumber),
       athleteProfile: athleteProfile ?? this.athleteProfile,
     );
   }

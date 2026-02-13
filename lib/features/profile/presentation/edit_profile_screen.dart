@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:country_flags/country_flags.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../shared/data/countries.dart';
 import '../../../core/theme/app_button_styles.dart';
+import '../../../core/theme/app_colors.dart';
 import '../application/edit_profile_notifier.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -21,6 +24,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _stravaController;
   late TextEditingController _instagramController;
   late TextEditingController _facebookController;
+  Country? _selectedCountry;
 
   @override
   void initState() {
@@ -35,9 +39,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _facebookController =
         TextEditingController(text: state.athleteProfile.socialLinks.facebook ?? '');
 
+    // Initialize selected country from edit profile state
+    if (state.countryIso != null) {
+      _selectedCountry = Countries.all.where((country) =>
+          country.isoCode.toLowerCase() == state.countryIso!.toLowerCase()).firstOrNull;
+    }
+
     // Load fresh profile data from API
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(editProfileProvider.notifier).loadProfile();
+      // ВАЖНО: Оборачиваем в try/catch чтобы предотвратить краш
+      ref.read(editProfileProvider.notifier).loadProfile().catchError((error) {
+        debugPrint('🔴 Ошибка загрузки профиля в initState: $error');
+        // Ошибка уже обработана в loadProfile, просто логируем
+      });
     });
   }
 
@@ -49,6 +63,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _instagramController.dispose();
     _facebookController.dispose();
     super.dispose();
+  }
+
+  void _showCountrySelector() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CountrySelector(
+        onCountrySelected: (country) {
+          setState(() {
+            _selectedCountry = country;
+          });
+          // Save country in uppercase format to match API specification
+          ref.read(editProfileProvider.notifier).updateCountry(country.isoCode.toUpperCase());
+        },
+      ),
+    );
   }
 
   @override
@@ -65,17 +96,45 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _stravaController.text = next.athleteProfile.socialLinks.strava ?? '';
         _instagramController.text = next.athleteProfile.socialLinks.instagram ?? '';
         _facebookController.text = next.athleteProfile.socialLinks.facebook ?? '';
+
+        // Update selected country from fresh API data
+        if (next.countryIso != null) {
+          if (mounted) {
+            setState(() {
+              _selectedCountry = Countries.all.where((country) =>
+                  country.isoCode.toLowerCase() == next.countryIso!.toLowerCase()).firstOrNull;
+            });
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _selectedCountry = null;
+            });
+          }
+        }
       }
       // Show success message (already localized from API)
       if (next.successMessage != null &&
           previous?.successMessage != next.successMessage) {
-        AlertHelper.showSuccess(context, next.successMessage!);
-        ref.read(editProfileProvider.notifier).clearSuccessMessage();
+        if (mounted) {
+          AlertHelper.showSuccess(context, next.successMessage!);
+          try {
+            ref.read(editProfileProvider.notifier).clearSuccessMessage();
+          } catch (e) {
+            debugPrint('🔴 Ошибка при очистке сообщения успеха: $e');
+          }
+        }
       }
       // Show error message
       if (next.error != null && previous?.error != next.error) {
-        ErrorHandler.showError(context, next.error ?? localizations.edit_profile_save_error);
-        ref.read(editProfileProvider.notifier).clearError();
+        if (mounted) {
+          ErrorHandler.showError(context, next.error ?? localizations.edit_profile_save_error);
+          try {
+            ref.read(editProfileProvider.notifier).clearError();
+          } catch (e) {
+            debugPrint('🔴 Ошибка при очистке ошибки: $e');
+          }
+        }
       }
     });
 
@@ -130,6 +189,57 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onChanged: (value) {
                   ref.read(editProfileProvider.notifier).updateName(value);
                 },
+              ),
+              const SizedBox(height: 16),
+
+              // Country selector
+              GestureDetector(
+                onTap: state.isLoading ? null : _showCountrySelector,
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: localizations.register_select_country,
+                    prefixIcon: HugeIcon(
+                      icon: HugeIcons.strokeRoundedLocation01,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                    ),
+                    border: const OutlineInputBorder(),
+                    enabled: !state.isLoading,
+                  ),
+                  isEmpty: _selectedCountry == null,
+                  child: _selectedCountry != null
+                      ? SizedBox(
+                          height: 24,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(2),
+                                child: CountryFlag.fromCountryCode(
+                                  _selectedCountry!.isoCode,
+                                  height: 16,
+                                  width: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _selectedCountry!.name,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(height: 24),
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -229,6 +339,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: 32),
 
+
               // Save button
               SizedBox(
                 width: double.infinity,
@@ -252,7 +363,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     : AppButtonStyles.primaryGradientButton(
                         text: localizations.edit_profile_save_button,
                         onPressed: () {
-                          ref.read(editProfileProvider.notifier).saveProfile();
+                          // ВАЖНО: Оборачиваем в try/catch для предотвращения краша
+                          try {
+                            ref.read(editProfileProvider.notifier).saveProfile().catchError((error) {
+                              debugPrint('🔴 Ошибка при сохранении профиля: $error');
+                              // Ошибка уже обработана в saveProfile, просто логируем
+                            });
+                          } catch (e) {
+                            debugPrint('🔴 КРИТИЧЕСКАЯ ошибка при вызове saveProfile: $e');
+                          }
                         },
                         borderRadius: 12,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -270,6 +389,159 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
         ),
       ),
+      ),
+    );
+  }
+}
+
+class _CountrySelector extends StatefulWidget {
+  final Function(Country) onCountrySelected;
+
+  const _CountrySelector({
+    required this.onCountrySelected,
+  });
+
+  @override
+  State<_CountrySelector> createState() => _CountrySelectorState();
+}
+
+class _CountrySelectorState extends State<_CountrySelector> {
+  final _searchController = TextEditingController();
+  List<Country> _filteredCountries = Countries.all;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase().trim();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredCountries = Countries.all;
+      } else {
+        _filteredCountries = Countries.all
+            .where((country) => country.name.toLowerCase().contains(query))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: Border.all(
+          color: AppColors.ironmanGray,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  localizations.register_select_country,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedCancel01,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          // Search field
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _searchController,
+              builder: (context, value, child) {
+                return TextFormField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: localizations.register_search_countries,
+                    prefixIcon: const HugeIcon(
+                      icon: HugeIcons.strokeRoundedSearch01,
+                      size: 20,
+                      color: AppColors.ironmanTextSecondary,
+                    ),
+                    suffixIcon: value.text.isNotEmpty
+                        ? IconButton(
+                            icon: HugeIcon(
+                              icon: HugeIcons.strokeRoundedCancel01,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                            },
+                          )
+                        : null,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Countries list
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredCountries.length,
+              itemExtent: 72.0, // Fixed height for better performance
+              itemBuilder: (context, index) {
+                final country = _filteredCountries[index];
+                return ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CountryFlag.fromCountryCode(
+                      country.isoCode,
+                      height: 24,
+                      width: 32,
+                    ),
+                  ),
+                  title: Text(country.name),
+                  onTap: () {
+                    widget.onCountrySelected(country);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
