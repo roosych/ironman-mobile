@@ -67,10 +67,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     });
 
     try {
-      final isDenied = await _permissionService.isDenied;
+      final isAuthorized = await _permissionService.isAuthorized;
+
       if (mounted) {
         setState(() {
-          _isNotificationDenied = isDenied;
+          _isNotificationDenied = !isAuthorized;
           _isCheckingPermission = false;
         });
       }
@@ -271,13 +272,16 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
               );
             }
 
-            if (state.isEmpty) {
+            if (state.isEmpty && !(_isNotificationDenied && !_isCheckingPermission)) {
               return Center(
                 child: Text(
                   AppLocalizations.of(context)!.notifications_no_notifications,
                 ),
               );
             }
+
+            final bannerCount = (!_isCheckingPermission && _isNotificationDenied ? 1 : 0);
+            final totalItemCount = bannerCount + state.notifications.length;
 
             return RefreshIndicator(
               onRefresh: _refresh,
@@ -287,10 +291,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                   horizontal: 16,
                   vertical: 8,
                 ),
-                itemCount: (!_isCheckingPermission && _isNotificationDenied
-                        ? 1
-                        : 0) +
-                    state.notifications.length,
+                itemCount: totalItemCount,
                 itemBuilder: (context, index) {
                   // Показываем баннер в начале списка, если разрешения запрещены
                   if (!_isCheckingPermission &&

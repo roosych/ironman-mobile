@@ -48,9 +48,26 @@ class NotificationPermissionService {
 
   /// Проверка, разрешены ли уведомления
   Future<bool> get isAuthorized async {
-    final status = await getPermissionStatus();
-    return status == NotificationPermissionState.authorized ||
-        status == NotificationPermissionState.provisional;
+    try {
+      final settings = await _messaging.getNotificationSettings();
+
+      // Проверяем не только authorizationStatus, но и конкретные настройки
+      final isAuthorized = settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional;
+
+      // Дополнительная проверка: если статус authorized, но все настройки отключены
+      if (isAuthorized) {
+        return settings.alert == AppleNotificationSetting.enabled ||
+               settings.badge == AppleNotificationSetting.enabled ||
+               settings.sound == AppleNotificationSetting.enabled ||
+               settings.authorizationStatus == AuthorizationStatus.authorized; // Android always returns enabled for these
+      }
+
+      return false;
+    } catch (e) {
+      // В случае ошибки считаем неавторизованными
+      return false;
+    }
   }
 
   /// Проверка, запрещены ли уведомления
@@ -69,6 +86,17 @@ class NotificationPermissionService {
   Future<bool> get isProvisional async {
     final status = await getPermissionStatus();
     return status == NotificationPermissionState.provisional;
+  }
+
+  /// Дополнительная проверка через получение токена
+  /// Более точно определяет доступность уведомлений
+  Future<bool> get canReceiveNotifications async {
+    try {
+      final token = await _messaging.getToken();
+      return token != null && token.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Открыть системные настройки приложения
