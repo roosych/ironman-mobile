@@ -60,7 +60,16 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
       }
     } catch (e) {
       if (mounted) {
-        ErrorHandler.showError(context, e);
+        // Fallback для неизвестных ошибок
+        final errorMessage = e.toString();
+        if (errorMessage.contains('404') || errorMessage.contains('not found')) {
+          AlertHelper.showError(context, 'Функция повторной отправки временно недоступна');
+        } else if (errorMessage.contains('429') || errorMessage.contains('too many')) {
+          AlertHelper.showError(context, 'Слишком много запросов. Попробуйте позже');
+          _startTimer(); // Запускаем таймер даже при rate limit
+        } else {
+          ErrorHandler.showError(context, e);
+        }
       }
     } finally {
       if (mounted) {
