@@ -1,16 +1,151 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../shared/utils/error_handler.dart';
 import '../../../core/theme/app_button_styles.dart';
 import '../application/auth_notifier.dart';
 
-class EmailNotVerifiedScreen extends ConsumerWidget {
+class EmailNotVerifiedScreen extends ConsumerStatefulWidget {
   const EmailNotVerifiedScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EmailNotVerifiedScreen> createState() => _EmailNotVerifiedScreenState();
+}
+
+class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen> {
+  Timer? _timer;
+  int _remainingSeconds = 0;
+  bool _isResendingEmail = false;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _remainingSeconds = 40;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          if (_remainingSeconds > 0) {
+            _remainingSeconds--;
+          } else {
+            _timer?.cancel();
+            _timer = null;
+          }
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  Future<void> _resendEmail() async {
+    if (_isResendingEmail || _remainingSeconds > 0) return;
+
+    setState(() {
+      _isResendingEmail = true;
+    });
+
+    try {
+      final message = await ref.read(authProvider.notifier).resendEmailVerification();
+      if (mounted) {
+        AlertHelper.showSuccess(context, message);
+        _startTimer();
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.showError(context, e);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isResendingEmail = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildResendButton(AppLocalizations localizations) {
+    final bool isDisabled = _isResendingEmail || _remainingSeconds > 0;
+
+    if (_isResendingEmail) {
+      // Показываем индикатор загрузки во время отправки
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: AppButtonStyles.primaryGradientDecoration(borderRadius: 12),
+        child: const Center(
+          child: SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_remainingSeconds > 0) {
+      // Показываем таймер на заблокированной кнопке
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.grey.withValues(alpha: 0.3),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            HugeIcon(
+              icon: HugeIcons.strokeRoundedClock01,
+              color: Colors.grey[600],
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${localizations.email_not_verified_resend} (${_remainingSeconds}s)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Обычная активная кнопка
+    return AppButtonStyles.gradientElevatedButton(
+      text: localizations.email_not_verified_resend,
+      onPressed: _resendEmail,
+      borderRadius: 12,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1,
+        color: Colors.white,
+      ),
+      icon: const HugeIcon(
+        icon: HugeIcons.strokeRoundedRefresh,
+        color: Colors.white,
+        size: 20,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final userEmail = authState.user?.email ?? '';
     final localizations = AppLocalizations.of(context)!;
@@ -71,25 +206,7 @@ class EmailNotVerifiedScreen extends ConsumerWidget {
                                       ),
                             ),
                             const SizedBox(height: 16),
-                            AppButtonStyles.gradientElevatedButton(
-                              text: localizations.email_not_verified_resend,
-                              onPressed: () {
-                                AlertHelper.showSuccess(context, localizations.email_not_verified_resend_success);
-                              },
-                              borderRadius: 12,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              textStyle: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                                color: Colors.white,
-                              ),
-                              icon: const HugeIcon(
-                                icon: HugeIcons.strokeRoundedRefresh,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
+                            _buildResendButton(localizations),
                           ],
                         ),
                       ),

@@ -207,6 +207,58 @@ class AuthApi {
     }
   }
 
+  /// Resend email verification
+  /// POST /auth/email/resend
+  /// Returns the localized success message from API
+  Future<String> resendEmailVerification() async {
+    try {
+      debugPrint('AuthApi.resendEmailVerification: Starting API call');
+
+      final response = await _client.post<Map<String, dynamic>>(
+        '/auth/email/resend',
+        data: {},
+      );
+
+      debugPrint('AuthApi.resendEmailVerification: Response received');
+      debugPrint('Response data: ${response.data}');
+
+      final json = response.data!;
+      if (json['success'] == true) {
+        debugPrint('AuthApi.resendEmailVerification: Success response');
+        // Return localized message from API
+        return json['message'] as String? ?? 'Verification email sent successfully';
+      } else {
+        debugPrint('AuthApi.resendEmailVerification: Error in response data');
+        throw _parseError(json);
+      }
+    } on DioException catch (e) {
+      debugPrint('AuthApi.resendEmailVerification: DioException caught');
+      debugPrint('Status code: ${e.response?.statusCode}');
+      debugPrint('Response data: ${e.response?.data}');
+
+      // Handle specific status codes
+      if (e.response?.statusCode == 429) {
+        debugPrint('AuthApi.resendEmailVerification: 429 Too Many Requests');
+        // Try to get message from response (already localized)
+        final json = e.response?.data as Map<String, dynamic>?;
+        final message = json?['message'] as String?;
+        if (message != null) {
+          debugPrint('AuthApi.resendEmailVerification: Using message from 429 response: $message');
+          throw AuthApiException(message);
+        }
+        // Fallback to generic message
+        throw const AuthApiException('NETWORK_TOO_MANY_REQUESTS');
+      }
+
+      debugPrint('AuthApi.resendEmailVerification: Other DioException, using _handleDioError');
+      throw _handleDioError(e);
+    } catch (e, stackTrace) {
+      debugPrint('AuthApi.resendEmailVerification: Unexpected error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
   /// Change user password
   /// PUT /user/password
   /// Returns the localized success message from API

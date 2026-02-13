@@ -476,6 +476,59 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Resend email verification
+  Future<String> resendEmailVerification() async {
+    // Защита от множественных запросов
+    if (state.isLoading) {
+      throw const AuthApiException('Уже выполняется запрос');
+    }
+
+    // Блокировка после ошибки сети (cooldown период)
+    if (_lastNetworkErrorTime != null) {
+      final timeSinceError = DateTime.now().difference(_lastNetworkErrorTime!);
+      if (timeSinceError < _networkErrorCooldown) {
+        final remainingSeconds =
+            (_networkErrorCooldown - timeSinceError).inSeconds;
+        throw AuthApiException('NETWORK_COOLDOWN_$remainingSeconds');
+      }
+    }
+
+    state = state.copyWith(
+      isLoading: true,
+      clearError: true,
+    );
+
+    try {
+      final message = await _repository.resendEmailVerification();
+
+      // Успешный запрос - сбрасываем время последней ошибки
+      _lastNetworkErrorTime = null;
+
+      state = state.copyWith(isLoading: false);
+      return message;
+    } on AuthApiException catch (e) {
+      // Сохраняем время ошибки для блокировки повторных запросов
+      final errorMessage = e.firstError.toLowerCase();
+      if (errorMessage.contains('подключ') ||
+          errorMessage.contains('сеть') ||
+          errorMessage.contains('timeout') ||
+          errorMessage.contains('слишком много') ||
+          errorMessage.contains('too many')) {
+        _lastNetworkErrorTime = DateTime.now();
+      }
+
+      state = state.copyWith(isLoading: false, error: e.firstError);
+      rethrow;
+    } catch (e) {
+      _lastNetworkErrorTime = DateTime.now();
+      state = state.copyWith(
+        isLoading: false,
+        error: 'error_unexpected',
+      );
+      rethrow;
+    }
+  }
+
   void clearError() {
     state = state.copyWith(clearError: true);
   }

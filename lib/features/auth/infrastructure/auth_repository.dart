@@ -281,4 +281,9 @@ class AuthRepository {
     return finalUser;
   }
 
+  /// Resend email verification
+  Future<String> resendEmailVerification() async {
+    return await _api.resendEmailVerification();
+  }
+
 }
