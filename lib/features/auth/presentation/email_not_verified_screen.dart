@@ -100,7 +100,7 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
           child: Text(
             '$_remainingSeconds',
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
               color: Colors.white,

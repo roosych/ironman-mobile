@@ -207,6 +207,58 @@ class AuthApi {
     }
   }
 
+  /// Forgot password - send reset email
+  /// POST /auth/forgot-password
+  /// Returns the localized success message from API
+  Future<String> forgotPassword({required String email}) async {
+    try {
+      debugPrint('AuthApi.forgotPassword: Starting API call');
+
+      final response = await _client.post<Map<String, dynamic>>(
+        '/auth/forgot-password',
+        data: {'email': email},
+      );
+
+      debugPrint('AuthApi.forgotPassword: Response received');
+      debugPrint('Response data: ${response.data}');
+
+      final json = response.data!;
+      if (json['success'] == true) {
+        debugPrint('AuthApi.forgotPassword: Success response');
+        // Return localized message from API
+        return json['message'] as String? ?? 'Password reset email sent successfully';
+      } else {
+        debugPrint('AuthApi.forgotPassword: Error in response data');
+        throw _parseError(json);
+      }
+    } on DioException catch (e) {
+      debugPrint('AuthApi.forgotPassword: DioException caught');
+      debugPrint('Status code: ${e.response?.statusCode}');
+      debugPrint('Response data: ${e.response?.data}');
+
+      // Handle specific status codes
+      if (e.response?.statusCode == 429) {
+        debugPrint('AuthApi.forgotPassword: 429 Too Many Requests');
+        // Try to get message from response (already localized)
+        final json = e.response?.data as Map<String, dynamic>?;
+        final message = json?['message'] as String?;
+        if (message != null) {
+          debugPrint('AuthApi.forgotPassword: Using message from 429 response: $message');
+          throw AuthApiException(message);
+        }
+        // Fallback to generic message
+        throw const AuthApiException('NETWORK_TOO_MANY_REQUESTS');
+      }
+
+      debugPrint('AuthApi.forgotPassword: Other DioException, using _handleDioError');
+      throw _handleDioError(e);
+    } catch (e, stackTrace) {
+      debugPrint('AuthApi.forgotPassword: Unexpected error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
   /// Resend email verification
   /// POST /auth/email/resend
   /// Returns the localized success message from API

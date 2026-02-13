@@ -281,6 +281,11 @@ class AuthRepository {
     return finalUser;
   }
 
+  /// Forgot password - send reset email
+  Future<String> forgotPassword({required String email}) async {
+    return await _api.forgotPassword(email: email);
+  }
+
   /// Resend email verification
   Future<String> resendEmailVerification() async {
     return await _api.resendEmailVerification();
