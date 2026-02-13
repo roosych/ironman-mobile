@@ -46,11 +46,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
   void _loadMyRaces() {
     final authState = ref.read(authProvider);
     final user = authState.user;
-    int? userProfileId;
-    if (user?.profile is Map<String, dynamic>) {
-      final profile = user!.profile as Map<String, dynamic>;
-      userProfileId = profile['id'] as int?;
-    }
+    final userProfileId = user?.profile?.id;
 
     // Если профиль не найден — очищаем список и выходим
     if (userProfileId == null) {
@@ -71,11 +67,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     try {
       final authState = ref.read(authProvider);
       final user = authState.user;
-      int? userProfileId;
-      if (user?.profile is Map<String, dynamic>) {
-        final profile = user!.profile as Map<String, dynamic>;
-        userProfileId = profile['id'] as int?;
-      }
+      final userProfileId = user?.profile?.id;
 
       if (userProfileId == null) {
         ref.read(myRacesProvider.notifier).setEmpty();
