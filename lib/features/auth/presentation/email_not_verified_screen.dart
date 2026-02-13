@@ -144,7 +144,6 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(),
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
