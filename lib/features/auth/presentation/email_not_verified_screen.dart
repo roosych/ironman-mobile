@@ -105,7 +105,7 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
           children: [
             HugeIcon(
               icon: HugeIcons.strokeRoundedClock01,
-              color: Colors.grey[600],
+              color: Colors.grey.shade600,
               size: 20,
             ),
             const SizedBox(width: 8),
@@ -115,7 +115,7 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
-                color: Colors.grey[600],
+                color: Colors.grey.shade600,
               ),
               textAlign: TextAlign.center,
             ),
