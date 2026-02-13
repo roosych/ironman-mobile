@@ -967,4 +967,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reset_password_sign_in => 'Войти';
+
+  @override
+  String get dashboard_notification_card_title => 'Оставайтесь в курсе!';
+
+  @override
+  String get dashboard_notification_card_message =>
+      'Получайте уведомления о ваших результатах гонок, предстоящих событиях и важных обновлениях.';
+
+  @override
+  String get dashboard_notification_card_enable => 'Да, включить';
+
+  @override
+  String get dashboard_notification_card_later => 'Может позже';
 }

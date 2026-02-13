@@ -966,4 +966,17 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get reset_password_sign_in => 'Daxil ol';
+
+  @override
+  String get dashboard_notification_card_title => 'Xəbərdar qalın!';
+
+  @override
+  String get dashboard_notification_card_message =>
+      'Yarış nəticələriniz, gələcək hadisələr və vacib yeniləmələr haqqında bildirişlər alın.';
+
+  @override
+  String get dashboard_notification_card_enable => 'Bəli, aktivləşdirin';
+
+  @override
+  String get dashboard_notification_card_later => 'Sonra ola bilər';
 }

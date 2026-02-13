@@ -1899,6 +1899,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in'**
   String get reset_password_sign_in;
+
+  /// Notification permission card title
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated!'**
+  String get dashboard_notification_card_title;
+
+  /// Notification permission card message
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified about your race results, upcoming events and important updates.'**
+  String get dashboard_notification_card_message;
+
+  /// Enable notifications button
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, enable'**
+  String get dashboard_notification_card_enable;
+
+  /// Maybe later button
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get dashboard_notification_card_later;
 }
 
 class _AppLocalizationsDelegate

@@ -964,4 +964,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reset_password_sign_in => 'Sign in';
+
+  @override
+  String get dashboard_notification_card_title => 'Stay updated!';
+
+  @override
+  String get dashboard_notification_card_message =>
+      'Get notified about your race results, upcoming events and important updates.';
+
+  @override
+  String get dashboard_notification_card_enable => 'Yes, enable';
+
+  @override
+  String get dashboard_notification_card_later => 'Maybe later';
 }

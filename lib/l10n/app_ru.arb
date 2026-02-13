@@ -340,6 +340,10 @@
   "reset_password_description": "Введите email, и мы отправим ссылку для сброса пароля.",
   "reset_password_send_button": "ОТПРАВИТЬ ПИСЬМО",
   "reset_password_remember": "Вспомнили пароль?",
-  "reset_password_sign_in": "Войти"
+  "reset_password_sign_in": "Войти",
+  "dashboard_notification_card_title": "Оставайтесь в курсе!",
+  "dashboard_notification_card_message": "Получайте уведомления о ваших результатах гонок, предстоящих событиях и важных обновлениях.",
+  "dashboard_notification_card_enable": "Да, включить",
+  "dashboard_notification_card_later": "Может позже"
 }
 

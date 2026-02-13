@@ -313,6 +313,10 @@
   "reset_password_description": "E-mailinizi daxil edin və biz sizə parolun sıfırlanması üçün keçid göndərəcəyik.",
   "reset_password_send_button": "E-MAIL GÖNDƏR",
   "reset_password_remember": "Parolunuzu xatırladınız?",
-  "reset_password_sign_in": "Daxil ol"
+  "reset_password_sign_in": "Daxil ol",
+  "dashboard_notification_card_title": "Xəbərdar qalın!",
+  "dashboard_notification_card_message": "Yarış nəticələriniz, gələcək hadisələr və vacib yeniləmələr haqqında bildirişlər alın.",
+  "dashboard_notification_card_enable": "Bəli, aktivləşdirin",
+  "dashboard_notification_card_later": "Sonra ola bilər"
 }
 

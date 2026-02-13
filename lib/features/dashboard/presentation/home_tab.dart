@@ -20,6 +20,7 @@ import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
+import '../../../core/services/notification_permission_service.dart';
 
 // Вспомогательные функции для расчёта темпа
 Map<String, double> _getDistances(String raceType) {
@@ -327,6 +328,14 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
               const SizedBox(height: 16),
 
+              // Notification permission card
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _NotificationPermissionCard(),
+              ),
+
+              const SizedBox(height: 12),
+
               // My Results expandable section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -374,6 +383,189 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _NotificationPermissionCard extends ConsumerStatefulWidget {
+  const _NotificationPermissionCard();
+
+  @override
+  ConsumerState<_NotificationPermissionCard> createState() =>
+      _NotificationPermissionCardState();
+}
+
+class _NotificationPermissionCardState
+    extends ConsumerState<_NotificationPermissionCard> with WidgetsBindingObserver {
+  final NotificationPermissionService _permissionService =
+      NotificationPermissionService();
+  bool _isNotificationDenied = false;
+  bool _isCheckingPermission = true;
+  bool _isVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkNotificationPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Проверяем разрешения при возврате в приложение из настроек
+    if (state == AppLifecycleState.resumed) {
+      _checkNotificationPermission();
+    }
+  }
+
+  Future<void> _checkNotificationPermission() async {
+    setState(() {
+      _isCheckingPermission = true;
+    });
+
+    try {
+      final isAuthorized = await _permissionService.isAuthorized;
+
+      if (mounted) {
+        setState(() {
+          _isNotificationDenied = !isAuthorized;
+          _isCheckingPermission = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isNotificationDenied = false;
+          _isCheckingPermission = false;
+        });
+      }
+    }
+  }
+
+  void _enableNotifications() async {
+    await _permissionService.openAppSettings();
+    // Проверка разрешений произойдет автоматически в didChangeAppLifecycleState
+  }
+
+  void _dismissCard() {
+    setState(() {
+      _isVisible = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+
+    // Не показываем карточку если уведомления разрешены, проверка не завершена или карточка скрыта
+    if (!_isNotificationDenied || _isCheckingPermission || !_isVisible) {
+      return const SizedBox.shrink();
+    }
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
+      clipBehavior: Clip.antiAlias,
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryGradientStart.withValues(alpha: 0.1),
+              AppColors.primaryGradientEnd.withValues(alpha: 0.05),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedNotification02,
+                    color: AppColors.primaryGradientEnd,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      localizations.dashboard_notification_card_title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                localizations.dashboard_notification_card_message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButtonStyles.primaryGradientButton(
+                      text: localizations.dashboard_notification_card_enable,
+                      onPressed: _enableNotifications,
+                      borderRadius: 10,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      textStyle: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _dismissCard,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(
+                          color: AppColors.primaryGradientEnd.withValues(alpha: 0.3),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        localizations.dashboard_notification_card_later,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: AppColors.primaryGradientEnd,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

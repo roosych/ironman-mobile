@@ -1061,6 +1061,22 @@
   "reset_password_description": "Enter your email and we'll send you a link to reset your password.",
   "reset_password_send_button": "SEND EMAIL",
   "reset_password_remember": "Remember your password?",
-  "reset_password_sign_in": "Sign in"
+  "reset_password_sign_in": "Sign in",
+  "dashboard_notification_card_title": "Stay updated!",
+  "@dashboard_notification_card_title": {
+    "description": "Notification permission card title"
+  },
+  "dashboard_notification_card_message": "Get notified about your race results, upcoming events and important updates.",
+  "@dashboard_notification_card_message": {
+    "description": "Notification permission card message"
+  },
+  "dashboard_notification_card_enable": "Yes, enable",
+  "@dashboard_notification_card_enable": {
+    "description": "Enable notifications button"
+  },
+  "dashboard_notification_card_later": "Maybe later",
+  "@dashboard_notification_card_later": {
+    "description": "Maybe later button"
+  }
 }
 
