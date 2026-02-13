@@ -5,6 +5,7 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_button_styles.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../settings/application/locale_notifier.dart';
@@ -361,58 +362,83 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
   }
 
   /// Виджет баннера для уведомления о запрещенных уведомлениях
+  /// Использует такой же дизайн как на Dashboard
   Widget _buildNotificationPermissionBanner(
     BuildContext context,
     AppLocalizations localizations,
   ) {
     final theme = Theme.of(context);
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
+      clipBehavior: Clip.antiAlias,
       color: theme.colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedNotification01,
-                  color: theme.colorScheme.error,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    localizations.notification_permission_disabled_title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryGradientStart.withValues(alpha: 0.05),
+              AppColors.primaryGradientEnd.withValues(alpha: 0.05),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedNotification02,
+                    color: AppColors.primaryGradientEnd,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      localizations.dashboard_notification_card_title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              localizations.notification_permission_disabled_message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: _openAppSettings,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 40),
-              ),
-              child: Text(
-                localizations.notification_permission_open_settings,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 8),
+              Text(
+                localizations.dashboard_notification_card_message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButtonStyles.primaryGradientButton(
+                      text: localizations.dashboard_notification_card_enable,
+                      onPressed: _openAppSettings,
+                      borderRadius: 10,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      textStyle: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
