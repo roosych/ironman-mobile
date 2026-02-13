@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../core/theme/app_button_styles.dart';
 import '../application/auth_notifier.dart';
 
 class EmailNotVerifiedScreen extends ConsumerWidget {
@@ -51,6 +52,11 @@ class EmailNotVerifiedScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 48),
                     Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide.none,
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Column(
@@ -65,21 +71,23 @@ class EmailNotVerifiedScreen extends ConsumerWidget {
                                       ),
                             ),
                             const SizedBox(height: 16),
-                            FilledButton.icon(
+                            AppButtonStyles.gradientElevatedButton(
+                              text: localizations.email_not_verified_resend,
                               onPressed: () {
                                 AlertHelper.showSuccess(context, localizations.email_not_verified_resend_success);
                               },
+                              borderRadius: 12,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                                color: Colors.white,
+                              ),
                               icon: const HugeIcon(
                                 icon: HugeIcons.strokeRoundedRefresh,
                                 color: Colors.white,
                                 size: 20,
-                              ),
-                              label: Text(
-                                localizations.email_not_verified_resend,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
                               ),
                             ),
                           ],
