@@ -81,8 +81,6 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
   }
 
   Widget _buildResendButton(AppLocalizations localizations) {
-    final bool isDisabled = _isResendingEmail || _remainingSeconds > 0;
-
     if (_isResendingEmail) {
       // Показываем индикатор загрузки во время отправки
       return Container(
