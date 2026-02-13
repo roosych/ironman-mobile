@@ -476,13 +476,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Resend email verification
+  /// Resend email verification without setting global loading state
+  /// This prevents AuthRouter from showing loading screen
   Future<String> resendEmailVerification() async {
-    // Защита от множественных запросов
-    if (state.isLoading) {
-      throw const AuthApiException('Уже выполняется запрос');
-    }
-
     // Блокировка после ошибки сети (cooldown период)
     if (_lastNetworkErrorTime != null) {
       final timeSinceError = DateTime.now().difference(_lastNetworkErrorTime!);
@@ -493,10 +489,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
     }
 
-    state = state.copyWith(
-      isLoading: true,
-      clearError: true,
-    );
+    // Очищаем только ошибку, НЕ устанавливаем isLoading чтобы избежать AuthRouter loading screen
+    state = state.copyWith(clearError: true);
 
     try {
       final message = await _repository.resendEmailVerification();
@@ -504,7 +498,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Успешный запрос - сбрасываем время последней ошибки
       _lastNetworkErrorTime = null;
 
-      state = state.copyWith(isLoading: false);
       return message;
     } on AuthApiException catch (e) {
       // Сохраняем время ошибки для блокировки повторных запросов
@@ -517,14 +510,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         _lastNetworkErrorTime = DateTime.now();
       }
 
-      state = state.copyWith(isLoading: false, error: e.firstError);
+      state = state.copyWith(error: e.firstError);
       rethrow;
     } catch (e) {
       _lastNetworkErrorTime = DateTime.now();
-      state = state.copyWith(
-        isLoading: false,
-        error: 'error_unexpected',
-      );
+      state = state.copyWith(error: 'error_unexpected');
       rethrow;
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -27,14 +28,19 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
   }
 
   void _startTimer() {
+    debugPrint('🚀 EmailNotVerified: Starting timer with 40 seconds');
     _remainingSeconds = 40;
     _timer?.cancel();
+    setState(() {}); // Перерисовываем UI сразу после установки таймера
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
           if (_remainingSeconds > 0) {
             _remainingSeconds--;
+            debugPrint('⏰ EmailNotVerified: Timer countdown: $_remainingSeconds seconds');
           } else {
+            debugPrint('✅ EmailNotVerified: Timer finished');
             _timer?.cancel();
             _timer = null;
           }
@@ -45,18 +51,26 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     });
   }
 
-  Future<void> _resendEmail() async {
-    if (_remainingSeconds > 0) return;
+  void _resendEmail() {
+    debugPrint('📧 EmailNotVerified: Button pressed');
+    if (_remainingSeconds > 0) {
+      debugPrint('❌ EmailNotVerified: Button blocked, timer still running: $_remainingSeconds seconds');
+      return;
+    }
 
-    // Запускаем таймер сразу после нажатия
+    debugPrint('🚀 EmailNotVerified: Starting resend process');
+
+    // Запускаем таймер сразу после нажатия (синхронно)
     _startTimer();
 
     // Отправляем письмо в фоне без блокировки UI
+    _sendEmailInBackground();
+  }
+
+  Future<void> _sendEmailInBackground() async {
     try {
-      final message = await ref.read(authProvider.notifier).resendEmailVerification();
-      if (mounted) {
-        AlertHelper.showSuccess(context, message);
-      }
+      await ref.read(authProvider.notifier).resendEmailVerification();
+      // Убираем alert с успехом, письмо отправляется тихо в фоне
     } catch (e) {
       if (mounted) {
         // Fallback для неизвестных ошибок
@@ -73,7 +87,9 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
   }
 
   Widget _buildResendButton(AppLocalizations localizations) {
+    debugPrint('🔄 EmailNotVerified: Building button, remainingSeconds: $_remainingSeconds');
     if (_remainingSeconds > 0) {
+      debugPrint('⏰ EmailNotVerified: Showing timer button with $_remainingSeconds seconds');
       // Показываем таймер прямо в градиентной кнопке (неактивной)
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -85,7 +101,7 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
           child: Text(
             '$_remainingSeconds',
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
               color: Colors.white,
@@ -121,6 +137,8 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     final authState = ref.watch(authProvider);
     final userEmail = authState.user?.email ?? '';
     final localizations = AppLocalizations.of(context)!;
+
+    debugPrint('🏗️ EmailNotVerified: Building screen, _isLoggingOut: $_isLoggingOut, authState.isLoading: ${authState.isLoading}');
 
 
     return Stack(
