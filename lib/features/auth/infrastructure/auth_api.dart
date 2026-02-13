@@ -215,7 +215,7 @@ class AuthApi {
       debugPrint('AuthApi.resendEmailVerification: Starting API call');
 
       final response = await _client.post<Map<String, dynamic>>(
-        '/email/verification-notification',
+        '/auth/email/resend-verification',
         data: {},
       );
 
