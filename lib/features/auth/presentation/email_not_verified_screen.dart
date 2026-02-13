@@ -18,7 +18,7 @@ class EmailNotVerifiedScreen extends ConsumerStatefulWidget {
 class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
-  bool _isResendingEmail = false;
+  bool _isLoggingOut = false;
 
   @override
   void dispose() {
@@ -46,17 +46,16 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
   }
 
   Future<void> _resendEmail() async {
-    if (_isResendingEmail || _remainingSeconds > 0) return;
+    if (_remainingSeconds > 0) return;
 
-    setState(() {
-      _isResendingEmail = true;
-    });
+    // Запускаем таймер сразу после нажатия
+    _startTimer();
 
+    // Отправляем письмо в фоне без блокировки UI
     try {
       final message = await ref.read(authProvider.notifier).resendEmailVerification();
       if (mounted) {
         AlertHelper.showSuccess(context, message);
-        _startTimer();
       }
     } catch (e) {
       if (mounted) {
@@ -66,67 +65,33 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
           AlertHelper.showError(context, 'Функция повторной отправки временно недоступна');
         } else if (errorMessage.contains('429') || errorMessage.contains('too many')) {
           AlertHelper.showError(context, 'Слишком много запросов. Попробуйте позже');
-          _startTimer(); // Запускаем таймер даже при rate limit
         } else {
           ErrorHandler.showError(context, e);
         }
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isResendingEmail = false;
-        });
       }
     }
   }
 
   Widget _buildResendButton(AppLocalizations localizations) {
-    if (_isResendingEmail) {
-      // Показываем индикатор загрузки во время отправки
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: AppButtonStyles.primaryGradientDecoration(borderRadius: 12),
-        child: const Center(
-          child: SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    }
-
     if (_remainingSeconds > 0) {
-      // Показываем таймер на заблокированной кнопке
+      // Показываем таймер прямо в градиентной кнопке (неактивной)
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.grey.withValues(alpha: 0.3),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HugeIcon(
-              icon: HugeIcons.strokeRoundedClock01,
-              color: Colors.grey.shade600,
-              size: 20,
+        child: Center(
+          child: Text(
+            '$_remainingSeconds',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+              color: Colors.white,
             ),
-            const SizedBox(width: 8),
-            Text(
-              '${localizations.email_not_verified_resend} (${_remainingSeconds}s)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-                color: Colors.grey.shade600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -220,18 +185,32 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
                     ),
                     const SizedBox(height: 24),
                     OutlinedButton(
-                      onPressed: authState.isLoading
+                      onPressed: _isLoggingOut
                           ? null
-                          : () {
-                              ref.read(authProvider.notifier).logout();
+                          : () async {
+                              setState(() {
+                                _isLoggingOut = true;
+                              });
+                              await ref.read(authProvider.notifier).logout();
+                              if (mounted) {
+                                setState(() {
+                                  _isLoggingOut = false;
+                                });
+                              }
                             },
-                      child: Text(
-                        localizations.email_not_verified_back_to_login,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
-                        ),
-                      ),
+                      child: _isLoggingOut
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(
+                              localizations.email_not_verified_back_to_login,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -240,7 +219,7 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
           ),
         ),
         // Overlay с лоадером при выходе
-        if (authState.isLoading)
+        if (_isLoggingOut)
           Container(
             color: Colors.black.withValues(alpha: 0.5),
             child: const Center(
