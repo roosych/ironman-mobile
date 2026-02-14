@@ -42,10 +42,13 @@ class AppLocalizationsAz extends AppLocalizations {
   String get login_create_account => 'Hesab yaradın';
 
   @override
+  String get login_loading => 'Yüklənir...';
+
+  @override
   String get settings_title => 'Parametrlər';
 
   @override
-  String get settings_language => 'Dil';
+  String get settings_language => 'Dil seçimi';
 
   @override
   String get language_russian => 'Русский';
@@ -66,7 +69,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get profile_information => 'Məlumat';
 
   @override
-  String get profile_photo_gallery => 'Foto Qalereya';
+  String get profile_photo_gallery => 'Foto qalereya';
 
   @override
   String get profile_workouts => 'Məşqlər';
@@ -102,13 +105,13 @@ class AppLocalizationsAz extends AppLocalizations {
   String get home_greeting => 'Salam,';
 
   @override
-  String get home_finishes => 'bitirmə';
+  String get home_finishes => 'finiş';
 
   @override
-  String get home_add_race => 'Yarış əlavə et';
+  String get home_add_race => 'Əlavə et';
 
   @override
-  String get home_add_race_title => 'Yarış əlavə et';
+  String get home_add_race_title => 'Əlavə et';
 
   @override
   String get home_no_upcoming_races => 'Gələcək yarış yoxdur';
@@ -302,7 +305,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get nav_athletes => 'Atletlər';
 
   @override
-  String get photo_delete_title => 'Fotoni silmək?';
+  String get photo_delete_title => 'Foto silinəcək, əminsiniz?';
 
   @override
   String get photo_delete_avatar_warning =>
@@ -416,13 +419,13 @@ class AppLocalizationsAz extends AppLocalizations {
   String get register_select_country => 'Ölkəni seçin';
 
   @override
-  String get register_search_countries => 'Ölkələri axtarın';
+  String get register_search_countries => 'Axtar';
 
   @override
   String get settings_language_changed => 'Dil dəyişdirildi';
 
   @override
-  String get edit_profile_title => 'Atlet haqqında';
+  String get edit_profile_title => 'Şəxsi məlumatlar';
 
   @override
   String get edit_profile_name => 'Ad';
@@ -653,10 +656,10 @@ class AppLocalizationsAz extends AppLocalizations {
       'Gözlənilməz xəta baş verdi, zəhmət olmasa yenidən cəhd edin';
 
   @override
-  String get my_races_title => 'Qarşıdakı yarışlar';
+  String get my_races_title => 'Gələcək yarışlar';
 
   @override
-  String get my_races_no_races => 'Hələ qarşıdakı yarışınız yoxdur';
+  String get my_races_no_races => 'Hələ gələcək yarışınız yoxdur';
 
   @override
   String get my_races_delete => 'Sil';
@@ -870,10 +873,10 @@ class AppLocalizationsAz extends AppLocalizations {
   String get pace_calculator_tab_5150 => '5150';
 
   @override
-  String get pace_calculator_appbar_title => 'Sürət Kalkulatoru';
+  String get pace_calculator_appbar_title => 'Temp kalkulatoru';
 
   @override
-  String get pace_calculator_total_race_time => 'ÜMUMİ YARIŞ VAXTİ';
+  String get pace_calculator_total_race_time => 'ÜMUMİ YARIŞ VAXTI';
 
   @override
   String get pace_calculator_km_unit => 'km';
@@ -903,7 +906,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get pace_calculator_run_time => 'Qaçış';
 
   @override
-  String get home_pace_calculator_title => 'Sürət Kalkulatoru';
+  String get home_pace_calculator_title => 'Temp kalkulatoru';
 
   @override
   String get home_pace_calculator_subtitle => 'Üzmə • Velosiped • Qaçış';
@@ -912,7 +915,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get home_pace_calculator_button => 'HESABLA';
 
   @override
-  String get home_card_pace_title => 'Sürət Kalkulatoru';
+  String get home_card_pace_title => 'Temp kalkulatoru';
 
   @override
   String get home_card_pace_subtitle => 'ÜZMƏ • VELOSİPED • QAÇIŞ';
@@ -959,10 +962,10 @@ class AppLocalizationsAz extends AppLocalizations {
       'E-mailinizi daxil edin və biz sizə parolun sıfırlanması üçün keçid göndərəcəyik.';
 
   @override
-  String get reset_password_send_button => 'E-MAIL GÖNDƏR';
+  String get reset_password_send_button => 'GÖNDƏR';
 
   @override
-  String get reset_password_remember => 'Parolunuzu xatırladınız?';
+  String get reset_password_remember => 'Parolunuzu bilirsiniz?';
 
   @override
   String get reset_password_sign_in => 'Daxil ol';
@@ -975,8 +978,8 @@ class AppLocalizationsAz extends AppLocalizations {
       'Yarış nəticələriniz, gələcək hadisələr və vacib yeniləmələr haqqında bildirişlər alın.';
 
   @override
-  String get dashboard_notification_card_enable => 'Bəli, aktivləşdirin';
+  String get dashboard_notification_card_enable => 'Aktiv et';
 
   @override
-  String get dashboard_notification_card_later => 'Sonra ola bilər';
+  String get dashboard_notification_card_later => 'İndi yox';
 }

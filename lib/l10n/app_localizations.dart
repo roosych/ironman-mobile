@@ -166,6 +166,12 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get login_create_account;
 
+  /// Loading message during authentication
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get login_loading;
+
   /// Settings screen title
   ///
   /// In en, this message translates to:

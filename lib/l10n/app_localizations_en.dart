@@ -42,6 +42,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login_create_account => 'Create account';
 
   @override
+  String get login_loading => 'Loading...';
+
+  @override
   String get settings_title => 'Settings';
 
   @override

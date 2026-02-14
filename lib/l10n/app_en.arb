@@ -44,6 +44,10 @@
   "@login_create_account": {
     "description": "Registration link text"
   },
+  "login_loading": "Loading...",
+  "@login_loading": {
+    "description": "Loading message during authentication"
+  },
   "settings_title": "Settings",
   "@settings_title": {
     "description": "Settings screen title"

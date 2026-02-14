@@ -11,6 +11,7 @@
   "login_forgot_password": "Забыли пароль?",
   "login_no_account": "Нет аккаунта?",
   "login_create_account": "Создать аккаунт",
+  "login_loading": "Загрузка...",
   "settings_title": "Настройки",
   "settings_language": "Язык",
   "language_russian": "Русский",

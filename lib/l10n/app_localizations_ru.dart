@@ -42,6 +42,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get login_create_account => 'Создать аккаунт';
 
   @override
+  String get login_loading => 'Загрузка...';
+
+  @override
   String get settings_title => 'Настройки';
 
   @override
