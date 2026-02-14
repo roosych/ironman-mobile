@@ -77,7 +77,7 @@ class _TimeoutTestState extends State<TimeoutTest> {
       final stopwatch = Stopwatch()..start();
 
       final response = await dio.get(
-        'http://172.28.4.136:8000/api/v1/athletes/${widget.athleteId}/photos?page=1',
+        'http://192.168.0.116:8000/api/v1/athletes/${widget.athleteId}/photos?page=1',
       );
 
       stopwatch.stop();

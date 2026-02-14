@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../shared/utils/alert_helper.dart';
 import '../storage/secure_storage.dart';
@@ -54,9 +55,17 @@ class SessionManager {
     debugPrint('SessionManager: Handling session expired (401)');
 
     try {
-      // 1. Clear token and user from storage
-      await _storage.deleteToken();
-      await _storage.deleteUser();
+      // 1. Clear token and user from storage с таймаутом
+      await Future.wait([
+        _storage.deleteToken(),
+        _storage.deleteUser(),
+      ]).timeout(
+        const Duration(seconds: 3), // Таймаут для операций очистки
+        onTimeout: () {
+          debugPrint('⚠️ SessionManager: Storage cleanup TIMEOUT');
+          return []; // Продолжаем даже при таймауте
+        },
+      );
       debugPrint('SessionManager: Token and user cleared from storage');
 
       // 2. Clear auth state via callback

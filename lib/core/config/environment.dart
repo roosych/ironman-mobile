@@ -28,7 +28,7 @@ class DevelopmentConfig extends EnvironmentConfig {
   @override
   String get baseUrl => const String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://172.28.4.136:8000/api/v1',
+    defaultValue: 'http://192.168.0.116:8000/api/v1',
   );
 
   @override

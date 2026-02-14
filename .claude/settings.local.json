@@ -41,7 +41,12 @@
       "Bash(git commit:*)",
       "Bash(nc:*)",
       "Bash(powershell -command \"$lines = Get-Content ''lib\\\\features\\\\auth\\\\presentation\\\\login_screen.dart''; $lines[345]\")",
-      "Bash(powershell -command \"$lines = Get-Content ''lib\\\\features\\\\auth\\\\presentation\\\\login_screen.dart''; Write-Host $lines[345]\")"
+      "Bash(powershell -command \"$lines = Get-Content ''lib\\\\features\\\\auth\\\\presentation\\\\login_screen.dart''; Write-Host $lines[345]\")",
+      "Bash(flutter logs:*)",
+      "Bash(cd:*)",
+      "Bash(r)",
+      "Bash(socat:*)",
+      "Bash(dart test_login.dart:*)"
     ]
   }
 }

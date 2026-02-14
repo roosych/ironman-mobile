@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -14,21 +15,52 @@ class SecureStorage {
   );
 
   Future<void> saveToken(String token) async {
-    await _storage.write(key: _tokenKey, value: token);
-    debugPrint('=== SecureStorage: Token saved ===');
-    final verify = await _storage.read(key: _tokenKey);
-    debugPrint('Token verification: ${verify != null ? "${verify.substring(0, 20)}..." : "null"}');
+    try {
+      // ФИКС: Таймаут для записи токена
+      await _storage.write(key: _tokenKey, value: token).timeout(
+        const Duration(seconds: 2),
+      );
+      debugPrint('=== SecureStorage: Token saved ===');
+
+      // Проверяем сохранение с таймаутом
+      final verify = await _storage.read(key: _tokenKey).timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
+      debugPrint('Token verification: ${verify != null ? "${verify.substring(0, 20)}..." : "null"}');
+    } catch (e) {
+      debugPrint('❌ SecureStorage.saveToken() ERROR: $e');
+      // Не выбрасываем ошибку, чтобы не ломать процесс авторизации
+    }
   }
 
   Future<String?> getToken() async {
-    final token = await _storage.read(key: _tokenKey);
-    debugPrint('=== SecureStorage: Token retrieved ===');
-    debugPrint('Token: ${token != null ? "${token.substring(0, 20)}..." : "null"}');
-    return token;
+    try {
+      // ФИКС: Таймаут 2 секунды для flutter_secure_storage
+      final token = await _storage.read(key: _tokenKey).timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {
+          debugPrint('⚠️ SecureStorage.getToken() TIMEOUT после 2 секунд');
+          return null; // Возвращаем null при таймауте
+        },
+      );
+      debugPrint('=== SecureStorage: Token retrieved ===');
+      debugPrint('Token: ${token != null ? "${token.substring(0, 20)}..." : "null"}');
+      return token;
+    } catch (e) {
+      debugPrint('❌ SecureStorage.getToken() ERROR: $e');
+      return null; // Возвращаем null при любой ошибке
+    }
   }
 
   Future<void> deleteToken() async {
-    await _storage.delete(key: _tokenKey);
+    try {
+      await _storage.delete(key: _tokenKey).timeout(
+        const Duration(seconds: 2),
+      );
+    } catch (e) {
+      debugPrint('❌ SecureStorage.deleteToken() ERROR: $e');
+    }
   }
 
   Future<bool> hasToken() async {
@@ -37,18 +69,38 @@ class SecureStorage {
   }
 
   Future<void> saveUser(Map<String, dynamic> userJson) async {
-    await _storage.write(key: _userKey, value: jsonEncode(userJson));
+    try {
+      await _storage.write(key: _userKey, value: jsonEncode(userJson)).timeout(
+        const Duration(seconds: 2),
+      );
+    } catch (e) {
+      debugPrint('❌ SecureStorage.saveUser() ERROR: $e');
+    }
   }
 
   Future<Map<String, dynamic>?> getUser() async {
-    final userStr = await _storage.read(key: _userKey);
-    if (userStr != null && userStr.isNotEmpty) {
-      return jsonDecode(userStr) as Map<String, dynamic>;
+    try {
+      final userStr = await _storage.read(key: _userKey).timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
+      if (userStr != null && userStr.isNotEmpty) {
+        return jsonDecode(userStr) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('❌ SecureStorage.getUser() ERROR: $e');
+      return null;
     }
-    return null;
   }
 
   Future<void> deleteUser() async {
-    await _storage.delete(key: _userKey);
+    try {
+      await _storage.delete(key: _userKey).timeout(
+        const Duration(seconds: 2),
+      );
+    } catch (e) {
+      debugPrint('❌ SecureStorage.deleteUser() ERROR: $e');
+    }
   }
 }

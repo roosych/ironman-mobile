@@ -363,7 +363,7 @@ class ProfileApi {
       debugPrint('ProfileApi.changePassword: Token retrieved');
 
       // Prepare request
-      final url = Uri.parse('http://172.28.4.136:8000/api/v1/user/password');
+      final url = Uri.parse('http://192.168.0.116:8000/api/v1/user/password');
       final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
