@@ -707,7 +707,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('=== AuthNotifier: Checking current user status ===');
       final user = await _repository.refreshUser();
 
-      if (user.id != null) {
+      if (user.id > 0) {
         debugPrint('=== AuthNotifier: Background check SUCCESS - user is authenticated! ===');
 
         // Auth succeeded! Update state
