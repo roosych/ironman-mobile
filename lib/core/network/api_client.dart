@@ -52,23 +52,25 @@ class ApiClient {
   Future<Response<T>> _safeRequest<T>(Future<Response<T>> Function() request) async {
     try {
       debugPrint('🌐 SafeRequest: Выполняем запрос...');
+      debugPrint('🕒 SafeRequest: Время начала: ${DateTime.now()}');
 
       // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Добавляем глобальный timeout поверх всего запроса
       // Это гарантирует, что запрос НИКОГДА не зависнет навсегда, даже если сервер не отвечает
-      final response = await request().timeout(
-        const Duration(seconds: 10), // Больше чем все Dio timeouts вместе взятые (2+2+3=7с)
-        onTimeout: () {
-          debugPrint('🔥 SafeRequest: ГЛОБАЛЬНЫЙ TIMEOUT - сервер не отвечает более 10 секунд');
-          // Создаем DioException который попадет в GlobalErrorInterceptor и покажет алерт пользователю
+      final response = await Future.any([
+        request(),
+        Future.delayed(const Duration(seconds: 8), () {
+          debugPrint('🔥🔥🔥 SafeRequest: ПРИНУДИТЕЛЬНЫЙ TIMEOUT после 8 секунд! 🔥🔥🔥');
+          debugPrint('🕒 SafeRequest: Время timeout: ${DateTime.now()}');
           throw DioException(
-            requestOptions: RequestOptions(path: 'global-timeout'),
+            requestOptions: RequestOptions(path: 'forced-timeout'),
             type: DioExceptionType.receiveTimeout,
-            message: 'Сервер не отвечает. Проверьте подключение к интернету.',
+            message: 'Сервер не отвечает более 8 секунд',
           );
-        },
-      );
+        }),
+      ]);
 
       debugPrint('✅ SafeRequest: Запрос выполнен успешно');
+      debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
       return response;
     } catch (e, stackTrace) {
       debugPrint('🔴 SafeRequest: Ошибка: ${e.runtimeType} - $e');
@@ -119,12 +121,22 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return _safeRequest<T>(() => _dio.post<T>(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-    ));
+    debugPrint('🚀 ApiClient.post: Начинаем POST запрос к $path');
+    debugPrint('🕒 POST время начала: ${DateTime.now()}');
+
+    final result = await _safeRequest<T>(() {
+      debugPrint('🔄 POST: Вызываем _dio.post для $path');
+      return _dio.post<T>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+    });
+
+    debugPrint('✅ ApiClient.post: POST запрос к $path завершен');
+    debugPrint('🕒 POST время завершения: ${DateTime.now()}');
+    return result;
   }
 
   Future<Response<T>> get<T>(
