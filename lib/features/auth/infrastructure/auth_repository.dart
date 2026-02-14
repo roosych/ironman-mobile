@@ -83,13 +83,21 @@ class AuthRepository {
     });
   }
   
-  /// Инициализация FCM в фоне
+  /// Инициализация FCM в фоне с защитой от зависания
   void _initializeFcmInBackground() {
     Future.microtask(() async {
       try {
-        await FcmService().initialize();
+        debugPrint('🔔 FCM (bg): Starting initialization with 3s timeout...');
+        await FcmService().initialize().timeout(
+          Duration(seconds: 3),
+          onTimeout: () {
+            debugPrint('⚠️ FCM (bg): Initialization timed out after 3s - continuing without FCM');
+            return;
+          },
+        );
+        debugPrint('✅ FCM (bg): Successfully initialized');
       } catch (e) {
-        debugPrint('FCM: Error initializing in background: $e');
+        debugPrint('❌ FCM: Error initializing in background: $e');
       }
     });
   }

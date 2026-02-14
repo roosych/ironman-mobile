@@ -104,13 +104,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
           // Игнорируем ошибки синхронизации locale
         }
 
-        // Инициализируем FCM для верифицированных пользователей
+        // Инициализируем FCM для верифицированных пользователей с защитой от зависания
         if (finalUser?.verified == true) {
           Future.microtask(() async {
             try {
-              await FcmService().initialize();
+              debugPrint('🔔 FCM (restore): Starting initialization with 3s timeout...');
+              await FcmService().initialize().timeout(
+                Duration(seconds: 3),
+                onTimeout: () {
+                  debugPrint('⚠️ FCM (restore): Initialization timed out after 3s - continuing without FCM');
+                  return;
+                },
+              );
+              debugPrint('✅ FCM (restore): Successfully initialized');
             } catch (e) {
-              debugPrint('FCM: Error initializing on session restore: $e');
+              debugPrint('❌ FCM: Error initializing on session restore: $e');
             }
           });
         }
@@ -723,13 +731,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = successState;
         _syncLocaleWithUser(user);
 
-        // Initialize FCM for verified users
+        // Initialize FCM for verified users with timeout protection
         if (user.verified) {
           Future.microtask(() async {
             try {
-              await FcmService().initialize();
+              debugPrint('🔔 FCM: Starting initialization with 3s timeout...');
+              await FcmService().initialize().timeout(
+                Duration(seconds: 3),
+                onTimeout: () {
+                  debugPrint('⚠️ FCM: Initialization timed out after 3s - continuing without FCM');
+                  return;
+                },
+              );
+              debugPrint('✅ FCM: Successfully initialized');
             } catch (e) {
-              debugPrint('FCM: Error initializing after background check: $e');
+              debugPrint('❌ FCM: Error initializing after background check: $e');
             }
           });
         }
@@ -817,9 +833,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (finalUser.verified) {
         Future.microtask(() async {
           try {
-            await FcmService().initialize();
+            debugPrint('🔔 FCM (retry): Starting initialization with 3s timeout...');
+            await FcmService().initialize().timeout(
+              Duration(seconds: 3),
+              onTimeout: () {
+                debugPrint('⚠️ FCM (retry): Initialization timed out after 3s - continuing without FCM');
+                return;
+              },
+            );
+            debugPrint('✅ FCM (retry): Successfully initialized');
           } catch (e) {
-            debugPrint('FCM: Error initializing after retry: $e');
+            debugPrint('❌ FCM: Error initializing after retry: $e');
           }
         });
       }
