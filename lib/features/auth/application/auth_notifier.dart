@@ -151,6 +151,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
     }
 
+    debugPrint('=== AuthNotifier: Starting login attempt ===');
+    debugPrint('Email: $email');
+    debugPrint('Time: ${DateTime.now()}');
+
     state = state.copyWith(
       isLoading: true,
       clearError: true,
@@ -164,11 +168,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
           _ref?.read(localeProvider.notifier).getLocaleForApi() ??
           'en';
 
+      debugPrint('=== AuthNotifier: Calling repository.login ===');
+      debugPrint('Locale for API: $localeForApi');
+
       final result = await _repository.login(
         email: email,
         password: password,
         locale: localeForApi,
       );
+
+      debugPrint('=== AuthNotifier: Login repository call completed ===');
+      debugPrint('User verified: ${result.user.verified}');
 
       // Успешный запрос - сбрасываем время последней ошибки
       _lastNetworkErrorTime = null;
@@ -291,17 +301,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = forcedState;
       });
     } on AuthApiException catch (e) {
+      debugPrint('=== AuthNotifier: Login failed with AuthApiException ===');
+      debugPrint('Error: ${e.firstError}');
+      debugPrint('Time: ${DateTime.now()}');
+
       // Сохраняем время ошибки для блокировки повторных запросов
       final errorMessage = e.firstError.toLowerCase();
       if (errorMessage.contains('подключ') ||
           errorMessage.contains('сеть') ||
           errorMessage.contains('timeout') ||
+          errorMessage.contains('connection') ||
           errorMessage.contains('слишком много')) {
+        debugPrint('=== AuthNotifier: Network error detected, setting cooldown ===');
         _lastNetworkErrorTime = DateTime.now();
       }
 
       state = state.copyWith(isLoading: false, error: e.firstError);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('=== AuthNotifier: Login failed with unexpected error ===');
+      debugPrint('Error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      debugPrint('Time: ${DateTime.now()}');
+
       _lastNetworkErrorTime = DateTime.now();
       state = state.copyWith(
         isLoading: false,

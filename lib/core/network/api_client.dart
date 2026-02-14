@@ -49,67 +49,39 @@ class ApiClient {
 
   Dio get dio => _dio;
 
-  /// Простая обертка для безопасных запросов
+  /// Простая обертка для безопасных запросов с timeout через microtask
   Future<Response<T>> _safeRequest<T>(Future<Response<T>> Function() request) async {
     try {
       debugPrint('🌐 SafeRequest: Выполняем запрос...');
       debugPrint('🕒 SafeRequest: Время начала: ${DateTime.now()}');
 
-      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем Completer для принудительного timeout
-      // который работает даже если нативный HTTP клиент зависает
-      final completer = Completer<Response<T>>();
-      bool isCompleted = false;
+      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем Future.any для работающего timeout
+      // который НЕ зависит от блокировки UI thread
+      final requestFuture = request();
 
-      // Запускаем запрос
-      debugPrint('🚀 SafeRequest: Запускаем request().then()...');
-      request().then((response) {
-        debugPrint('✅ SafeRequest: request().then() ВЫЗВАН с успешным ответом');
-        if (!isCompleted) {
-          isCompleted = true;
-          debugPrint('✅ SafeRequest: Запрос успешно завершен');
-          debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
-          completer.complete(response);
-        } else {
-          debugPrint('⚠️ Успешный ответ получен, но запрос уже помечен как завершенный');
-        }
-      }).catchError((error) {
-        debugPrint('🔴 SafeRequest: request().catchError() ВЫЗВАН с ошибкой: $error');
-        if (!isCompleted) {
-          isCompleted = true;
-          debugPrint('🔴 SafeRequest: Запрос завершен с ошибкой: $error');
-          completer.completeError(error);
-        } else {
-          debugPrint('⚠️ Ошибка получена, но запрос уже помечен как завершенный');
-        }
-      });
+      // Создаем timeout future через microtask (выполняется в следующем кадре)
+      final timeoutFuture = Future.delayed(
+        const Duration(seconds: 5),
+        () {
+          debugPrint('🔥🔥🔥 TIMEOUT FUTURE СРАБОТАЛ после 5 секунд! 🔥🔥🔥');
+          debugPrint('🕒 Timeout время: ${DateTime.now()}');
 
-      debugPrint('✅ SafeRequest: request().then() настроен, переходим к Timer');
-
-      // Принудительный timeout через Timer (работает независимо от HTTP)
-      debugPrint('🚀 SafeRequest: СОЗДАЕМ Timer на 6 секунд...');
-      final timer = Timer(const Duration(seconds: 6), () {
-        debugPrint('🔥🔥🔥 TIMER CALLBACK ВЫЗВАН! 🔥🔥🔥');
-        debugPrint('🕒 Timer время: ${DateTime.now()}');
-        debugPrint('📋 isCompleted: $isCompleted');
-
-        if (!isCompleted) {
-          isCompleted = true;
-          debugPrint('🔥🔥🔥 SafeRequest: ПРИНУДИТЕЛЬНЫЙ TIMEOUT через Timer после 6 секунд! 🔥🔥🔥');
-          debugPrint('⚡ Этот timeout НЕ ЗАВИСИТ от HTTP запроса и должен ВСЕГДА сработать!');
-
-          completer.completeError(DioException(
-            requestOptions: RequestOptions(path: 'timer-timeout'),
+          throw DioException(
+            requestOptions: RequestOptions(path: 'timeout'),
             type: DioExceptionType.receiveTimeout,
             message: 'Сервер не отвечает. Проверьте подключение к интернету.',
-          ));
-        } else {
-          debugPrint('⚠️ Timer сработал, но запрос уже завершен');
-        }
-      });
+          );
+        },
+      );
 
-      debugPrint('✅ SafeRequest: Timer создан успешно, isActive: ${timer.isActive}');
+      debugPrint('🚀 SafeRequest: Запускаем Future.any(request, timeout)...');
 
-      final response = await completer.future;
+      // Используем Future.any - первый завершившийся future выиграет
+      final response = await Future.any([requestFuture, timeoutFuture]);
+
+      debugPrint('✅ SafeRequest: Запрос завершен успешно');
+      debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
+
       return response;
     } catch (e, stackTrace) {
       debugPrint('🔴 SafeRequest: Ошибка: ${e.runtimeType} - $e');
