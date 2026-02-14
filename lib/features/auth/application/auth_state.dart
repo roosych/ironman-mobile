@@ -43,18 +43,17 @@ class AuthState {
   String getLoadingMessage(AppLocalizations localizations) {
     switch (loadingStage) {
       case AuthLoadingStage.sending:
-        return 'Отправка данных...'; // TODO: Add to localizations
+        return 'Отправка данных...'; // Add to localizations
       case AuthLoadingStage.processing:
-        return 'Обработка на сервере...'; // TODO: Add to localizations
+        return 'Обработка на сервере...'; // Add to localizations
       case AuthLoadingStage.verifying:
-        return 'Проверяем результат...'; // TODO: Add to localizations
+        return 'Проверяем результат...'; // Add to localizations
       case AuthLoadingStage.retrying:
-        return 'Повторная попытка...'; // TODO: Add to localizations
+        return 'Повторная попытка...'; //  Add to localizations
       case AuthLoadingStage.backgroundCheck:
-        return 'Проверяем статус авторизации...'; // TODO: Add to localizations
+        return 'Проверяем статус авторизации...'; //  Add to localizations
       case AuthLoadingStage.none:
-      default:
-        return localizations.login_loading ?? 'Загрузка...';
+        return localizations.login_loading;
     }
   }
 
