@@ -8,6 +8,7 @@ import '../../auth/application/auth_notifier.dart';
 import '../../auth/infrastructure/auth_repository.dart';
 import '../../../core/services/notification_permission_service.dart';
 import '../../../core/services/fcm_service.dart';
+import '../../../core/theme/app_button_styles.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -321,15 +322,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
             ),
             const SizedBox(height: 12),
-            FilledButton(
-              onPressed: _openAppSettings,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 40),
-              ),
-              child: Text(
-                localizations.notification_permission_open_settings,
-                style: const TextStyle(
+            SizedBox(
+              width: double.infinity,
+              child: AppButtonStyles.primaryGradientButton(
+                text: localizations.notification_permission_open_settings,
+                onPressed: _openAppSettings,
+                borderRadius: 12,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                textStyle: const TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  color: Colors.white,
                 ),
               ),
             ),
