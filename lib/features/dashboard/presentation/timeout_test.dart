@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../../../core/config/app_config.dart';
 
 /// ТЕСТ TIMEOUT'а
 /// Проверяем, работает ли timeout правильно
@@ -77,7 +78,7 @@ class _TimeoutTestState extends State<TimeoutTest> {
       final stopwatch = Stopwatch()..start();
 
       final response = await dio.get(
-        'http://192.168.0.116:8000/api/v1/athletes/${widget.athleteId}/photos?page=1',
+        '${AppConfig.baseUrl}/athletes/${widget.athleteId}/photos?page=1',
       );
 
       stopwatch.stop();

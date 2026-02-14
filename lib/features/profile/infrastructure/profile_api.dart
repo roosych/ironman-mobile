@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/network/api_client.dart';
 import '../../../core/storage/secure_storage.dart';
+import '../../../core/config/app_config.dart';
 import '../../auth/domain/user.dart';
 import '../domain/athlete_profile.dart';
 import '../domain/user_photo.dart';
@@ -363,7 +364,7 @@ class ProfileApi {
       debugPrint('ProfileApi.changePassword: Token retrieved');
 
       // Prepare request
-      final url = Uri.parse('http://192.168.0.116:8000/api/v1/user/password');
+      final url = Uri.parse('${AppConfig.baseUrl}/user/password');
       final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
