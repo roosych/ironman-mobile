@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,23 +55,44 @@ class ApiClient {
       debugPrint('🌐 SafeRequest: Выполняем запрос...');
       debugPrint('🕒 SafeRequest: Время начала: ${DateTime.now()}');
 
-      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Добавляем глобальный timeout поверх всего запроса
-      // Это гарантирует, что запрос НИКОГДА не зависнет навсегда, даже если сервер не отвечает
-      final response = await Future.any([
-        request(),
-        Future.delayed(const Duration(seconds: 8), () {
-          debugPrint('🔥🔥🔥 SafeRequest: ПРИНУДИТЕЛЬНЫЙ TIMEOUT после 8 секунд! 🔥🔥🔥');
-          debugPrint('🕒 SafeRequest: Время timeout: ${DateTime.now()}');
-          throw DioException(
-            requestOptions: RequestOptions(path: 'forced-timeout'),
-            type: DioExceptionType.receiveTimeout,
-            message: 'Сервер не отвечает более 8 секунд',
-          );
-        }),
-      ]);
+      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем Completer для принудительного timeout
+      // который работает даже если нативный HTTP клиент зависает
+      final completer = Completer<Response<T>>();
+      bool isCompleted = false;
 
-      debugPrint('✅ SafeRequest: Запрос выполнен успешно');
-      debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
+      // Запускаем запрос
+      request().then((response) {
+        if (!isCompleted) {
+          isCompleted = true;
+          debugPrint('✅ SafeRequest: Запрос успешно завершен');
+          debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
+          completer.complete(response);
+        }
+      }).catchError((error) {
+        if (!isCompleted) {
+          isCompleted = true;
+          debugPrint('🔴 SafeRequest: Запрос завершен с ошибкой: $error');
+          completer.completeError(error);
+        }
+      });
+
+      // Принудительный timeout через Timer (работает независимо от HTTP)
+      Timer(const Duration(seconds: 6), () {
+        if (!isCompleted) {
+          isCompleted = true;
+          debugPrint('🔥🔥🔥 SafeRequest: ПРИНУДИТЕЛЬНЫЙ TIMEOUT через Timer после 6 секунд! 🔥🔥🔥');
+          debugPrint('🕒 SafeRequest: Время timeout: ${DateTime.now()}');
+          debugPrint('⚡ Этот timeout НЕ ЗАВИСИТ от HTTP запроса и должен ВСЕГДА сработать!');
+
+          completer.completeError(DioException(
+            requestOptions: RequestOptions(path: 'timer-timeout'),
+            type: DioExceptionType.receiveTimeout,
+            message: 'Сервер не отвечает. Проверьте подключение к интернету.',
+          ));
+        }
+      });
+
+      final response = await completer.future;
       return response;
     } catch (e, stackTrace) {
       debugPrint('🔴 SafeRequest: Ошибка: ${e.runtimeType} - $e');
