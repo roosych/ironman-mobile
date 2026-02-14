@@ -669,7 +669,7 @@ class DisciplineCard extends StatelessWidget {
                         rightValue!,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
-                          fontSize: 18,
+                          fontSize: 20,
                           color: AppColors.ironmanWhite,
                         ),
                       ),
