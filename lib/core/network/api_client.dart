@@ -61,27 +61,40 @@ class ApiClient {
       bool isCompleted = false;
 
       // Запускаем запрос
+      debugPrint('🚀 SafeRequest: Запускаем request().then()...');
       request().then((response) {
+        debugPrint('✅ SafeRequest: request().then() ВЫЗВАН с успешным ответом');
         if (!isCompleted) {
           isCompleted = true;
           debugPrint('✅ SafeRequest: Запрос успешно завершен');
           debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
           completer.complete(response);
+        } else {
+          debugPrint('⚠️ Успешный ответ получен, но запрос уже помечен как завершенный');
         }
       }).catchError((error) {
+        debugPrint('🔴 SafeRequest: request().catchError() ВЫЗВАН с ошибкой: $error');
         if (!isCompleted) {
           isCompleted = true;
           debugPrint('🔴 SafeRequest: Запрос завершен с ошибкой: $error');
           completer.completeError(error);
+        } else {
+          debugPrint('⚠️ Ошибка получена, но запрос уже помечен как завершенный');
         }
       });
 
+      debugPrint('✅ SafeRequest: request().then() настроен, переходим к Timer');
+
       // Принудительный timeout через Timer (работает независимо от HTTP)
-      Timer(const Duration(seconds: 6), () {
+      debugPrint('🚀 SafeRequest: СОЗДАЕМ Timer на 6 секунд...');
+      final timer = Timer(const Duration(seconds: 6), () {
+        debugPrint('🔥🔥🔥 TIMER CALLBACK ВЫЗВАН! 🔥🔥🔥');
+        debugPrint('🕒 Timer время: ${DateTime.now()}');
+        debugPrint('📋 isCompleted: $isCompleted');
+
         if (!isCompleted) {
           isCompleted = true;
           debugPrint('🔥🔥🔥 SafeRequest: ПРИНУДИТЕЛЬНЫЙ TIMEOUT через Timer после 6 секунд! 🔥🔥🔥');
-          debugPrint('🕒 SafeRequest: Время timeout: ${DateTime.now()}');
           debugPrint('⚡ Этот timeout НЕ ЗАВИСИТ от HTTP запроса и должен ВСЕГДА сработать!');
 
           completer.completeError(DioException(
@@ -89,8 +102,12 @@ class ApiClient {
             type: DioExceptionType.receiveTimeout,
             message: 'Сервер не отвечает. Проверьте подключение к интернету.',
           ));
+        } else {
+          debugPrint('⚠️ Timer сработал, но запрос уже завершен');
         }
       });
+
+      debugPrint('✅ SafeRequest: Timer создан успешно, isActive: ${timer.isActive}');
 
       final response = await completer.future;
       return response;
