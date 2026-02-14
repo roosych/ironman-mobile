@@ -52,7 +52,22 @@ class ApiClient {
   Future<Response<T>> _safeRequest<T>(Future<Response<T>> Function() request) async {
     try {
       debugPrint('🌐 SafeRequest: Выполняем запрос...');
-      final response = await request();
+
+      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Добавляем глобальный timeout поверх всего запроса
+      // Это гарантирует, что запрос НИКОГДА не зависнет навсегда, даже если сервер не отвечает
+      final response = await request().timeout(
+        const Duration(seconds: 10), // Больше чем все Dio timeouts вместе взятые (2+2+3=7с)
+        onTimeout: () {
+          debugPrint('🔥 SafeRequest: ГЛОБАЛЬНЫЙ TIMEOUT - сервер не отвечает более 10 секунд');
+          // Создаем DioException который попадет в GlobalErrorInterceptor и покажет алерт пользователю
+          throw DioException(
+            requestOptions: RequestOptions(path: 'global-timeout'),
+            type: DioExceptionType.receiveTimeout,
+            message: 'Сервер не отвечает. Проверьте подключение к интернету.',
+          );
+        },
+      );
+
       debugPrint('✅ SafeRequest: Запрос выполнен успешно');
       return response;
     } catch (e, stackTrace) {
@@ -153,49 +168,81 @@ class ApiClient {
   }
 }
 
-class _AuthInterceptor extends QueuedInterceptorsWrapper {
+class _AuthInterceptor extends Interceptor {
   final SecureStorage _storage;
 
   _AuthInterceptor(this._storage);
 
   @override
-  Future<void> onRequest(
+  void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
-  ) async {
+  ) {
     debugPrint('⚡⚡⚡ AuthInterceptor.onRequest NEW VERSION START ⚡⚡⚡');
     debugPrint('=== AuthInterceptor.onRequest START ===');
     debugPrint('Path: ${options.path}');
 
-    debugPrint('Getting token from SecureStorage...');
-    final token = await _storage.getToken();
-    debugPrint('Token retrieved, length: ${token?.length ?? 0}');
+    // ФИКС: Выполняем асинхронные операции с таймаутом БЕЗ блокировки очереди
+    _addAuthHeadersSafely(options, handler);
+  }
 
-    if (token != null && token.isNotEmpty) {
-      debugPrint('Adding Authorization header...');
-      options.headers['Authorization'] = 'Bearer $token';
-    } else {
-      debugPrint('No token found');
-    }
-
-    // Добавляем заголовок Accept-Language
-    debugPrint('Getting locale from SharedPreferences...');
+  /// ФИКС: Безопасное добавление заголовков с таймаутами
+  Future<void> _addAuthHeadersSafely(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final locale = prefs.getString('app_locale') ?? 'en';
-      // Поддерживаем только ru и en для бэкенда
-      final backendLocale = (locale == 'ru' || locale == 'en') ? locale : 'en';
-      options.headers['Accept-Language'] = backendLocale;
-      debugPrint('Set Accept-Language: $backendLocale');
-    } catch (e) {
-      debugPrint('Error getting locale: $e');
-      // Fallback на английский язык при ошибке
-      options.headers['Accept-Language'] = 'en';
-    }
+      debugPrint('Getting token from SecureStorage with timeout...');
 
-    debugPrint('Calling handler.next()...');
-    handler.next(options);
-    debugPrint('=== AuthInterceptor.onRequest END ===');
+      // ФИКС: Получаем токен с ОЧЕНЬ коротким таймаутом чтобы не блокировать запрос
+      final token = await _storage.getToken().timeout(
+        const Duration(milliseconds: 500), // Очень короткий таймаут для interceptor
+        onTimeout: () {
+          debugPrint('⚠️ AuthInterceptor: getToken() TIMEOUT после 500мс');
+          return null;
+        },
+      );
+
+      debugPrint('Token retrieved, length: ${token?.length ?? 0}');
+
+      if (token != null && token.isNotEmpty) {
+        debugPrint('Adding Authorization header...');
+        options.headers['Authorization'] = 'Bearer $token';
+      } else {
+        debugPrint('No token found');
+      }
+
+      // ФИКС: Добавляем заголовок Accept-Language с таймаутом
+      debugPrint('Getting locale from SharedPreferences with timeout...');
+      try {
+        final prefs = await SharedPreferences.getInstance().timeout(
+          const Duration(milliseconds: 300), // Очень короткий таймаут для interceptor
+          onTimeout: () {
+            debugPrint('⚠️ AuthInterceptor: SharedPreferences TIMEOUT после 300мс');
+            throw TimeoutException('SharedPreferences timeout');
+          },
+        );
+        final locale = prefs.getString('app_locale') ?? 'en';
+        // Поддерживаем только ru и en для бэкенда
+        final backendLocale = (locale == 'ru' || locale == 'en') ? locale : 'en';
+        options.headers['Accept-Language'] = backendLocale;
+        debugPrint('Set Accept-Language: $backendLocale');
+      } catch (e) {
+        debugPrint('Error getting locale: $e');
+        // Fallback на английский язык при ошибке
+        options.headers['Accept-Language'] = 'en';
+      }
+
+      debugPrint('Calling handler.next()...');
+      handler.next(options);
+      debugPrint('=== AuthInterceptor.onRequest END ===');
+
+    } catch (e) {
+      debugPrint('❌ AuthInterceptor: Критическая ошибка: $e');
+      // ВАЖНО: Даже при ошибке передаем запрос дальше
+      options.headers['Accept-Language'] = 'en'; // Fallback
+      handler.next(options);
+    }
   }
 
   @override
