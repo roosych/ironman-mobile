@@ -157,6 +157,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = state.copyWith(
       isLoading: true,
+      loadingStage: AuthLoadingStage.sending,
       clearError: true,
       clearWarning: true,
     );
@@ -171,6 +172,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('=== AuthNotifier: Calling repository.login ===');
       debugPrint('Locale for API: $localeForApi');
 
+      // Update to processing stage
+      state = state.copyWith(loadingStage: AuthLoadingStage.processing);
+
       final result = await _repository.login(
         email: email,
         password: password,
@@ -179,6 +183,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       debugPrint('=== AuthNotifier: Login repository call completed ===');
       debugPrint('User verified: ${result.user.verified}');
+
+      // Update to verifying stage
+      state = state.copyWith(loadingStage: AuthLoadingStage.verifying);
 
       // Успешный запрос - сбрасываем время последней ошибки
       _lastNetworkErrorTime = null;
@@ -260,6 +267,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         user: finalUser,
         status: AuthStatus.authenticated,
         isLoading: false,
+        loadingStage: AuthLoadingStage.none,
         warning: null, // Очищаем warning после успешного логина
       );
 
@@ -280,6 +288,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           user: finalUser,
           status: AuthStatus.authenticated,
           isLoading: false,
+          loadingStage: AuthLoadingStage.none,
           warning: null, // Очищаем warning
         );
 
@@ -294,6 +303,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           user: finalUser,
           status: AuthStatus.authenticated,
           isLoading: false,
+          loadingStage: AuthLoadingStage.none,
           warning: null, // Очищаем warning
         );
 
@@ -301,33 +311,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = forcedState;
       });
     } on AuthApiException catch (e) {
-      debugPrint('=== AuthNotifier: Login failed with AuthApiException ===');
-      debugPrint('Error: ${e.firstError}');
-      debugPrint('Time: ${DateTime.now()}');
-
-      // Сохраняем время ошибки для блокировки повторных запросов
-      final errorMessage = e.firstError.toLowerCase();
-      if (errorMessage.contains('подключ') ||
-          errorMessage.contains('сеть') ||
-          errorMessage.contains('timeout') ||
-          errorMessage.contains('connection') ||
-          errorMessage.contains('слишком много')) {
-        debugPrint('=== AuthNotifier: Network error detected, setting cooldown ===');
-        _lastNetworkErrorTime = DateTime.now();
-      }
-
-      state = state.copyWith(isLoading: false, error: e.firstError);
+      await _handleAuthError(e, email, password, locale);
     } catch (e, stackTrace) {
       debugPrint('=== AuthNotifier: Login failed with unexpected error ===');
       debugPrint('Error: $e');
       debugPrint('Stack trace: $stackTrace');
       debugPrint('Time: ${DateTime.now()}');
 
-      _lastNetworkErrorTime = DateTime.now();
-      state = state.copyWith(
-        isLoading: false,
-        error: 'error_unexpected',
-      );
+      await _handleUnexpectedError(e, email, password, locale);
     }
   }
 
@@ -630,6 +621,223 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       debugPrint('Failed to refresh user: $e');
       // Don't throw - keep current state
+    }
+  }
+
+  /// Handle authentication errors with smart retry and background verification
+  Future<void> _handleAuthError(
+    AuthApiException e,
+    String email,
+    String password,
+    String? locale
+  ) async {
+    debugPrint('=== AuthNotifier: Login failed with AuthApiException ===');
+    debugPrint('Error: ${e.firstError}');
+    debugPrint('Time: ${DateTime.now()}');
+
+    final errorMessage = e.firstError.toLowerCase();
+    final isNetworkError = errorMessage.contains('подключ') ||
+        errorMessage.contains('сеть') ||
+        errorMessage.contains('timeout') ||
+        errorMessage.contains('connection') ||
+        errorMessage.contains('слишком много');
+
+    if (isNetworkError) {
+      debugPrint('=== AuthNotifier: Network error detected, checking retry options ===');
+
+      // Check if we should try background verification for timeout errors
+      if (errorMessage.contains('timeout') || errorMessage.contains('не отвечает')) {
+        await _handleTimeoutWithBackgroundCheck(email, password, locale);
+        return;
+      }
+
+      // Set cooldown for other network errors
+      _lastNetworkErrorTime = DateTime.now();
+    }
+
+    // Show error for non-timeout cases
+    state = state.copyWith(
+      isLoading: false,
+      loadingStage: AuthLoadingStage.none,
+      error: e.firstError
+    );
+  }
+
+  /// Handle unexpected errors with potential retry
+  Future<void> _handleUnexpectedError(
+    dynamic error,
+    String email,
+    String password,
+    String? locale
+  ) async {
+    final errorString = error.toString().toLowerCase();
+
+    // Check if this might be a timeout that succeeded on server
+    if (errorString.contains('timeout') || errorString.contains('connection')) {
+      debugPrint('=== AuthNotifier: Unexpected error might be timeout, checking background ===');
+      await _handleTimeoutWithBackgroundCheck(email, password, locale);
+      return;
+    }
+
+    // Regular error handling
+    _lastNetworkErrorTime = DateTime.now();
+    state = state.copyWith(
+      isLoading: false,
+      loadingStage: AuthLoadingStage.none,
+      error: 'error_unexpected',
+    );
+  }
+
+  /// Handle timeout errors with background authentication verification
+  Future<void> _handleTimeoutWithBackgroundCheck(
+    String email,
+    String password,
+    String? locale
+  ) async {
+    debugPrint('=== AuthNotifier: Starting background verification after timeout ===');
+
+    // Update UI to show background check
+    state = state.copyWith(loadingStage: AuthLoadingStage.backgroundCheck);
+
+    // Wait a bit for server to potentially complete the request
+    await Future.delayed(const Duration(seconds: 2));
+
+    try {
+      // Try to get current user to see if auth actually succeeded
+      debugPrint('=== AuthNotifier: Checking current user status ===');
+      final user = await _repository.refreshUser();
+
+      if (user.id != null) {
+        debugPrint('=== AuthNotifier: Background check SUCCESS - user is authenticated! ===');
+
+        // Auth succeeded! Update state
+        await _repository.saveUser(user);
+
+        final successState = AuthState(
+          user: user,
+          status: AuthStatus.authenticated,
+          isLoading: false,
+          loadingStage: AuthLoadingStage.none,
+        );
+
+        state = successState;
+        _syncLocaleWithUser(user);
+
+        // Initialize FCM for verified users
+        if (user.verified) {
+          Future.microtask(() async {
+            try {
+              await FcmService().initialize();
+            } catch (e) {
+              debugPrint('FCM: Error initializing after background check: $e');
+            }
+          });
+        }
+
+        return;
+      }
+    } catch (backgroundError) {
+      debugPrint('=== AuthNotifier: Background check failed: $backgroundError ===');
+
+      // If background check fails, try one retry
+      final backgroundErrorString = backgroundError.toString();
+      if (!backgroundErrorString.contains('retry_attempted')) {
+        debugPrint('=== AuthNotifier: Attempting one retry after background check failure ===');
+        await _attemptRetry(email, password, locale);
+        return;
+      }
+    }
+
+    // If we get here, both background check and retry failed
+    debugPrint('=== AuthNotifier: All recovery attempts failed, showing timeout error ===');
+    state = state.copyWith(
+      isLoading: false,
+      loadingStage: AuthLoadingStage.none,
+      error: 'Сервер не отвечает. Попробуйте позже.',
+    );
+
+    _lastNetworkErrorTime = DateTime.now();
+  }
+
+  /// Attempt one retry with exponential backoff
+  Future<void> _attemptRetry(String email, String password, String? locale) async {
+    debugPrint('=== AuthNotifier: Starting retry attempt ===');
+
+    // Update UI to show retry
+    state = state.copyWith(loadingStage: AuthLoadingStage.retrying);
+
+    // Wait a bit before retry (exponential backoff)
+    await Future.delayed(const Duration(seconds: 1));
+
+    try {
+      debugPrint('=== AuthNotifier: Retry - calling repository.login ===');
+      state = state.copyWith(loadingStage: AuthLoadingStage.processing);
+
+      final result = await _repository.login(
+        email: email,
+        password: password,
+        locale: locale ?? 'en',
+      );
+
+      debugPrint('=== AuthNotifier: Retry SUCCESS ===');
+
+      // Success on retry! Handle normally
+      state = state.copyWith(loadingStage: AuthLoadingStage.verifying);
+
+      User finalUser = result.user;
+
+      // Continue with normal success flow...
+      if (result.user.verified) {
+        try {
+          final refreshedUser = await _repository.refreshUser();
+          final profileData = refreshedUser.profile;
+          if (profileData?.id != null) {
+            finalUser = refreshedUser;
+          } else {
+            finalUser = refreshedUser.copyWith(clearProfile: true);
+          }
+        } catch (e) {
+          debugPrint('Failed to refresh user after retry: $e');
+          finalUser = result.user.copyWith(clearProfile: true);
+        }
+      }
+
+      await _repository.saveUser(finalUser);
+
+      final successState = AuthState(
+        user: finalUser,
+        status: AuthStatus.authenticated,
+        isLoading: false,
+        loadingStage: AuthLoadingStage.none,
+      );
+
+      state = successState;
+      _syncLocaleWithUser(finalUser);
+
+      if (finalUser.verified) {
+        Future.microtask(() async {
+          try {
+            await FcmService().initialize();
+          } catch (e) {
+            debugPrint('FCM: Error initializing after retry: $e');
+          }
+        });
+      }
+
+    } catch (retryError) {
+      debugPrint('=== AuthNotifier: Retry failed: $retryError ===');
+
+      // Mark that retry was attempted to avoid infinite loops
+      final errorWithRetryMark = 'retry_attempted: ${retryError.toString()}';
+
+      if (retryError is AuthApiException) {
+        await _handleAuthError(
+          AuthApiException(errorWithRetryMark),
+          email, password, locale
+        );
+      } else {
+        await _handleUnexpectedError(errorWithRetryMark, email, password, locale);
+      }
     }
   }
 }
