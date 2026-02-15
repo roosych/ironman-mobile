@@ -9,7 +9,7 @@ import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/shared/data/countries.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
-import '../application/auth_notifier.dart';
+import '../application/simple_auth_notifier.dart';
 import '../application/auth_state.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -69,7 +69,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Устанавливаем новый таймер для debounce
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       ref
-          .read(authProvider.notifier)
+          .read(simpleAuthProvider.notifier)
           .register(
             name: _nameController.text.trim(),
             email: _emailController.text.trim(),
@@ -101,22 +101,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(simpleAuthProvider);
     final localizations = AppLocalizations.of(context)!;
 
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      // ИСПРАВЛЕНО: Защита от дублирования ошибок
-      if (next.error != null &&
-          next.error != previous?.error &&
-          next.error != _lastShownError) {
-        _lastShownError = next.error; // Запоминаем показанную ошибку
-        ErrorHandler.showError(context, next.error!);
-      }
-
-      // Сбрасываем запомненную ошибку при успешном состоянии
-      if (next.error == null) {
-        _lastShownError = null;
-      }
+    // НОВЫЙ API: Ошибки показываются автоматически через SimpleApiClient!
+    // Логика защиты от дублирования больше не нужна
+    ref.listen<AuthState>(simpleAuthProvider, (previous, next) {
 
       // Show warning (informational message from server)
       if (next.warning != null && next.warning != previous?.warning) {

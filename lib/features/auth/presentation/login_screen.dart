@@ -5,7 +5,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
-import '../application/auth_notifier.dart';
+import '../application/simple_auth_notifier.dart';
 import '../application/auth_state.dart';
 import 'email_not_verified_screen.dart';
 import '../../dashboard/presentation/dashboard_screen.dart';
@@ -52,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // Устанавливаем новый таймер для debounce
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      ref.read(authProvider.notifier).login(
+      ref.read(simpleAuthProvider.notifier).login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
@@ -61,15 +61,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(simpleAuthProvider);
     final localizations = AppLocalizations.of(context)!;
 
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      // Show error
-      if (next.error != null && next.error != previous?.error) {
-        ErrorHandler.showError(context, next.error!);
-      }
-
+    // НОВЫЙ API: Ошибки показываются автоматически через SimpleApiClient!
+    // ref.listen для ошибок больше не нужен
+    ref.listen<AuthState>(simpleAuthProvider, (previous, next) {
       // ВАЖНО: Навигация после успешного логина
       // Проверяем, что пользователь стал аутентифицированным
       if (previous?.isAuthenticated != true &&

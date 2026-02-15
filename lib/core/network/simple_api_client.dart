@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../storage/secure_storage.dart';
 import '../session/session_manager.dart';
+import '../../main.dart';
 import '../config/app_config.dart';
 import '../../shared/utils/error_handler.dart';
 
@@ -232,7 +233,7 @@ class SimpleApiClient {
   /// Показ ошибки пользователю
   Future<void> _showError(String message) async {
     try {
-      final context = SessionManager().navigatorKey?.currentContext;
+      final context = navigatorKey.currentContext;
       if (context != null) {
         ErrorHandler.showError(context, message);
       }
@@ -314,8 +315,19 @@ class _SimpleErrorInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // Обработка 401 ошибок (истекшая сессия)
     if (err.response?.statusCode == 401 && !_isAuthEndpoint(err.requestOptions.path)) {
-      // Запускаем обработку истечения сессии в фоне
-      Future.microtask(() => SessionManager().handleSessionExpired());
+      // Запускаем обработку истечения сессии в фоне через navigatorKey
+      Future.microtask(() {
+        final sessionManager = SessionManager();
+        if (sessionManager.navigatorKey == null) {
+          sessionManager.init(
+            navigatorKey: navigatorKey,
+            onForceLogout: () {
+              // Этот callback будет установлен в main.dart
+            },
+          );
+        }
+        sessionManager.handleSessionExpired();
+      });
     }
 
     handler.next(err);

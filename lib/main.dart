@@ -10,6 +10,7 @@ import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/services/fcm_service.dart';
 import 'package:ironman_mobile/core/session/session_manager.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
+import 'package:ironman_mobile/features/auth/application/simple_auth_notifier.dart';
 import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 import 'package:ironman_mobile/features/auth/presentation/login_screen.dart';
 import 'package:ironman_mobile/features/auth/presentation/register_screen.dart';
@@ -278,7 +279,7 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
     SessionManager().init(
       navigatorKey: navigatorKey,
       onForceLogout: () {
-        ref.read(authProvider.notifier).forceLogout();
+        ref.read(simpleAuthProvider.notifier).forceLogout();
       },
     );
 
@@ -289,7 +290,7 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
 
     // Restore session after initialization
     Future.microtask(() {
-      ref.read(authProvider.notifier).restoreSession();
+      ref.read(simpleAuthProvider.notifier).restoreSession();
     });
   }
 
@@ -297,7 +298,7 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
   Widget build(BuildContext context) {
     // ВАЖНО: Используем ref.watch для отслеживания изменений состояния
     // Это гарантирует, что роутер перерисуется при изменении authState
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(simpleAuthProvider);
 
     debugPrint('=== AuthRouter.build() called ===');
     debugPrint('isAuthenticated: ${authState.isAuthenticated}');
@@ -308,7 +309,7 @@ class _AuthRouterState extends ConsumerState<AuthRouter> {
     // Загружаем upcoming события при восстановлении сессии или после логина
     // и очищаем результаты при смене пользователя
     // ВАЖНО: Навигация происходит в LoginScreen после успешного логина
-    ref.listen<AuthState>(authProvider, (previous, next) {
+    ref.listen<AuthState>(simpleAuthProvider, (previous, next) {
       // Очищаем результаты при смене пользователя (логин/логаут)
       final previousUserId = previous?.user?.id;
       final nextUserId = next.user?.id;
