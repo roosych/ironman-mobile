@@ -31,6 +31,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Timer? _debounceTimer;
   DateTime? _lastRegisterAttempt;
   Country? _selectedCountry;
+  String? _lastShownError; // Защита от дублирования диалогов ошибок
 
   @override
   void dispose() {
@@ -96,8 +97,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final localizations = AppLocalizations.of(context)!;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.error != null && next.error != previous?.error) {
+      // ИСПРАВЛЕНО: Защита от дублирования ошибок
+      if (next.error != null &&
+          next.error != previous?.error &&
+          next.error != _lastShownError) {
+        _lastShownError = next.error; // Запоминаем показанную ошибку
         ErrorHandler.showError(context, next.error!);
+      }
+
+      // Сбрасываем запомненную ошибку при успешном состоянии
+      if (next.error == null) {
+        _lastShownError = null;
       }
 
       // Show warning (informational message from server)
