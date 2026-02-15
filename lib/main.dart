@@ -27,6 +27,7 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/results/application/race_results_notifier.dart';
 import 'package:ironman_mobile/features/notifications/application/notifications_notifier.dart';
 import 'package:ironman_mobile/core/config/app_config.dart';
+import 'package:ironman_mobile/core/network/simple_api_client.dart';
 
 /// Global navigator key for navigation without BuildContext
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -42,7 +43,15 @@ void main() async {
     debugPrint('Library: ${details.library}');
     debugPrint('Context: ${details.context}');
     debugPrint('========================');
-    FlutterError.presentError(details);
+
+    // Don't show red screens in debug mode for expected network errors
+    final isNetworkError = details.exception.toString().toLowerCase().contains('timeout') ||
+        details.exception.toString().toLowerCase().contains('connection') ||
+        details.exception.toString().toLowerCase().contains('dioexception');
+
+    if (!isNetworkError) {
+      FlutterError.presentError(details);
+    }
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {
@@ -55,6 +64,14 @@ void main() async {
 
   // Initialize AppConfig FIRST - before any other services
   AppConfig.initialize();
+
+  // Initialize SimpleApiClient
+  try {
+    await SimpleApiClient().init();
+    debugPrint('✅ SimpleApiClient initialized successfully');
+  } catch (e) {
+    debugPrint('❌ Error initializing SimpleApiClient: $e');
+  }
 
   // Initialize Hive
   try {
