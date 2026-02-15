@@ -336,6 +336,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password,
     required String passwordConfirmation,
     String? locale,
+    String? countryCode,
   }) async {
     // Защита от множественных запросов
     if (state.isLoading) return;
@@ -371,6 +372,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
         passwordConfirmation: passwordConfirmation,
         locale: localeForApi,
+        countryCode: countryCode,
       );
 
       // Успешный запрос - сбрасываем время последней ошибки

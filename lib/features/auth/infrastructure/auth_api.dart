@@ -132,6 +132,7 @@ class AuthApi {
     required String password,
     required String passwordConfirmation,
     String? locale,
+    String? countryCode,
   }) async {
     try {
       final data = <String, dynamic>{
@@ -142,6 +143,9 @@ class AuthApi {
       };
       if (locale != null) {
         data['locale'] = locale;
+      }
+      if (countryCode != null) {
+        data['country_code'] = countryCode;
       }
       
       final response = await _client.post<Map<String, dynamic>>(

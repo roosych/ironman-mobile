@@ -46,6 +46,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _register() {
     if (!_formKey.currentState!.validate()) return;
 
+    // Проверяем, что страна выбрана
+    if (_selectedCountry == null) {
+      final localizations = AppLocalizations.of(context)!;
+      ErrorHandler.showError(context, localizations.register_select_country);
+      return;
+    }
+
     // Debounce: предотвращаем множественные нажатия
     final now = DateTime.now();
     if (_lastRegisterAttempt != null) {
@@ -68,6 +75,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
             passwordConfirmation: _confirmPasswordController.text,
+            countryCode: _selectedCountry?.isoCode,
           );
     });
   }
@@ -319,7 +327,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 onTap: authState.isLoading ? null : _showCountrySelector,
                                 child: InputDecorator(
                                   decoration: InputDecoration(
-                                    labelText: localizations.register_select_country,
+                                    labelText: '${localizations.register_select_country} *',
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedLocation01,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,

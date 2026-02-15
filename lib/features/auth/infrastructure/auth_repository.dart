@@ -108,6 +108,7 @@ class AuthRepository {
     required String password,
     required String passwordConfirmation,
     String? locale,
+    String? countryCode,
   }) async {
     final response = await _api.register(
       name: name,
@@ -115,6 +116,7 @@ class AuthRepository {
       password: password,
       passwordConfirmation: passwordConfirmation,
       locale: locale,
+      countryCode: countryCode,
     );
     await _storage.saveToken(response.token);
 
