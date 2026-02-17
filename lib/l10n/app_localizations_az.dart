@@ -406,6 +406,28 @@ class AppLocalizationsAz extends AppLocalizations {
   String get register_already_have_account => 'Hesabınız var?';
 
   @override
+  String get register_privacy_policy_agree => 'Məxfilik siyasəti ilə razıyam ';
+
+  @override
+  String get register_privacy_policy_link => 'Məxfilik Siyasəti';
+
+  @override
+  String get register_privacy_policy_required =>
+      'Məxfilik Siyasəti ilə razılaşmaq lazımdır';
+
+  @override
+  String get policies_title => 'Siyasətlər';
+
+  @override
+  String get policy_not_available => 'Siyasət mövcud deyil';
+
+  @override
+  String get policy_load_error => 'Siyasəti yükləmək mümkün olmadı';
+
+  @override
+  String get retry => 'Təkrar cəhd edin';
+
+  @override
   String get register_thank_you => 'Təşəkkürlər!';
 
   @override

@@ -501,6 +501,34 @@
   "@register_already_have_account": {
     "description": "Text before login link"
   },
+  "register_privacy_policy_agree": "I agree with the ",
+  "@register_privacy_policy_agree": {
+    "description": "Privacy policy agreement text (first part)"
+  },
+  "register_privacy_policy_link": "Privacy Policy",
+  "@register_privacy_policy_link": {
+    "description": "Privacy policy link text"
+  },
+  "register_privacy_policy_required": "You must agree to the Privacy Policy",
+  "@register_privacy_policy_required": {
+    "description": "Privacy policy validation error"
+  },
+  "policies_title": "Policies",
+  "@policies_title": {
+    "description": "Policy screen title"
+  },
+  "policy_not_available": "Policy not available",
+  "@policy_not_available": {
+    "description": "Policy not available message"
+  },
+  "policy_load_error": "Failed to load policy",
+  "@policy_load_error": {
+    "description": "Policy load error message"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
   "register_thank_you": "Thank you!",
   "@register_thank_you": {
     "description": "Registration success title"

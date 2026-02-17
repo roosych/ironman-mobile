@@ -8,6 +8,7 @@ import 'package:ironman_mobile/features/dashboard/application/athletes_notifier.
 import 'package:ironman_mobile/features/dashboard/application/athletes_state.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/athlete_profile_screen.dart';
 import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
+import '../../../shared/utils/image_url_helper.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 
@@ -192,7 +193,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                   child: ClipOval(
                     child: athlete.avatar != null
                         ? Image.network(
-                            athlete.avatar!,
+                            ImageUrlHelper.getFullImageUrl(athlete.avatar!),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return _buildDefaultAvatar(theme);

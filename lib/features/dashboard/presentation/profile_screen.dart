@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../shared/utils/image_url_helper.dart';
 import '../../auth/application/auth_notifier.dart';
 import '../../profile/application/profile_avatar_notifier.dart';
 import '../../profile/presentation/photo_gallery_screen.dart';
@@ -110,7 +111,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
                                 : Theme.of(context).colorScheme.surfaceContainerHighest,
                             backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
-                                ? NetworkImage(avatarUrl)
+                                ? NetworkImage(ImageUrlHelper.getFullImageUrl(avatarUrl))
                                 : null,
                             child: (avatarUrl == null || avatarUrl.isEmpty)
                                 ? HugeIcon(

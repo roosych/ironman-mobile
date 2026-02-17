@@ -11,6 +11,7 @@ import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
+import '../../policies/presentation/policy_screen.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -31,6 +32,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Timer? _debounceTimer;
   DateTime? _lastRegisterAttempt;
   Country? _selectedCountry;
+  String? _countryError; // Ошибка валидации для поля страны
+  bool _privacyPolicyAccepted = false; // Privacy policy checkbox state
   String? _lastShownError; // Защита от дублирования диалогов ошибок
 
   @override
@@ -44,14 +47,45 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   void _register() {
-    if (!_formKey.currentState!.validate()) return;
+    final localizations = AppLocalizations.of(context)!;
+
+    // Очищаем предыдущие ошибки в начале валидации
+    _lastShownError = null;
+
+    // Проверяем все поля сразу, чтобы показать все ошибки одновременно
+    bool hasErrors = false;
 
     // Проверяем, что страна выбрана
     if (_selectedCountry == null) {
-      final localizations = AppLocalizations.of(context)!;
-      ErrorHandler.showError(context, localizations.register_select_country);
-      return;
+      setState(() {
+        _countryError = localizations.register_select_country;
+      });
+      hasErrors = true;
+    } else {
+      setState(() {
+        _countryError = null;
+      });
     }
+
+    // Проверяем, что пользователь согласился с политикой конфиденциальности
+    if (!_privacyPolicyAccepted) {
+      final errorMessage = localizations.register_privacy_policy_required;
+      // Проверяем, что эта ошибка еще не показывалась
+      if (_lastShownError != errorMessage) {
+        debugPrint('🚨 Register: Showing policy error: $errorMessage');
+        _lastShownError = errorMessage;
+        ErrorHandler.showError(context, errorMessage);
+      }
+      hasErrors = true;
+    }
+
+    // Проверяем стандартные поля формы
+    if (!_formKey.currentState!.validate()) {
+      hasErrors = true;
+    }
+
+    // Если есть ошибки, прекращаем выполнение
+    if (hasErrors) return;
 
     // Debounce: предотвращаем множественные нажатия
     final now = DateTime.now();
@@ -68,6 +102,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     // Устанавливаем новый таймер для debounce
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      debugPrint('🌍 Registration: Sending country code: ${_selectedCountry?.isoCode}');
+      debugPrint('🌍 Registration: Selected country: ${_selectedCountry?.name}');
+
       ref
           .read(authProvider.notifier)
           .register(
@@ -93,6 +130,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         onCountrySelected: (country) {
           setState(() {
             _selectedCountry = country;
+            _countryError = null; // Очищаем ошибку при выборе страны
           });
         },
       ),
@@ -109,6 +147,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (next.error != null &&
           next.error != previous?.error &&
           next.error != _lastShownError) {
+        debugPrint('🚨 Register: Showing auth error: ${next.error}');
         _lastShownError = next.error; // Запоминаем показанную ошибку
         ErrorHandler.showError(context, next.error!);
       }
@@ -327,7 +366,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 onTap: authState.isLoading ? null : _showCountrySelector,
                                 child: InputDecorator(
                                   decoration: InputDecoration(
-                                    labelText: '${localizations.register_select_country} *',
+                                    labelText: localizations.register_select_country,
+                                    errorText: _countryError,
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedLocation01,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -482,6 +522,57 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   }
                                   return null;
                                 },
+                              ),
+                              const SizedBox(height: 16),
+                              // Privacy Policy Checkbox
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: _privacyPolicyAccepted,
+                                    onChanged: authState.isLoading ? null : (value) {
+                                      setState(() {
+                                        _privacyPolicyAccepted = value ?? false;
+                                      });
+                                    },
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        children: [
+                                          TextSpan(
+                                            text: localizations.register_privacy_policy_agree,
+                                          ),
+                                          WidgetSpan(
+                                            child: GestureDetector(
+                                              onTap: authState.isLoading ? null : () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) => const PolicyScreen(
+                                                      initialType: 'privacy',
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: Text(
+                                                localizations.register_privacy_policy_link,
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: AppColors.ironmanRed,
+                                                  decoration: TextDecoration.underline,
+                                                  decorationColor: AppColors.ironmanRed,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 24),
                               FilledButton(

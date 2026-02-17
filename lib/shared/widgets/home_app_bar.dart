@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../features/auth/application/auth_notifier.dart';
 import '../../features/notifications/application/notifications_notifier.dart';
+import '../utils/image_url_helper.dart';
 
 /// TopBar widget that displays user avatar (left), logo (center), notifications (right).
 /// Avatar is read from AuthState.user.avatarUrl (Single Source of Truth)
@@ -60,7 +61,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                         ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
                         : Theme.of(context).colorScheme.surfaceContainerHighest,
                     backgroundImage:
-                        (avatarUrl != null && avatarUrl.isNotEmpty) ? NetworkImage(avatarUrl) : null,
+                        (avatarUrl != null && avatarUrl.isNotEmpty) ? NetworkImage(ImageUrlHelper.getFullImageUrl(avatarUrl)) : null,
                     child: (avatarUrl == null || avatarUrl.isEmpty)
                         ? HugeIcon(
                             icon: HugeIcons.strokeRoundedUser,

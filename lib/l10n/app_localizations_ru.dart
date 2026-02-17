@@ -406,6 +406,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get register_already_have_account => 'Уже есть аккаунт?';
 
   @override
+  String get register_privacy_policy_agree => 'Я согласен с ';
+
+  @override
+  String get register_privacy_policy_link => 'Политикой конфиденциальности';
+
+  @override
+  String get register_privacy_policy_required =>
+      'Необходимо согласиться с Политикой конфиденциальности';
+
+  @override
+  String get policies_title => 'Политики';
+
+  @override
+  String get policy_not_available => 'Политика недоступна';
+
+  @override
+  String get policy_load_error => 'Не удалось загрузить политику';
+
+  @override
+  String get retry => 'Повторить';
+
+  @override
   String get register_thank_you => 'Спасибо!';
 
   @override

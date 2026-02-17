@@ -862,6 +862,48 @@ abstract class AppLocalizations {
   /// **'Already have an account?'**
   String get register_already_have_account;
 
+  /// Privacy policy agreement text (first part)
+  ///
+  /// In en, this message translates to:
+  /// **'I agree with the '**
+  String get register_privacy_policy_agree;
+
+  /// Privacy policy link text
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get register_privacy_policy_link;
+
+  /// Privacy policy validation error
+  ///
+  /// In en, this message translates to:
+  /// **'You must agree to the Privacy Policy'**
+  String get register_privacy_policy_required;
+
+  /// Policy screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Policies'**
+  String get policies_title;
+
+  /// Policy not available message
+  ///
+  /// In en, this message translates to:
+  /// **'Policy not available'**
+  String get policy_not_available;
+
+  /// Policy load error message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load policy'**
+  String get policy_load_error;
+
+  /// Retry button text
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
   /// Registration success title
   ///
   /// In en, this message translates to:

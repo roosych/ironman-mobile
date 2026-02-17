@@ -87,6 +87,9 @@ dependencies:
   country_flags: ^3.0.2
   http: ^1.6.0
 
+  # HTML rendering for policies
+  flutter_html: ^3.0.0-beta.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -109,8 +112,8 @@ flutter_native_splash:
   color: "#0D0D0D"
   color_dark: "#0D0D0D"
 
-  image: assets/images/logo-splash.png
-  image_dark: assets/images/logo-splash.png
+  image: assets/images/splash-new.png
+  image_dark: assets/images/splash-new.png
 
   android_gravity: center
   ios_content_mode: center
@@ -118,8 +121,8 @@ flutter_native_splash:
   android_12:
     color: "#0D0D0D"
     color_dark: "#0D0D0D"
-    image: assets/images/logo-splash.png
-    image_dark: assets/images/logo-splash.png
+    image: assets/images/splash-new.png
+    image_dark: assets/images/splash-new.png
 
 # App icon configuration
 flutter_launcher_icons:

@@ -145,9 +145,14 @@ class AuthApi {
         data['locale'] = locale;
       }
       if (countryCode != null) {
-        data['country_code'] = countryCode;
+        data['country_iso'] = countryCode;
+        debugPrint('🌍 AuthAPI: country_iso set to: $countryCode');
+      } else {
+        debugPrint('⚠️ AuthAPI: countryCode is null!');
       }
-      
+
+      debugPrint('🚀 AuthAPI: Sending registration data: $data');
+
       final response = await _client.post<Map<String, dynamic>>(
         '/auth/register',
         data: data,

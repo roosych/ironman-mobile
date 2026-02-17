@@ -405,6 +405,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get register_already_have_account => 'Already have an account?';
 
   @override
+  String get register_privacy_policy_agree => 'I agree with the ';
+
+  @override
+  String get register_privacy_policy_link => 'Privacy Policy';
+
+  @override
+  String get register_privacy_policy_required =>
+      'You must agree to the Privacy Policy';
+
+  @override
+  String get policies_title => 'Policies';
+
+  @override
+  String get policy_not_available => 'Policy not available';
+
+  @override
+  String get policy_load_error => 'Failed to load policy';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
   String get register_thank_you => 'Thank you!';
 
   @override

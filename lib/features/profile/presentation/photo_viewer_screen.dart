@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../shared/utils/image_url_helper.dart';
 import '../application/user_photos_notifier.dart';
 import '../domain/user_photo.dart';
 
@@ -373,7 +374,7 @@ class _PhotoPageState extends State<_PhotoPage> {
         maxScale: 4.0,
         child: Center(
           child: Image.network(
-            widget.photo.url,
+            ImageUrlHelper.getFullImageUrl(widget.photo.url),
             fit: BoxFit.contain,
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;

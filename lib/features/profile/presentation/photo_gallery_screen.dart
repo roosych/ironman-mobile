@@ -6,6 +6,7 @@ import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../../shared/utils/alert_helper.dart';
+import '../../../shared/utils/image_url_helper.dart';
 import '../application/user_photos_notifier.dart';
 import '../application/user_photos_state.dart';
 import '../domain/user_photo.dart';
@@ -389,7 +390,7 @@ class _PhotoCard extends StatelessWidget {
         children: [
           // Photo image with caching
           CachedNetworkImage(
-            imageUrl: photo.url,
+            imageUrl: ImageUrlHelper.getFullImageUrl(photo.url),
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,

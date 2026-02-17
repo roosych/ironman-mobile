@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../../features/upcoming_races/domain/upcoming_race.dart';
+import '../utils/image_url_helper.dart';
 
 class UpcomingRaceCard extends StatelessWidget {
   final UpcomingRace race;
@@ -174,7 +175,7 @@ class UpcomingRaceCard extends StatelessWidget {
                     child: ClipOval(
                       child: race.createdBy!.avatar != null
                           ? Image.network(
-                              race.createdBy!.avatar!,
+                              ImageUrlHelper.getFullImageUrl(race.createdBy!.avatar!),
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return _buildDefaultAvatar(theme);

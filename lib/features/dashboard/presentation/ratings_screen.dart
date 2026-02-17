@@ -8,6 +8,7 @@ import 'package:ironman_mobile/features/rankings/application/rankings_state.dart
 import 'package:ironman_mobile/features/rankings/domain/ranking.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/disciplines_comparison_widget.dart';
 import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
+import '../../../shared/utils/image_url_helper.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 import 'package:intl/intl.dart';
@@ -768,7 +769,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     child: ClipOval(
                       child: ranking.avatar != null
                           ? Image.network(
-                              ranking.avatar!,
+                              ImageUrlHelper.getFullImageUrl(ranking.avatar!),
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return _buildDefaultAvatar(theme);
