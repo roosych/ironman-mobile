@@ -141,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: Colors.white,
                   size: 24,
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false),
               ),
               actions: [
                 Padding(
@@ -268,31 +268,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     decoration: AppButtonStyles.primaryGradientDecoration(
                                       borderRadius: 12,
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
+                                    child: const Center(
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
                                         ),
-                                        const SizedBox(width: 12),
-                                        Flexible(
-                                          child: Text(
-                                            authState.getLoadingMessage(localizations),
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   )
                                 : AppButtonStyles.primaryGradientButton(
