@@ -58,7 +58,6 @@ class Profile {
   final String? countryIso;
   final String? bio;
   final SocialLinks socialLinks;
-  final bool? codeUsed;
   final Map<String, dynamic>? photos;
   final List<RaceResult>? raceResults;
   final Stats? stats;
@@ -72,7 +71,6 @@ class Profile {
     this.countryIso,
     this.bio,
     this.socialLinks = const SocialLinks(),
-    this.codeUsed,
     this.photos,
     this.raceResults,
     this.stats,
@@ -140,7 +138,6 @@ class Profile {
       socialLinks: SocialLinks.fromJson(
         json['social_links'] as Map<String, dynamic>?,
       ),
-      codeUsed: json['code_used'] as bool?,
       photos: photos,
       raceResults: raceResults,
       stats: Stats.fromJson(
@@ -159,7 +156,6 @@ class Profile {
       'country_iso': countryIso,
       'bio': bio,
       'social_links': socialLinks.toJson(),
-      'code_used': codeUsed,
       'photos': photos,
       'race_results': raceResults?.map((result) => result.toJson()).toList(),
       'stats': stats?.toJson(),
@@ -175,7 +171,6 @@ class Profile {
     String? countryIso,
     String? bio,
     SocialLinks? socialLinks,
-    bool? codeUsed,
     Map<String, dynamic>? photos,
     List<RaceResult>? raceResults,
     Stats? stats,
@@ -186,7 +181,6 @@ class Profile {
     bool clearIronmanRacesCount = false,
     bool clearCountryIso = false,
     bool clearBio = false,
-    bool clearCodeUsed = false,
     bool clearPhotos = false,
     bool clearRaceResults = false,
     bool clearStats = false,
@@ -200,7 +194,6 @@ class Profile {
       countryIso: clearCountryIso ? null : (countryIso ?? this.countryIso),
       bio: clearBio ? null : (bio ?? this.bio),
       socialLinks: socialLinks ?? this.socialLinks,
-      codeUsed: clearCodeUsed ? null : (codeUsed ?? this.codeUsed),
       photos: clearPhotos ? null : (photos ?? this.photos),
       raceResults: clearRaceResults ? null : (raceResults ?? this.raceResults),
       stats: clearStats ? null : (stats ?? this.stats),
