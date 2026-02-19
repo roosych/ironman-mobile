@@ -23,6 +23,16 @@ import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
 import '../../../core/services/notification_permission_service.dart';
 
+/// Helper function to safely cast personal bests data
+Map<String, dynamic>? _safeGetPersonalBestsData(dynamic data) {
+  if (data == null) return null;
+  if (data is Map<String, dynamic>) return data;
+  if (data is List<dynamic> && data.isNotEmpty && data[0] is Map<String, dynamic>) {
+    return data[0] as Map<String, dynamic>;
+  }
+  return null;
+}
+
 // Вспомогательные функции для расчёта темпа
 Map<String, double> _getDistances(String raceType) {
   final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
@@ -1317,39 +1327,33 @@ class _PersonalBestsExpandableCardState
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Ironman
-                        if (widget.personalBests['ironman'] != null) ...[
+                        if (_safeGetPersonalBestsData(widget.personalBests['ironman']) != null) ...[
                           _PersonalBestsCard(
                             title: 'Ironman',
-                            data:
-                                widget.personalBests['ironman']
-                                    as Map<String, dynamic>,
+                            data: _safeGetPersonalBestsData(widget.personalBests['ironman'])!,
                             profileId: widget.profileId,
                             results: widget.results,
                           ),
-                          if (widget.personalBests['ironman_70_3'] != null ||
-                              widget.personalBests['5150'] != null)
+                          if (_safeGetPersonalBestsData(widget.personalBests['ironman_70_3']) != null ||
+                              _safeGetPersonalBestsData(widget.personalBests['5150']) != null)
                             const SizedBox(height: 12),
                         ],
                         // Ironman 70.3
-                        if (widget.personalBests['ironman_70_3'] != null) ...[
+                        if (_safeGetPersonalBestsData(widget.personalBests['ironman_70_3']) != null) ...[
                           _PersonalBestsCard(
                             title: 'Ironman 70.3',
-                            data:
-                                widget.personalBests['ironman_70_3']
-                                    as Map<String, dynamic>,
+                            data: _safeGetPersonalBestsData(widget.personalBests['ironman_70_3'])!,
                             profileId: widget.profileId,
                             results: widget.results,
                           ),
-                          if (widget.personalBests['5150'] != null)
+                          if (_safeGetPersonalBestsData(widget.personalBests['5150']) != null)
                             const SizedBox(height: 12),
                         ],
                         // 5150
-                        if (widget.personalBests['5150'] != null)
+                        if (_safeGetPersonalBestsData(widget.personalBests['5150']) != null)
                           _PersonalBestsCard(
                             title: '5150',
-                            data:
-                                widget.personalBests['5150']
-                                    as Map<String, dynamic>,
+                            data: _safeGetPersonalBestsData(widget.personalBests['5150'])!,
                             profileId: widget.profileId,
                             results: widget.results,
                           ),

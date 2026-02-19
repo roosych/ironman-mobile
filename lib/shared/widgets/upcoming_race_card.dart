@@ -138,7 +138,7 @@ class UpcomingRaceCard extends StatelessWidget {
                   child: Row(
                     children: [
                       HugeIcon(
-                        icon: HugeIcons.strokeRoundedCalendar01,
+                        icon: HugeIcons.strokeRoundedCalendar03,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         size: 16,
                       ),

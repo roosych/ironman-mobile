@@ -220,7 +220,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     ListTile(
                       leading: HugeIcon(
-                        icon: HugeIcons.strokeRoundedCalendar01,
+                        icon: HugeIcons.strokeRoundedCalendar03,
                         color: Theme.of(context).colorScheme.primary,
                         size: 24,
                       ),

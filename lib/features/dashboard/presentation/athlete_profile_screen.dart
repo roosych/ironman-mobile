@@ -276,7 +276,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final currentTheme = Theme.of(context);
                             final isSelected = _tabController.index == 3;
                             return HugeIcon(
-                              icon: HugeIcons.strokeRoundedCalendar01,
+                              icon: HugeIcons.strokeRoundedCalendar03,
                               size: 24,
                               color: isSelected
                                   ? AppColors.ironmanWhite
@@ -312,10 +312,12 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     );
     final athlete = athleteDetailState.athlete ?? widget.athlete;
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        children: [
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
           // Аватар с бейджем
           Stack(
             children: [
@@ -402,14 +404,19 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               ),
             ),
           ],
-          // Блок рейтинга (показываем только если есть данные рейтинга)
-          if (athlete.ranking != null &&
-              (athlete.ranking!.ironman != null || athlete.ranking!.ironman703 != null)) ...[
-            const SizedBox(height: 16),
-            _buildRatingBlock(context, theme, athlete),
-          ],
+            ],
+          ),
+        ),
+        // Блок рейтинга (показываем только если есть данные рейтинга)
+        if (athlete.ranking != null &&
+            (athlete.ranking!.ironman != null || athlete.ranking!.ironman703 != null)) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0), // Match tab block margins
+            child: _buildRatingBlock(context, theme, athlete),
+          ),
         ],
-      ),
+      ],
     );
   }
 
@@ -1063,9 +1070,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
   Widget _buildRatingBlock(BuildContext context, ThemeData theme, Athlete athlete) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Card(
+    return Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -1173,8 +1178,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           ],
         ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildRatingRow(BuildContext context, ThemeData theme, String raceType, int position, int total) {

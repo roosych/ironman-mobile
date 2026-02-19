@@ -68,6 +68,8 @@ class ResultDetailScreen extends ConsumerWidget {
     if (duration == null || distance <= 0) return '';
 
     final totalSeconds = duration.inSeconds;
+    if (totalSeconds <= 0) return ''; // Только блокируем нулевое время
+
     final pacePerHundredMetersSeconds = (totalSeconds / distance) * 0.1; // 100 meters
 
     final minutes = (pacePerHundredMetersSeconds / 60).floor();
@@ -80,7 +82,10 @@ class ResultDetailScreen extends ConsumerWidget {
     final duration = _parseTime(timeStr);
     if (duration == null || distance <= 0) return '';
 
-    final hours = duration.inSeconds / 3600;
+    final totalSeconds = duration.inSeconds;
+    if (totalSeconds <= 0) return ''; // Только блокируем нулевое время
+
+    final hours = totalSeconds / 3600;
     final speed = distance / hours;
 
     return speed.toStringAsFixed(1);
@@ -91,12 +96,21 @@ class ResultDetailScreen extends ConsumerWidget {
     if (duration == null || distance <= 0) return '';
 
     final totalSeconds = duration.inSeconds;
+    if (totalSeconds <= 0) return ''; // Только блокируем нулевое время
+
     final pacePerKmSeconds = totalSeconds / distance;
 
     final minutes = (pacePerKmSeconds / 60).floor();
     final seconds = (pacePerKmSeconds % 60).round();
 
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  String _capitalizeWords(String text) {
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 
   @override
@@ -107,7 +121,9 @@ class ResultDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          localizations.result_detail_title,
+          result.athleteName != null && result.athleteName!.isNotEmpty
+              ? _capitalizeWords(result.athleteName!)
+              : localizations.result_detail_title,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -139,56 +155,85 @@ class ResultDetailScreen extends ConsumerWidget {
                         _getRaceTypeText(result.raceType, context),
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
-                          fontSize: 22,
+                          fontSize: 20, // Уменьшенный размер шрифта
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     // Location
-                    Text(
-                      result.location,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        HugeIcon(
+                          icon: HugeIcons.strokeRoundedLocation01,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            result.location,
+                            style: theme.textTheme.titleMedium?.copyWith( // Уменьшенный размер шрифта
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     // Date
-                    Text(
-                      _formatDate(result.date),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        HugeIcon(
+                          icon: HugeIcons.strokeRoundedCalendar03,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDate(result.date),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // Total time
             Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide.none, // Remove border
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0), // Уменьшенные вертикальные отступы
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
                       'assets/images/svg/flag.png',
-                      width: 32,
-                      height: 32,
+                      width: 24,
+                      height: 24,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        return const SizedBox(width: 32, height: 32);
+                        return const SizedBox(width: 24, height: 24);
                       },
                     ),
                     const SizedBox(width: 16),
                     Text(
                       result.totalTime,
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith( // Уменьшенный размер шрифта
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -196,7 +241,7 @@ class ResultDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // Disciplines section
             Text(
@@ -351,7 +396,7 @@ class _TransitionCard extends StatelessWidget {
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Уменьшенные вертикальные отступы
         child: Row(
           children: [
             Container(

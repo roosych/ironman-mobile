@@ -804,7 +804,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                         Row(
                           children: [
                             HugeIcon(
-                              icon: HugeIcons.strokeRoundedCalendar01,
+                              icon: HugeIcons.strokeRoundedCalendar03,
                               color: AppColors.ironmanTextSecondary,
                               size: 14,
                             ),

@@ -120,7 +120,7 @@ class ResultCard extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     HugeIcon(
-                      icon: HugeIcons.strokeRoundedCalendar01,
+                      icon: HugeIcons.strokeRoundedCalendar03,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       size: 16,
                     ),

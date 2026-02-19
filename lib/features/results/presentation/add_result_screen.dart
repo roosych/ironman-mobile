@@ -262,7 +262,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   filled: true,
                   fillColor: AppColors.ironmanDarkGray,
                   prefixIcon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedCalendar01,
+                    icon: HugeIcons.strokeRoundedCalendar03,
                     color: Colors.white,
                     size: 20,
                   ),
