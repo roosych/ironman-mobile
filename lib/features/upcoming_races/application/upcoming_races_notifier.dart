@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:async';
 import '../infrastructure/upcoming_races_api.dart';
 import 'upcoming_races_state.dart';
 
@@ -39,7 +38,6 @@ final upcomingRacesProvider = globalUpcomingRacesProvider;
 
 class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
   final UpcomingRacesApi _api;
-  static const Duration _requestTimeout = Duration(seconds: 20);
 
   UpcomingRacesNotifier({UpcomingRacesApi? api})
     : _api = api ?? UpcomingRacesApi(),
@@ -82,18 +80,11 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
             raceType: raceType,
             onlyFuture: onlyFuture,
             page: 1, // Только первая страница
-          )
-          .timeout(_requestTimeout);
+          );
       state = state.copyWith(
         races: racesResponse.data,
         isLoading: false,
         paginationMeta: racesResponse.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoading: false,
-        error:
-            'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on UpcomingRacesApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -131,17 +122,11 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
             onlyFuture: onlyFuture,
             page: 1,
           )
-          .timeout(_requestTimeout);
+;
       state = state.copyWith(
         races: racesResponse.data,
         isLoading: false,
         paginationMeta: racesResponse.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoading: false,
-        error:
-            'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on UpcomingRacesApiException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -171,7 +156,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
             onlyFuture: onlyFuture,
             page: meta.currentPage + 1,
           )
-          .timeout(_requestTimeout);
+;
 
       // Добавляем новые гонки к существующим
       final updatedRaces = [...state.races, ...racesResponse.data];
@@ -179,12 +164,6 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
         races: updatedRaces,
         isLoadingMore: false,
         paginationMeta: racesResponse.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoadingMore: false,
-        error:
-            'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on UpcomingRacesApiException catch (e) {
       state = state.copyWith(isLoadingMore: false, error: e.message);
@@ -212,15 +191,10 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
             onlyFuture: onlyFuture,
             page: 1,
           )
-          .timeout(_requestTimeout);
+;
       state = state.copyWith(
         races: racesResponse.data,
         paginationMeta: racesResponse.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        error:
-            'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on UpcomingRacesApiException catch (e) {
       state = state.copyWith(error: e.message);
@@ -240,13 +214,10 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
           .createUpcomingRace(
             raceId: raceId,
           )
-          .timeout(_requestTimeout);
+;
 
       // Добавляем новую гонку в список
       state = state.copyWith(races: [newRace, ...state.races]);
-    } on TimeoutException {
-      state = state.copyWith(error: 'Превышено время ожидания...');
-      rethrow;
     } on UpcomingRacesApiException catch (e) {
       state = state.copyWith(error: e.message);
       rethrow;

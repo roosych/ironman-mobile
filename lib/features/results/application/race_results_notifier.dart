@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:async';
 import '../infrastructure/race_results_api.dart';
 import 'race_results_state.dart';
 
@@ -17,7 +16,6 @@ final athleteRaceResultsProvider = StateNotifierProvider.family<
 
 class RaceResultsNotifier extends StateNotifier<RaceResultsState> {
   final RaceResultsApi _api;
-  static const Duration _requestTimeout = Duration(seconds: 20);
   int? _lastLoadedProfileId; // Отслеживаем, для какого profileId загружены результаты
 
   RaceResultsNotifier({RaceResultsApi? api})
@@ -58,17 +56,12 @@ class RaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(isLoading: showLoading, clearError: true);
 
     try {
-      final response = await _api.fetchResultsByProfileId(profileId).timeout(_requestTimeout);
+      final response = await _api.fetchResultsByProfileId(profileId);
       _lastLoadedProfileId = profileId; // Сохраняем profileId после успешной загрузки
       state = state.copyWith(
         results: response.results,
         isLoading: false,
         pagination: response.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(
@@ -93,17 +86,12 @@ class RaceResultsNotifier extends StateNotifier<RaceResultsState> {
 
     try {
       final nextPage = state.pagination?.nextPage ?? 2;
-      final response = await _api.fetchResultsByProfileId(profileId, page: nextPage).timeout(_requestTimeout);
+      final response = await _api.fetchResultsByProfileId(profileId, page: nextPage);
       state = state.copyWith(
         results: response.results,
         isLoadingMore: false,
         pagination: response.meta,
         appendResults: true,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoadingMore: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(
@@ -122,15 +110,11 @@ class RaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(clearError: true);
 
     try {
-      final response = await _api.fetchResultsByProfileId(profileId).timeout(_requestTimeout);
+      final response = await _api.fetchResultsByProfileId(profileId);
       _lastLoadedProfileId = profileId; // Обновляем profileId после обновления
       state = state.copyWith(
         results: response.results,
         pagination: response.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(error: e.message);
@@ -158,7 +142,6 @@ final allRaceResultsProvider =
 
 class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
   final RaceResultsApi _api;
-  static const Duration _requestTimeout = Duration(seconds: 20);
 
   AllRaceResultsNotifier({RaceResultsApi? api})
       : _api = api ?? RaceResultsApi(),
@@ -173,16 +156,11 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(isLoading: showLoading, clearError: true);
 
     try {
-      final response = await _api.fetchAllResults().timeout(_requestTimeout);
+      final response = await _api.fetchAllResults();
       state = state.copyWith(
         results: response.results,
         isLoading: false,
         pagination: response.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(
@@ -207,17 +185,12 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
 
     try {
       final nextPage = state.pagination?.nextPage ?? 2;
-      final response = await _api.fetchAllResults(page: nextPage).timeout(_requestTimeout);
+      final response = await _api.fetchAllResults(page: nextPage);
       state = state.copyWith(
         results: response.results,
         isLoadingMore: false,
         pagination: response.meta,
         appendResults: true,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        isLoadingMore: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(
@@ -236,14 +209,10 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(clearError: true);
 
     try {
-      final response = await _api.fetchAllResults().timeout(_requestTimeout);
+      final response = await _api.fetchAllResults();
       state = state.copyWith(
         results: response.results,
         pagination: response.meta,
-      );
-    } on TimeoutException {
-      state = state.copyWith(
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
       );
     } on RaceResultsApiException catch (e) {
       state = state.copyWith(error: e.message);

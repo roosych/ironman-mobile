@@ -20,10 +20,10 @@ class ApiClient {
       _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
-          // МАКСИМАЛЬНО агрессивные timeouts - должны сработать раньше Timer
-          connectTimeout: const Duration(seconds: 2),
-          receiveTimeout: const Duration(seconds: 3),
-          sendTimeout: const Duration(seconds: 2),
+          // Оптимизированные таймауты для мобильных сетей
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 20),
+          sendTimeout: const Duration(seconds: 12),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -48,35 +48,14 @@ class ApiClient {
 
   Dio get dio => _dio;
 
-  /// Простая обертка для безопасных запросов с timeout через microtask
+  /// Простая обертка для безопасных запросов с обработкой ошибок
   Future<Response<T>> _safeRequest<T>(Future<Response<T>> Function() request) async {
     try {
       debugPrint('🌐 SafeRequest: Выполняем запрос...');
       debugPrint('🕒 SafeRequest: Время начала: ${DateTime.now()}');
 
-      // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем Future.any для работающего timeout
-      // который НЕ зависит от блокировки UI thread
-      final requestFuture = request();
-
-      // Создаем timeout future через microtask (выполняется в следующем кадре)
-      final timeoutFuture = Future.delayed(
-        const Duration(seconds: 5),
-        () {
-          debugPrint('🔥🔥🔥 TIMEOUT FUTURE СРАБОТАЛ после 5 секунд! 🔥🔥🔥');
-          debugPrint('🕒 Timeout время: ${DateTime.now()}');
-
-          throw DioException(
-            requestOptions: RequestOptions(path: 'timeout'),
-            type: DioExceptionType.receiveTimeout,
-            message: 'Сервер не отвечает. Проверьте подключение к интернету.',
-          );
-        },
-      );
-
-      debugPrint('🚀 SafeRequest: Запускаем Future.any(request, timeout)...');
-
-      // Используем Future.any - первый завершившийся future выиграет
-      final response = await Future.any([requestFuture, timeoutFuture]);
+      // Выполняем запрос напрямую - таймауты обрабатываются на уровне Dio
+      final response = await request();
 
       debugPrint('✅ SafeRequest: Запрос завершен успешно');
       debugPrint('🕒 SafeRequest: Время завершения: ${DateTime.now()}');
@@ -225,13 +204,15 @@ class _AuthInterceptor extends Interceptor {
         },
       );
 
-      debugPrint('Token retrieved, length: ${token?.length ?? 0}');
+      debugPrint('🔍 Token retrieved: ${token?.isNotEmpty == true ? "[FOUND] length=${token!.length}" : "[NULL/EMPTY]"}');
 
       if (token != null && token.isNotEmpty) {
-        debugPrint('Adding Authorization header...');
+        debugPrint('✅ Adding Authorization header: Bearer ${token.substring(0, 10)}...');
         options.headers['Authorization'] = 'Bearer $token';
+        debugPrint('📋 Final headers: ${options.headers}');
       } else {
-        debugPrint('No token found');
+        debugPrint('❌ No token found - запрос будет без авторизации!');
+        debugPrint('🔍 Проверьте авторизацию пользователя');
       }
 
       // ФИКС: Добавляем заголовок Accept-Language с таймаутом
@@ -307,6 +288,10 @@ class _AuthInterceptor extends Interceptor {
       '/user/fcm-token',      // регистрация/удаление FCM токена
       '/upcoming-races',      // список гонок (гость/неверифицированный)
       '/notifications',       // список уведомлений
+      // Transfer endpoints (may not be implemented yet)
+      '/transfer/current',    // текущий статус заявки на перенос
+      '/transfer/eligible-athletes', // список доступных атлетов
+      '/transfer/request',    // создание заявки на перенос
     ];
     return ignorePaths.any((ignorePath) => path.contains(ignorePath));
   }

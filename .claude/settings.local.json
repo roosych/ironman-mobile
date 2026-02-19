@@ -46,7 +46,9 @@
       "Bash(cd:*)",
       "Bash(r)",
       "Bash(socat:*)",
-      "Bash(dart test_login.dart:*)"
+      "Bash(dart test_login.dart:*)",
+      "Bash(git ls-files:*)",
+      "Bash(find:*)"
     ]
   }
 }

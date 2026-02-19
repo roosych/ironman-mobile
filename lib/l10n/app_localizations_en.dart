@@ -483,7 +483,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit_profile_social_links => 'Social Links';
 
   @override
-  String get edit_profile_save_button => 'SAVE CHANGES';
+  String get edit_profile_save_button => 'Save';
 
   @override
   String get edit_profile_save_success => 'Profile saved successfully';

@@ -27,68 +27,40 @@ class UnauthenticatedBottomNav extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.ironmanBlack,
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 20,
-            color: AppColors.ironmanBlack.withValues(alpha: 0.5),
-          ),
-        ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 6,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.ironmanGray.withValues(alpha: 0.6),
-                    AppColors.ironmanGray.withValues(alpha: 0),
-                  ],
-                ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavItem(
+                icon: HugeIcons.strokeRoundedStopWatch,
+                label: loc.nav_results,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                isSelected: currentIndex == 0,
+                onTap: () => _navigateTo(context, '/results'),
               ),
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedStopWatch,
-                    label: loc.nav_results,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    isSelected: currentIndex == 0,
-                    onTap: () => _navigateTo(context, '/results'),
-                  ),
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedAward01,
-                    label: loc.nav_ratings,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    isSelected: currentIndex == 1,
-                    onTap: () => _navigateTo(context, '/ratings'),
-                  ),
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedUserGroup,
-                    label: loc.nav_athletes,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    isSelected: currentIndex == 2,
-                    onTap: () => _navigateTo(context, '/athletes'),
-                  ),
-                ],
+              _NavItem(
+                icon: HugeIcons.strokeRoundedAward01,
+                label: loc.nav_ratings,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                isSelected: currentIndex == 1,
+                onTap: () => _navigateTo(context, '/ratings'),
               ),
-            ),
+              _NavItem(
+                icon: HugeIcons.strokeRoundedUserGroup,
+                label: loc.nav_athletes,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                isSelected: currentIndex == 2,
+                onTap: () => _navigateTo(context, '/athletes'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -438,19 +438,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               pinned: true,
               floating: false,
               snap: false,
-              forceElevated: true,
+              forceElevated: false,
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight + 80),
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 20,
-                        color: Colors.black.withValues(alpha: 0.1),
-                      ),
-                    ],
-                  ),
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   child: Column(
                     children: [
                       // Поле поиска

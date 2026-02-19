@@ -25,12 +25,6 @@ class BottomNavBar extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: Colors.black.withValues(alpha: 0.1),
-              ),
-            ],
           ),
           child: SafeArea(
             child: Padding(

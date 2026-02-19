@@ -484,7 +484,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get edit_profile_social_links => 'Sosial şəbəkələr';
 
   @override
-  String get edit_profile_save_button => 'YADDA SAXLA';
+  String get edit_profile_save_button => 'Yadda saxla';
 
   @override
   String get edit_profile_save_success => 'Profil saxlanıldı';

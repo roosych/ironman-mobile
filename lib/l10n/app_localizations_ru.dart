@@ -484,7 +484,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get edit_profile_social_links => 'Социальные сети';
 
   @override
-  String get edit_profile_save_button => 'СОХРАНИТЬ ИЗМЕНЕНИЯ';
+  String get edit_profile_save_button => 'Сохранить';
 
   @override
   String get edit_profile_save_success => 'Профиль сохранён';

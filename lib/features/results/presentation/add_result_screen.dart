@@ -61,7 +61,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
       locale: ref.read(localeProvider),
@@ -209,11 +209,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             child: Column(
               children: [
             
-            // Basic Information Section
-            _SectionHeader(
-              title: localizations.add_result_section_basic_info,
-              icon: Icons.description_outlined,
-            ),
             const SizedBox(height: 16),
             
             // Location field with icon
@@ -227,8 +222,8 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 hintStyle: theme.textTheme.bodyLarge,
                 filled: true,
                 fillColor: AppColors.ironmanDarkGray,
-                prefixIcon: Icon(
-                  Icons.location_on_outlined,
+                prefixIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedLocation01,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -266,8 +261,8 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   hintStyle: theme.textTheme.bodyLarge,
                   filled: true,
                   fillColor: AppColors.ironmanDarkGray,
-                  prefixIcon: Icon(
-                    Icons.calendar_today_outlined,
+                  prefixIcon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedCalendar01,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -292,7 +287,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   _selectedDate != null
                       ? _formatDisplayDate(_selectedDate)
                       : localizations.add_result_date_hint,
-                  style: TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     color: _selectedDate != null
                         ? theme.colorScheme.onSurface
                         : theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -354,13 +349,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Time Section
-            _SectionHeader(
-              title: localizations.add_result_section_time,
-              icon: Icons.access_time_outlined,
-            ),
-            const SizedBox(height: 16),
-
             // Total time
             DisciplineCard(
               icon: Icons.flag_outlined,
@@ -390,14 +378,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   ),
                 ),
               ),
-            const SizedBox(height: 24),
-
-            // Disciplines section header
-            _SectionHeader(
-              title: localizations.add_result_section_disciplines,
-              icon: Icons.timer_outlined,
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
             // Swim time
             DisciplineCard(
@@ -415,7 +396,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _swimTime = d),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // T1 time
             DisciplineCard(
@@ -432,7 +413,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _t1Time = d),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // Bike time
             DisciplineCard(
@@ -450,7 +431,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _bikeTime = d),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // T2 time
             DisciplineCard(
@@ -467,7 +448,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _t2Time = d),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // Run time
             DisciplineCard(
@@ -529,7 +510,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                       ),
                     ),
             ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 64),
               ],
             ),
           ),
@@ -596,37 +577,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   }
 }
 
-/// Section header widget for better visual hierarchy
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final IconData icon;
-
-  const _SectionHeader({
-    required this.title,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: theme.colorScheme.primary,
-          size: 20,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Discipline icon (asset image or fallback icon)

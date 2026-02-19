@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/shared/widgets/result_detail_screen.dart';
@@ -89,23 +90,47 @@ class ResultCard extends ConsumerWidget {
                 const SizedBox(height: 4),
               // Location with race type prefix
               Center(
-                child: Text(
-                  '${_getRaceTypePrefix(result.raceType)} ${result.location}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedLocation01,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        '${_getRaceTypePrefix(result.raceType)} ${result.location}',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 4),
               // Date (теперь под локацией)
               Center(
-                child: Text(
-                  _formatDate(result.date, ref),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedCalendar01,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _formatDate(result.date, ref),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),

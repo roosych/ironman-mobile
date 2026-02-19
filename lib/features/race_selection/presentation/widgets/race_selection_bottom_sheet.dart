@@ -275,17 +275,20 @@ class _RaceSelectionBottomSheetState
                   },
                   decoration: InputDecoration(
                     hintText: localizations.race_selection_search_hint,
-                    prefixIcon: const HugeIcon(
+                    hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                    prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
-                      color: Colors.white,
-                      size: 20,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      size: 24,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const HugeIcon(
+                            icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
-                              color: Colors.white,
-                              size: 18,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              size: 24,
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -293,12 +296,18 @@ class _RaceSelectionBottomSheetState
                             },
                           )
                         : null,
-                    border: const OutlineInputBorder(),
+                    filled: true,
+                    fillColor: theme.colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 16,
+                      horizontal: 16,
+                      vertical: 12,
                     ),
                   ),
+                  style: theme.textTheme.bodyLarge,
                 ),
               ),
 

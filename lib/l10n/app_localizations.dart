@@ -1015,7 +1015,7 @@ abstract class AppLocalizations {
   /// Save button text
   ///
   /// In en, this message translates to:
-  /// **'SAVE CHANGES'**
+  /// **'Save'**
   String get edit_profile_save_button;
 
   /// Profile save success message

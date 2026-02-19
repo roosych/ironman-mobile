@@ -187,19 +187,11 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     pinned: true,
                     floating: false,
                     snap: false,
-                    forceElevated: true,
+                    forceElevated: false,
                     bottom: PreferredSize(
                       preferredSize: const Size.fromHeight(kToolbarHeight + 16),
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.scaffoldBackgroundColor,
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 20,
-                              color: Colors.black.withValues(alpha: 0.1),
-                            ),
-                          ],
-                        ),
+                        color: theme.scaffoldBackgroundColor,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -473,15 +465,11 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
-              indicator: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(3)),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryGradientStart,
-                    AppColors.primaryGradientEnd,
-                  ],
+              indicator: UnderlineTabIndicator(
+                borderRadius: BorderRadius.circular(1.5),
+                borderSide: BorderSide(
+                  width: 3,
+                  color: AppColors.ironmanRed,
                 ),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -815,6 +803,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                         const SizedBox(height: 4),
                         Row(
                           children: [
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedCalendar01,
+                              color: AppColors.ironmanTextSecondary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
                             Text(
                               _formatDate(ranking.raceDate),
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -826,6 +820,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                               ),
                             ),
                             const SizedBox(width: 12),
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedLocation01,
+                              color: AppColors.ironmanTextSecondary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 ranking.location,
@@ -1133,3 +1133,4 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
     );
   }
 }
+
