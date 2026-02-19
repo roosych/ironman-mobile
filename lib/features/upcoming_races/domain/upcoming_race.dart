@@ -4,6 +4,7 @@ class UpcomingRace {
   final String raceTypeLabel;
   final String location;
   final String raceDate;
+  final String? countryIso;
   final bool isActive;
   final CreatedBy? createdBy;
 
@@ -13,6 +14,7 @@ class UpcomingRace {
     required this.raceTypeLabel,
     required this.location,
     required this.raceDate,
+    this.countryIso,
     required this.isActive,
     this.createdBy,
   });
@@ -47,6 +49,7 @@ class UpcomingRace {
       raceTypeLabel: safeString(json['race_type_label'], ''),
       location: safeString(json['location'], ''),
       raceDate: safeString(json['race_date'], ''),
+      countryIso: json['country_iso'] as String?,
       isActive: safeBool(json['is_active'], true),
       createdBy: json['created_by'] != null
           ? CreatedBy.fromJson(json['created_by'] as Map<String, dynamic>)
@@ -61,6 +64,7 @@ class UpcomingRace {
       'race_type_label': raceTypeLabel,
       'location': location,
       'race_date': raceDate,
+      'country_iso': countryIso,
       'is_active': isActive,
       'created_by': createdBy?.toJson(),
     };

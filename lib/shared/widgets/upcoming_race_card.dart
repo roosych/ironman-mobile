@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../../features/upcoming_races/domain/upcoming_race.dart';
@@ -27,20 +28,6 @@ class UpcomingRaceCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getRaceTypePrefix(String raceType) {
-    switch (raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '')) {
-      case 'ironman':
-        return 'IM';
-      case 'ironman70.3':
-      case 'ironman703':
-        return '70.3';
-      case '5150':
-        return '5150';
-      default:
-        return 'IM';
-    }
   }
 
   String _formatDate(String isoDate, BuildContext context) {
@@ -98,22 +85,48 @@ class UpcomingRaceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide.none,
       ),
-      color: theme.colorScheme.outlineVariant,
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Location with race type prefix as main title
+            // Race type as main title
             Text(
-              '${_getRaceTypePrefix(race.raceType)} ${race.location}',
+              race.raceTypeLabel.toUpperCase(),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 18,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+            // Flag and location
+            Row(
+              children: [
+                if (race.countryIso != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: CountryFlag.fromCountryCode(
+                      race.countryIso!,
+                      height: 16,
+                      width: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    race.location,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             // Date and countdown section

@@ -104,22 +104,16 @@ class UpcomingRacesApi {
   }
 
   /// Создать новую предстоящую гонку
-  /// 
-  /// [raceType] - тип гонки (например, 'ironman', 'ironman_70_3', '5150')
-  /// [location] - локация гонки
-  /// [raceDate] - дата гонки в формате 'YYYY-MM-DD'
+  ///
+  /// [raceId] - ID гонки из таблицы races
   Future<UpcomingRace> createUpcomingRace({
-    required String raceType,
-    required String location,
-    required String raceDate,
+    required int raceId,
   }) async {
     try {
       final response = await _client.post<Map<String, dynamic>>(
         '/upcoming-races',
         data: {
-          'race_type': raceType,
-          'location': location,
-          'race_date': raceDate,
+          'race_id': raceId,
         },
       );
 

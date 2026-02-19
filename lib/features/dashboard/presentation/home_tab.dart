@@ -18,7 +18,7 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/upcoming_races/presentation/upcoming_races_screen.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
-import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
+import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
 import '../../../core/services/notification_permission_service.dart';
@@ -1000,7 +1000,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   }
 
   void _addUpcomingRace(BuildContext context) {
-    showAddUpcomingRaceBottomSheet(context);
+    showRaceSelectionBottomSheet(context);
   }
 
   List<dynamic> _getActiveRaces(List<dynamic> races) {
@@ -1093,16 +1093,20 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
       }
     });
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide.none,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+    // Временно закомментирован фон Card
+    // return Card(
+    //   elevation: 0,
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(12),
+    //     side: BorderSide.none,
+    //   ),
+    //   clipBehavior: Clip.antiAlias,
+    //   child: Padding(
+    //     padding: const EdgeInsets.all(16.0),
+    //     child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header с заголовком и кнопкой "All >"
@@ -1154,8 +1158,8 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
             ),
           ],
         ),
-      ),
-    );
+      );
+      // ); // Закрывающая скобка Card - закомментирована
   }
 }
 
