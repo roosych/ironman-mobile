@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../infrastructure/race_results_api.dart';
@@ -18,57 +20,35 @@ class AddResultScreen extends ConsumerStatefulWidget {
 class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   final _formKey = GlobalKey<FormState>();
   final _locationController = TextEditingController();
-  final _totalTimeController = TextEditingController();
-  final _swimTimeController = TextEditingController();
-  final _t1TimeController = TextEditingController();
-  final _bikeTimeController = TextEditingController();
-  final _t2TimeController = TextEditingController();
-  final _runTimeController = TextEditingController();
   final _scrollController = ScrollController();
 
   // FocusNodes для управления фокусом
   late final FocusNode _locationFocusNode;
-  late final FocusNode _totalTimeFocusNode;
-  late final FocusNode _swimTimeFocusNode;
-  late final FocusNode _t1TimeFocusNode;
-  late final FocusNode _bikeTimeFocusNode;
-  late final FocusNode _t2TimeFocusNode;
-  late final FocusNode _runTimeFocusNode;
 
   DateTime? _selectedDate;
   String? _selectedRaceType;
   bool _isSaving = false;
+
+  // Duration переменные для времени
+  Duration _totalTime = Duration.zero;
+  Duration _swimTime = Duration.zero;
+  Duration _t1Time = Duration.zero;
+  Duration _bikeTime = Duration.zero;
+  Duration _t2Time = Duration.zero;
+  Duration _runTime = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     // Инициализируем FocusNodes
     _locationFocusNode = FocusNode();
-    _totalTimeFocusNode = FocusNode();
-    _swimTimeFocusNode = FocusNode();
-    _t1TimeFocusNode = FocusNode();
-    _bikeTimeFocusNode = FocusNode();
-    _t2TimeFocusNode = FocusNode();
-    _runTimeFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _locationController.dispose();
-    _totalTimeController.dispose();
-    _swimTimeController.dispose();
-    _t1TimeController.dispose();
-    _bikeTimeController.dispose();
-    _t2TimeController.dispose();
-    _runTimeController.dispose();
     _scrollController.dispose();
     _locationFocusNode.dispose();
-    _totalTimeFocusNode.dispose();
-    _swimTimeFocusNode.dispose();
-    _t1TimeFocusNode.dispose();
-    _bikeTimeFocusNode.dispose();
-    _t2TimeFocusNode.dispose();
-    _runTimeFocusNode.dispose();
     super.dispose();
   }
 
@@ -93,6 +73,103 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   String _formatDisplayDate(DateTime? date) {
     if (date == null) return '';
     return DateFormat('dd.MM.yyyy').format(date);
+  }
+
+  String formatDurationHhMmSs(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
+  /// Opens a Cupertino-style timer picker (hours, minutes, seconds) in a modal.
+  /// On confirm: updates the discipline [Duration], recalculates total time and
+  /// paces, and refreshes UI via setState. On cancel: dismisses without changes.
+  Future<void> _pickTime({
+    required String title,
+    required Duration initial,
+    required ValueChanged<Duration> onConfirm,
+  }) async {
+    FocusScope.of(context).unfocus();
+
+    // Clamp to CupertinoTimerPicker range (0–23:59:59); picker uses this as initial.
+    final clampedInitial = Duration(
+      hours: initial.inHours.clamp(0, 23),
+      minutes: initial.inMinutes.remainder(60),
+      seconds: initial.inSeconds.remainder(60),
+    );
+    Duration selected = clampedInitial;
+
+    final theme = Theme.of(context);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final loc = AppLocalizations.of(ctx)!;
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.ironmanDarkGray,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CupertinoButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text(
+                          loc.common_cancel,
+                          style: const TextStyle(color: AppColors.ironmanRed),
+                        ),
+                      ),
+                      Text(
+                        title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ironmanWhite,
+                        ),
+                      ),
+                      CupertinoButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        onPressed: () {
+                          onConfirm(selected);
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text(
+                          loc.pace_calculator_done,
+                          style: const TextStyle(
+                            color: AppColors.ironmanRed,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 220,
+                  child: CupertinoTimerPicker(
+                    mode: CupertinoTimerPickerMode.hms,
+                    initialTimerDuration: clampedInitial,
+                    onTimerDurationChanged: (Duration d) => selected = d,
+                    backgroundColor: AppColors.ironmanDarkGray,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -126,40 +203,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               children: [
-            // Info card with icon
-            Card(
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.info_outline,
-                        color: theme.colorScheme.primary,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        localizations.add_result_info,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
             
             // Basic Information Section
             _SectionHeader(
@@ -176,10 +219,27 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
               decoration: InputDecoration(
                 labelText: localizations.add_result_location,
                 hintText: localizations.add_result_location_hint,
+                hintStyle: theme.textTheme.bodyLarge,
+                filled: true,
+                fillColor: AppColors.ironmanDarkGray,
                 prefixIcon: Icon(
                   Icons.location_on_outlined,
                   color: Colors.white,
                   size: 20,
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.error,
+                    width: 1,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.error,
+                    width: 1,
+                  ),
                 ),
               ),
               validator: (value) {
@@ -198,12 +258,30 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 decoration: InputDecoration(
                   labelText: localizations.add_result_date,
                   hintText: localizations.add_result_date_hint,
+                  hintStyle: theme.textTheme.bodyLarge,
+                  filled: true,
+                  fillColor: AppColors.ironmanDarkGray,
                   prefixIcon: Icon(
                     Icons.calendar_today_outlined,
                     color: Colors.white,
                     size: 20,
                   ),
                   suffixIcon: const Icon(Icons.arrow_drop_down),
+                  errorText: _selectedDate == null ? localizations.add_result_date_required : null,
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.error,
+                      width: 1,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.error,
+                      width: 1,
+                    ),
+                  ),
                 ),
                 child: Text(
                   _selectedDate != null
@@ -224,10 +302,27 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
               initialValue: _selectedRaceType,
               decoration: InputDecoration(
                 labelText: localizations.add_result_race_type,
+                hintStyle: theme.textTheme.bodyLarge,
+                filled: true,
+                fillColor: AppColors.ironmanDarkGray,
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAward01,
                   color: Colors.white,
                   size: 20,
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.error,
+                    width: 1,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.error,
+                    width: 1,
+                  ),
                 ),
               ),
               items: [
@@ -237,7 +332,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
               ].map((raceType) {
                 return DropdownMenuItem<String>(
                   value: raceType['value'],
-                  child: Text(raceType['label']!),
+                  child: Text(raceType['label']!.toUpperCase()),
                 );
               }).toList(),
               onChanged: (value) {
@@ -262,243 +357,166 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             const SizedBox(height: 16),
 
             // Total time
-            TextFormField(
-              controller: _totalTimeController,
-              focusNode: _totalTimeFocusNode,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                labelText: localizations.add_result_total_time,
-                hintText: localizations.add_result_time_hint,
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Image.asset(
-                    'assets/images/svg/flag.png',
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.contain,
-                    cacheWidth: 24,
-                    cacheHeight: 24,
+            DisciplineCard(
+              icon: Icons.flag_outlined,
+              iconAsset: 'assets/images/svg/flag.png',
+              label: localizations.add_result_total_time,
+              duration: _totalTime,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_total_time,
+                initial: _totalTime,
+                onConfirm: (d) => setState(() => _totalTime = d),
+              ),
+            ),
+            if (_totalTime.inSeconds == 0)
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 4),
+                child: Text(
+                  localizations.add_result_total_time_required,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
                   ),
                 ),
               ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                _TimeInputFormatter(),
-              ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return localizations.add_result_total_time_required;
-                }
-                if (!_isValidTimeFormat(value)) {
-                  return localizations.add_result_time_format;
-                }
-                return null;
-              },
-            ),
             const SizedBox(height: 24),
 
-            // Disciplines - grouped in card
-            Card(
-              elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      localizations.add_result_section_disciplines,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Swim time
-                    TextFormField(
-                      controller: _swimTimeController,
-                      focusNode: _swimTimeFocusNode,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: localizations.add_result_swim,
-                        hintText: localizations.add_result_time_hint,
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Image.asset(
-                            'assets/images/svg/swim.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.contain,
-                            cacheWidth: 24,
-                            cacheHeight: 24,
-                          ),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        _TimeInputFormatter(),
-                      ],
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty && !_isValidTimeFormat(value)) {
-                          return localizations.add_result_time_format;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    // T1 time
-                    TextFormField(
-                      controller: _t1TimeController,
-                      focusNode: _t1TimeFocusNode,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: localizations.add_result_t1_label,
-                        hintText: localizations.add_result_time_hint,
-                        prefixIcon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedArrowRight01,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        _TimeInputFormatter(),
-                      ],
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty && !_isValidTimeFormat(value)) {
-                          return localizations.add_result_time_format;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    // Bike time
-                    TextFormField(
-                      controller: _bikeTimeController,
-                      focusNode: _bikeTimeFocusNode,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: localizations.add_result_bike,
-                        hintText: localizations.add_result_time_hint,
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Image.asset(
-                            'assets/images/svg/bike.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.contain,
-                            cacheWidth: 24,
-                            cacheHeight: 24,
-                          ),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        _TimeInputFormatter(),
-                      ],
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty && !_isValidTimeFormat(value)) {
-                          return localizations.add_result_time_format;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    // T2 time
-                    TextFormField(
-                      controller: _t2TimeController,
-                      focusNode: _t2TimeFocusNode,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: localizations.add_result_t2_label,
-                        hintText: localizations.add_result_time_hint,
-                        prefixIcon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedArrowRight01,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        _TimeInputFormatter(),
-                      ],
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty && !_isValidTimeFormat(value)) {
-                          return localizations.add_result_time_format;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    // Run time
-                    TextFormField(
-                      controller: _runTimeController,
-                      focusNode: _runTimeFocusNode,
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        labelText: localizations.add_result_run,
-                        hintText: localizations.add_result_time_hint,
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Image.asset(
-                            'assets/images/svg/run.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.contain,
-                            cacheWidth: 24,
-                            cacheHeight: 24,
-                          ),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        _TimeInputFormatter(),
-                      ],
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty && !_isValidTimeFormat(value)) {
-                          return localizations.add_result_time_format;
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
+            // Disciplines section header
+            _SectionHeader(
+              title: localizations.add_result_section_disciplines,
+              icon: Icons.timer_outlined,
+            ),
+            const SizedBox(height: 16),
+
+            // Swim time
+            DisciplineCard(
+              icon: Icons.pool_outlined,
+              iconAsset: 'assets/images/svg/swim.png',
+              label: localizations.add_result_swim,
+              duration: _swimTime,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_swim,
+                initial: _swimTime,
+                onConfirm: (d) => setState(() => _swimTime = d),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // T1 time
+            DisciplineCard(
+              icon: Icons.swap_horiz,
+              label: 'T1',
+              duration: _t1Time,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_t1_label,
+                initial: _t1Time,
+                onConfirm: (d) => setState(() => _t1Time = d),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Bike time
+            DisciplineCard(
+              icon: Icons.directions_bike_outlined,
+              iconAsset: 'assets/images/svg/bike.png',
+              label: localizations.add_result_bike,
+              duration: _bikeTime,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_bike,
+                initial: _bikeTime,
+                onConfirm: (d) => setState(() => _bikeTime = d),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // T2 time
+            DisciplineCard(
+              icon: Icons.swap_horiz,
+              label: 'T2',
+              duration: _t2Time,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_t2_label,
+                initial: _t2Time,
+                onConfirm: (d) => setState(() => _t2Time = d),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Run time
+            DisciplineCard(
+              icon: Icons.directions_run_outlined,
+              iconAsset: 'assets/images/svg/run.png',
+              label: localizations.add_result_run,
+              duration: _runTime,
+              rightLabel: null,
+              rightValue: null,
+              isLocked: false,
+              isSelected: false,
+              onTap: () => _pickTime(
+                title: localizations.add_result_run,
+                initial: _runTime,
+                onConfirm: (d) => setState(() => _runTime = d),
               ),
             ),
             const SizedBox(height: 32),
 
-            // Submit button - more prominent
+            // Submit button - gradient style
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isSaving ? null : () {
-                  if (_formKey.currentState!.validate()) {
-                    _saveResult();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: _isSaving
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Text(
-                        localizations.add_result_save,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+              child: _isSaving
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey,
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
                         ),
                       ),
-              ),
+                    )
+                  : AppButtonStyles.gradientElevatedButton(
+                      text: localizations.add_result_save,
+                      onPressed: () {
+                        setState(() {}); // Trigger rebuild to show validation errors
+                        if (_formKey.currentState!.validate() && _selectedDate != null && _totalTime.inSeconds > 0) {
+                          _saveResult();
+                        }
+                      },
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      borderRadius: 12,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
                 const SizedBox(height: 32),
               ],
@@ -509,32 +527,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
     );
   }
 
-  bool _isValidTimeFormat(String value) {
-    final regex = RegExp(r'^\d{2}:\d{2}:\d{2}$');
-    if (!regex.hasMatch(value)) return false;
-    final parts = value.split(':');
-    final hours = int.tryParse(parts[0]);
-    final minutes = int.tryParse(parts[1]);
-    final seconds = int.tryParse(parts[2]);
-    return hours != null &&
-        minutes != null &&
-        seconds != null &&
-        hours >= 0 &&
-        minutes >= 0 &&
-        minutes < 60 &&
-        seconds >= 0 &&
-        seconds < 60;
-  }
-
-  /// Конвертирует время из формата HH:MM:SS в секунды
-  int _timeStringToSeconds(String timeString) {
-    final parts = timeString.split(':');
-    if (parts.length != 3) return 0;
-    final hours = int.tryParse(parts[0]) ?? 0;
-    final minutes = int.tryParse(parts[1]) ?? 0;
-    final seconds = int.tryParse(parts[2]) ?? 0;
-    return hours * 3600 + minutes * 60 + seconds;
-  }
 
   Future<void> _saveResult() async {
     if (!_formKey.currentState!.validate()) return;
@@ -549,25 +541,17 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
       // Форматируем дату в формат YYYY-MM-DD
       final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
 
-      // Конвертируем время в секунды
-      final swimTimeSeconds = _timeStringToSeconds(_swimTimeController.text);
-      final t1TimeSeconds = _timeStringToSeconds(_t1TimeController.text);
-      final bikeTimeSeconds = _timeStringToSeconds(_bikeTimeController.text);
-      final t2TimeSeconds = _timeStringToSeconds(_t2TimeController.text);
-      final runTimeSeconds = _timeStringToSeconds(_runTimeController.text);
-      final totalTimeSeconds = _timeStringToSeconds(_totalTimeController.text);
-
       final api = RaceResultsApi();
       await api.createRaceResult(
         raceDate: formattedDate,
         location: _locationController.text.trim(),
         raceType: _selectedRaceType!,
-        swimTime: swimTimeSeconds,
-        t1Time: t1TimeSeconds,
-        bikeTime: bikeTimeSeconds,
-        t2Time: t2TimeSeconds,
-        runTime: runTimeSeconds,
-        totalTime: totalTimeSeconds,
+        swimTime: _swimTime.inSeconds,
+        t1Time: _t1Time.inSeconds,
+        bikeTime: _bikeTime.inSeconds,
+        t2Time: _t2Time.inSeconds,
+        runTime: _runTime.inSeconds,
+        totalTime: _totalTime.inSeconds,
       );
 
       if (!mounted) return;
@@ -633,31 +617,149 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Discipline icon (asset image or fallback icon)
+// ---------------------------------------------------------------------------
 
-/// TextInputFormatter для маски времени HH:MM:SS
-class _TimeInputFormatter extends TextInputFormatter {
+class _DisciplineIcon extends StatelessWidget {
+  const _DisciplineIcon({
+    required this.icon,
+    required this.color,
+    required this.size,
+    this.iconAsset,
+  });
+
+  final IconData icon;
+  final String? iconAsset;
+  final Color color;
+  final double size;
+
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
-    
-    if (text.isEmpty) {
-      return newValue.copyWith(text: '');
+  Widget build(BuildContext context) {
+    if (iconAsset != null && iconAsset!.isNotEmpty) {
+      return Image.asset(
+        iconAsset!,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
     }
-
-    String formatted = '';
-    for (int i = 0; i < text.length && i < 6; i++) {
-      if (i == 2 || i == 4) {
-        formatted += ':';
-      }
-      formatted += text[i];
-    }
-
-    return newValue.copyWith(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
+    return Icon(icon, color: color, size: size);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Discipline Card (reusable)
+// ---------------------------------------------------------------------------
+
+class DisciplineCard extends StatelessWidget {
+  const DisciplineCard({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.duration,
+    required this.isLocked,
+    required this.isSelected,
+    required this.onTap,
+    this.iconAsset,
+    this.rightLabel,
+    this.rightValue,
+  });
+
+  final IconData icon;
+
+  /// Optional PNG/SVG asset path (e.g. assets/images/svg/swim.png). When set, shown instead of [icon].
+  final String? iconAsset;
+  final String label;
+  final Duration duration;
+  final String? rightLabel;
+  final String? rightValue;
+  final bool isLocked;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: Card(
+        elevation: 0,
+        color: AppColors.ironmanDarkGray,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: isSelected
+                ? AppColors.ironmanRed
+                : AppColors.ironmanGray,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Иконка слева
+                _DisciplineIcon(
+                  icon: icon,
+                  iconAsset: iconAsset,
+                  color: isSelected
+                      ? AppColors.ironmanRed
+                      : AppColors.ironmanTextSecondary,
+                  size: 36,
+                ),
+                const SizedBox(width: 16),
+
+                // Название дисциплины в центре
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          color: AppColors.ironmanWhite,
+                        ),
+                      ),
+                      if (isLocked) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.lock_outline,
+                          size: 18,
+                          color: AppColors.ironmanTextSecondary,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                // Время справа
+                Text(
+                  formatDurationHhMmSs(duration),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                    color: AppColors.ironmanWhite,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String formatDurationHhMmSs(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+}
+

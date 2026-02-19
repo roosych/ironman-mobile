@@ -87,6 +87,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_cancel => 'Отмена';
 
   @override
+  String get common_confirm => 'Подтвердить';
+
+  @override
   String get common_undo => 'Отменить';
 
   @override
@@ -112,6 +115,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get home_add_race_title => 'Добавить гонку';
+
+  @override
+  String get race_selection_title => 'Выбор гонки';
+
+  @override
+  String get race_selection_search_hint => 'Поиск гонок...';
+
+  @override
+  String get race_selection_save => 'Сохранить';
+
+  @override
+  String get race_selection_no_races => 'Гонки не найдены';
+
+  @override
+  String get race_selection_confirm_title => 'Добавить гонку';
+
+  @override
+  String get race_selection_confirm_description =>
+      'Добавить эту гонку в список предстоящих?';
+
+  @override
+  String get race_selection_success => 'Гонка успешно добавлена';
 
   @override
   String get home_no_upcoming_races => 'Нет предстоящих гонок';
@@ -560,6 +585,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get add_result_date_hint => 'Выберите дату';
 
   @override
+  String get add_result_date_required => 'Выберите дату гонки';
+
+  @override
   String get add_result_race_type => 'Тип гонки';
 
   @override
@@ -1005,4 +1033,90 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get dashboard_notification_card_later => 'Может позже';
+
+  @override
+  String get transfer_no_request_title => 'Перенос результатов';
+
+  @override
+  String get transfer_no_request_description =>
+      'Если ваши результаты есть на сайте ironman.az, мы можем их перенести';
+
+  @override
+  String get transfer_attach_results => 'Привязать результаты';
+
+  @override
+  String get transfer_status_pending => 'Заявка на рассмотрении';
+
+  @override
+  String get transfer_status_pending_description =>
+      'Ваша заявка на перенос рассматривается';
+
+  @override
+  String get transfer_status_approved => 'Заявка одобрена';
+
+  @override
+  String get transfer_status_approved_description =>
+      'Ваши результаты успешно перенесены';
+
+  @override
+  String get transfer_status_rejected => 'Заявка отклонена';
+
+  @override
+  String get transfer_status_rejected_description =>
+      'Ваша заявка на перенос была отклонена';
+
+  @override
+  String get transfer_submit_again => 'Подать снова';
+
+  @override
+  String transfer_source_athlete(String name) {
+    return 'От: $name';
+  }
+
+  @override
+  String get transfer_select_athlete => 'Выберите атлета';
+
+  @override
+  String get transfer_search_athletes => 'Поиск атлетов...';
+
+  @override
+  String get transfer_start_typing => 'Начните печатать для поиска атлетов';
+
+  @override
+  String get transfer_no_athletes_found => 'Атлеты не найдены';
+
+  @override
+  String transfer_results_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count результатов',
+      few: '$count результата',
+      one: '1 результат',
+      zero: 'Нет результатов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transfer_last_race(String location) {
+    return 'Последняя гонка: $location';
+  }
+
+  @override
+  String get transfer_request_created => 'Заявка на перенос успешно создана';
+
+  @override
+  String get transfer_request_error => 'Не удалось создать заявку на перенос';
+
+  @override
+  String get transfer_confirm_title => 'Подтвердить перенос';
+
+  @override
+  String transfer_confirm_description(String name) {
+    return 'Запросить перенос результатов от $name в ваш профиль?';
+  }
+
+  @override
+  String get transfer_confirm_button => 'Подтвердить';
 }

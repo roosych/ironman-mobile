@@ -256,6 +256,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get common_cancel;
 
+  /// Confirm button text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get common_confirm;
+
   /// Undo button text
   ///
   /// In en, this message translates to:
@@ -309,6 +315,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Race'**
   String get home_add_race_title;
+
+  /// Race selection bottom sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Race'**
+  String get race_selection_title;
+
+  /// Race selection search field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search races...'**
+  String get race_selection_search_hint;
+
+  /// Race selection save button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get race_selection_save;
+
+  /// Race selection empty state message
+  ///
+  /// In en, this message translates to:
+  /// **'No races found'**
+  String get race_selection_no_races;
+
+  /// Race selection confirmation dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add Race'**
+  String get race_selection_confirm_title;
+
+  /// Race selection confirmation dialog description
+  ///
+  /// In en, this message translates to:
+  /// **'Add this race to your upcoming races?'**
+  String get race_selection_confirm_description;
+
+  /// Race selection success message
+  ///
+  /// In en, this message translates to:
+  /// **'Race added successfully'**
+  String get race_selection_success;
 
   /// No upcoming races message
   ///
@@ -1156,6 +1204,12 @@ abstract class AppLocalizations {
   /// **'Select date'**
   String get add_result_date_hint;
 
+  /// Date validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Select race date'**
+  String get add_result_date_required;
+
   /// Race type field label
   ///
   /// In en, this message translates to:
@@ -1971,6 +2025,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Maybe later'**
   String get dashboard_notification_card_later;
+
+  /// Title when user has no transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Results'**
+  String get transfer_no_request_title;
+
+  /// Description when user has no transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'If your results are on ironman.az website, we can transfer them'**
+  String get transfer_no_request_description;
+
+  /// Button text to start transfer process
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Results'**
+  String get transfer_attach_results;
+
+  /// Status text for pending transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Request Pending'**
+  String get transfer_status_pending;
+
+  /// Description for pending transfer status
+  ///
+  /// In en, this message translates to:
+  /// **'Your transfer request is being reviewed'**
+  String get transfer_status_pending_description;
+
+  /// Status text for approved transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Request Approved'**
+  String get transfer_status_approved;
+
+  /// Description for approved transfer status
+  ///
+  /// In en, this message translates to:
+  /// **'Your results have been successfully transferred'**
+  String get transfer_status_approved_description;
+
+  /// Status text for rejected transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Request Rejected'**
+  String get transfer_status_rejected;
+
+  /// Description for rejected transfer status
+  ///
+  /// In en, this message translates to:
+  /// **'Your transfer request was rejected'**
+  String get transfer_status_rejected_description;
+
+  /// Button text to submit new transfer request after rejection
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Again'**
+  String get transfer_submit_again;
+
+  /// Shows source athlete name
+  ///
+  /// In en, this message translates to:
+  /// **'From: {name}'**
+  String transfer_source_athlete(String name);
+
+  /// BottomSheet title for athlete selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select Athlete'**
+  String get transfer_select_athlete;
+
+  /// Search field placeholder in athlete selection
+  ///
+  /// In en, this message translates to:
+  /// **'Search athletes...'**
+  String get transfer_search_athletes;
+
+  /// Empty state message in athlete search
+  ///
+  /// In en, this message translates to:
+  /// **'Start typing to search for athletes'**
+  String get transfer_start_typing;
+
+  /// Empty results message in athlete search
+  ///
+  /// In en, this message translates to:
+  /// **'No athletes found'**
+  String get transfer_no_athletes_found;
+
+  /// Results count for athlete
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No results} =1{1 result} other{{count} results}}'**
+  String transfer_results_count(int count);
+
+  /// Shows athlete's last race location
+  ///
+  /// In en, this message translates to:
+  /// **'Last race: {location}'**
+  String transfer_last_race(String location);
+
+  /// Success message after creating transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer request created successfully'**
+  String get transfer_request_created;
+
+  /// Error message when transfer request creation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create transfer request'**
+  String get transfer_request_error;
+
+  /// Confirmation dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Transfer'**
+  String get transfer_confirm_title;
+
+  /// Confirmation dialog description
+  ///
+  /// In en, this message translates to:
+  /// **'Request to transfer results from {name} to your profile?'**
+  String transfer_confirm_description(String name);
+
+  /// Confirm button in confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get transfer_confirm_button;
 }
 
 class _AppLocalizationsDelegate

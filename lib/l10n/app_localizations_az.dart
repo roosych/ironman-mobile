@@ -87,6 +87,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get common_cancel => 'Ləğv et';
 
   @override
+  String get common_confirm => 'Təsdiq et';
+
+  @override
   String get common_undo => 'Geri al';
 
   @override
@@ -112,6 +115,28 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get home_add_race_title => 'Əlavə et';
+
+  @override
+  String get race_selection_title => 'Yarış seçin';
+
+  @override
+  String get race_selection_search_hint => 'Yarışları axtarın...';
+
+  @override
+  String get race_selection_save => 'Saxla';
+
+  @override
+  String get race_selection_no_races => 'Yarış tapılmadı';
+
+  @override
+  String get race_selection_confirm_title => 'Yarış əlavə et';
+
+  @override
+  String get race_selection_confirm_description =>
+      'Bu yarışı gələcək yarışlar siyahısına əlavə edək?';
+
+  @override
+  String get race_selection_success => 'Yarış uğurla əlavə edildi';
 
   @override
   String get home_no_upcoming_races => 'Gələcək yarış yoxdur';
@@ -559,6 +584,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get add_result_date_hint => 'Tarix seçin';
 
   @override
+  String get add_result_date_required => 'Yarış tarixini seçin';
+
+  @override
   String get add_result_race_type => 'Yarış növü';
 
   @override
@@ -1004,4 +1032,90 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get dashboard_notification_card_later => 'İndi yox';
+
+  @override
+  String get transfer_no_request_title => 'Başqalarının nəticələrini bağla';
+
+  @override
+  String get transfer_no_request_description =>
+      'Əgər nəticələriniz ironman.az saytında varsa, onları köçürə bilərik';
+
+  @override
+  String get transfer_attach_results => 'Nəticələri bağla';
+
+  @override
+  String get transfer_status_pending => 'Gözləyir';
+
+  @override
+  String get transfer_status_pending_description =>
+      'Your transfer request is being reviewed';
+
+  @override
+  String get transfer_status_approved => 'Təsdiqlənib';
+
+  @override
+  String get transfer_status_approved_description =>
+      'Your results have been successfully transferred';
+
+  @override
+  String get transfer_status_rejected => 'Rədd edilib';
+
+  @override
+  String get transfer_status_rejected_description =>
+      'Your transfer request was rejected';
+
+  @override
+  String get transfer_submit_again => 'Submit Again';
+
+  @override
+  String transfer_source_athlete(String name) {
+    return 'From: $name';
+  }
+
+  @override
+  String get transfer_select_athlete => 'Atleti seçin';
+
+  @override
+  String get transfer_search_athletes => 'Atletləri axtar';
+
+  @override
+  String get transfer_start_typing => 'Axtarış üçün yazmağa başlayın';
+
+  @override
+  String get transfer_no_athletes_found => 'Heç bir atlet tapılmadı';
+
+  @override
+  String transfer_results_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nəticə',
+      one: '1 nəticə',
+      zero: 'nəticə yoxdur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transfer_last_race(String location) {
+    return 'Son yarış: $location';
+  }
+
+  @override
+  String get transfer_request_created =>
+      'Sorğu yaradıldı. İnzibatçı tərəfindən nəzərdən keçiriləcək';
+
+  @override
+  String get transfer_request_error => 'Sorğu göndərilmədi. Yenidən cəhd edin';
+
+  @override
+  String get transfer_confirm_title => 'Nəticələr bağlansın?';
+
+  @override
+  String transfer_confirm_description(String name) {
+    return '$name atletinin bütün nəticələrini öz profilinizə əlavə etmək üçün sorğu göndərilsin?';
+  }
+
+  @override
+  String get transfer_confirm_button => 'Təsdiqlə';
 }

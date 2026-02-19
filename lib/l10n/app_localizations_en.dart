@@ -87,6 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_cancel => 'Cancel';
 
   @override
+  String get common_confirm => 'Confirm';
+
+  @override
   String get common_undo => 'Undo';
 
   @override
@@ -112,6 +115,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home_add_race_title => 'Add Race';
+
+  @override
+  String get race_selection_title => 'Select Race';
+
+  @override
+  String get race_selection_search_hint => 'Search races...';
+
+  @override
+  String get race_selection_save => 'Save';
+
+  @override
+  String get race_selection_no_races => 'No races found';
+
+  @override
+  String get race_selection_confirm_title => 'Add Race';
+
+  @override
+  String get race_selection_confirm_description =>
+      'Add this race to your upcoming races?';
+
+  @override
+  String get race_selection_success => 'Race added successfully';
 
   @override
   String get home_no_upcoming_races => 'No upcoming races';
@@ -560,6 +585,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add_result_date_hint => 'Select date';
 
   @override
+  String get add_result_date_required => 'Select race date';
+
+  @override
   String get add_result_race_type => 'Race Type';
 
   @override
@@ -1002,4 +1030,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboard_notification_card_later => 'Maybe later';
+
+  @override
+  String get transfer_no_request_title => 'Transfer Results';
+
+  @override
+  String get transfer_no_request_description =>
+      'If your results are on ironman.az website, we can transfer them';
+
+  @override
+  String get transfer_attach_results => 'Attach Results';
+
+  @override
+  String get transfer_status_pending => 'Request Pending';
+
+  @override
+  String get transfer_status_pending_description =>
+      'Your transfer request is being reviewed';
+
+  @override
+  String get transfer_status_approved => 'Request Approved';
+
+  @override
+  String get transfer_status_approved_description =>
+      'Your results have been successfully transferred';
+
+  @override
+  String get transfer_status_rejected => 'Request Rejected';
+
+  @override
+  String get transfer_status_rejected_description =>
+      'Your transfer request was rejected';
+
+  @override
+  String get transfer_submit_again => 'Submit Again';
+
+  @override
+  String transfer_source_athlete(String name) {
+    return 'From: $name';
+  }
+
+  @override
+  String get transfer_select_athlete => 'Select Athlete';
+
+  @override
+  String get transfer_search_athletes => 'Search athletes...';
+
+  @override
+  String get transfer_start_typing => 'Start typing to search for athletes';
+
+  @override
+  String get transfer_no_athletes_found => 'No athletes found';
+
+  @override
+  String transfer_results_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+      zero: 'No results',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transfer_last_race(String location) {
+    return 'Last race: $location';
+  }
+
+  @override
+  String get transfer_request_created =>
+      'Transfer request created successfully';
+
+  @override
+  String get transfer_request_error => 'Failed to create transfer request';
+
+  @override
+  String get transfer_confirm_title => 'Confirm Transfer';
+
+  @override
+  String transfer_confirm_description(String name) {
+    return 'Request to transfer results from $name to your profile?';
+  }
+
+  @override
+  String get transfer_confirm_button => 'Confirm';
 }

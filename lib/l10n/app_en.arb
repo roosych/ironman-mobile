@@ -104,6 +104,10 @@
   "@common_cancel": {
     "description": "Cancel button text"
   },
+  "common_confirm": "Confirm",
+  "@common_confirm": {
+    "description": "Confirm button text"
+  },
   "common_undo": "Undo",
   "@common_undo": {
     "description": "Undo button text"
@@ -139,6 +143,34 @@
   "home_add_race_title": "Add Race",
   "@home_add_race_title": {
     "description": "Add upcoming race bottom sheet title"
+  },
+  "race_selection_title": "Select Race",
+  "@race_selection_title": {
+    "description": "Race selection bottom sheet title"
+  },
+  "race_selection_search_hint": "Search races...",
+  "@race_selection_search_hint": {
+    "description": "Race selection search field hint"
+  },
+  "race_selection_save": "Save",
+  "@race_selection_save": {
+    "description": "Race selection save button text"
+  },
+  "race_selection_no_races": "No races found",
+  "@race_selection_no_races": {
+    "description": "Race selection empty state message"
+  },
+  "race_selection_confirm_title": "Add Race",
+  "@race_selection_confirm_title": {
+    "description": "Race selection confirmation dialog title"
+  },
+  "race_selection_confirm_description": "Add this race to your upcoming races?",
+  "@race_selection_confirm_description": {
+    "description": "Race selection confirmation dialog description"
+  },
+  "race_selection_success": "Race added successfully",
+  "@race_selection_success": {
+    "description": "Race selection success message"
   },
   "home_no_upcoming_races": "No upcoming races",
   "@home_no_upcoming_races": {
@@ -697,6 +729,10 @@
   "@add_result_date_hint": {
     "description": "Date field hint"
   },
+  "add_result_date_required": "Select race date",
+  "@add_result_date_required": {
+    "description": "Date validation error"
+  },
   "add_result_race_type": "Race Type",
   "@add_result_race_type": {
     "description": "Race type field label"
@@ -1109,6 +1145,114 @@
   "dashboard_notification_card_later": "Maybe later",
   "@dashboard_notification_card_later": {
     "description": "Maybe later button"
+  },
+  "transfer_no_request_title": "Transfer Results",
+  "@transfer_no_request_title": {
+    "description": "Title when user has no transfer request"
+  },
+  "transfer_no_request_description": "If your results are on ironman.az website, we can transfer them",
+  "@transfer_no_request_description": {
+    "description": "Description when user has no transfer request"
+  },
+  "transfer_attach_results": "Attach Results",
+  "@transfer_attach_results": {
+    "description": "Button text to start transfer process"
+  },
+  "transfer_status_pending": "Request Pending",
+  "@transfer_status_pending": {
+    "description": "Status text for pending transfer request"
+  },
+  "transfer_status_pending_description": "Your transfer request is being reviewed",
+  "@transfer_status_pending_description": {
+    "description": "Description for pending transfer status"
+  },
+  "transfer_status_approved": "Request Approved",
+  "@transfer_status_approved": {
+    "description": "Status text for approved transfer request"
+  },
+  "transfer_status_approved_description": "Your results have been successfully transferred",
+  "@transfer_status_approved_description": {
+    "description": "Description for approved transfer status"
+  },
+  "transfer_status_rejected": "Request Rejected",
+  "@transfer_status_rejected": {
+    "description": "Status text for rejected transfer request"
+  },
+  "transfer_status_rejected_description": "Your transfer request was rejected",
+  "@transfer_status_rejected_description": {
+    "description": "Description for rejected transfer status"
+  },
+  "transfer_submit_again": "Submit Again",
+  "@transfer_submit_again": {
+    "description": "Button text to submit new transfer request after rejection"
+  },
+  "transfer_source_athlete": "From: {name}",
+  "@transfer_source_athlete": {
+    "description": "Shows source athlete name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transfer_select_athlete": "Select Athlete",
+  "@transfer_select_athlete": {
+    "description": "BottomSheet title for athlete selection"
+  },
+  "transfer_search_athletes": "Search athletes...",
+  "@transfer_search_athletes": {
+    "description": "Search field placeholder in athlete selection"
+  },
+  "transfer_start_typing": "Start typing to search for athletes",
+  "@transfer_start_typing": {
+    "description": "Empty state message in athlete search"
+  },
+  "transfer_no_athletes_found": "No athletes found",
+  "@transfer_no_athletes_found": {
+    "description": "Empty results message in athlete search"
+  },
+  "transfer_results_count": "{count, plural, =0{No results} =1{1 result} other{{count} results}}",
+  "@transfer_results_count": {
+    "description": "Results count for athlete",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transfer_last_race": "Last race: {location}",
+  "@transfer_last_race": {
+    "description": "Shows athlete's last race location",
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "transfer_request_created": "Transfer request created successfully",
+  "@transfer_request_created": {
+    "description": "Success message after creating transfer request"
+  },
+  "transfer_request_error": "Failed to create transfer request",
+  "@transfer_request_error": {
+    "description": "Error message when transfer request creation fails"
+  },
+  "transfer_confirm_title": "Confirm Transfer",
+  "@transfer_confirm_title": {
+    "description": "Confirmation dialog title"
+  },
+  "transfer_confirm_description": "Request to transfer results from {name} to your profile?",
+  "@transfer_confirm_description": {
+    "description": "Confirmation dialog description",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transfer_confirm_button": "Confirm",
+  "@transfer_confirm_button": {
+    "description": "Confirm button in confirmation dialog"
   }
 }
 

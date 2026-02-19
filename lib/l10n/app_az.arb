@@ -26,6 +26,7 @@
   "common_coming_soon": "tezliklə",
   "common_retry": "Yenidən cəhd et",
   "common_cancel": "Ləğv et",
+  "common_confirm": "Təsdiq et",
   "common_undo": "Geri al",
   "common_all": "Hamısı",
   "common_loading_error": "Yükləmə xətası",
@@ -35,6 +36,13 @@
   "home_finishes": "finiş",
   "home_add_race": "Əlavə et",
   "home_add_race_title": "Əlavə et",
+  "race_selection_title": "Yarış seçin",
+  "race_selection_search_hint": "Yarışları axtarın...",
+  "race_selection_save": "Saxla",
+  "race_selection_no_races": "Yarış tapılmadı",
+  "race_selection_confirm_title": "Yarış əlavə et",
+  "race_selection_confirm_description": "Bu yarışı gələcək yarışlar siyahısına əlavə edək?",
+  "race_selection_success": "Yarış uğurla əlavə edildi",
   "home_no_upcoming_races": "Gələcək yarış yoxdur",
   "common_no_data": "Məlumat yoxdur",
   "common_today": "Bu gün",
@@ -176,6 +184,7 @@
   "add_result_location_required": "Yer daxil edin",
   "add_result_date": "Yarış tarixi",
   "add_result_date_hint": "Tarix seçin",
+  "add_result_date_required": "Yarış tarixini seçin",
   "add_result_race_type": "Yarış növü",
   "add_result_race_type_required": "Yarış növünü seçin",
   "add_result_total_time": "Ümumi vaxt",
@@ -351,6 +360,49 @@
   "home_card_profile_title": "Atlet Kabineti",
   "home_card_profile_subtitle": "NƏTİCƏLƏR • REYTİNQ • PROFİL",
   "home_card_profile_helper": "Yarış nəticələri",
-  "home_card_profile_button": "PROFİL"
+  "home_card_profile_button": "PROFİL",
+
+  "transfer_attach_results": "Nəticələri bağla",
+  "transfer_status_loading": "Yüklənir...",
+  "transfer_status_pending": "Gözləyir",
+  "transfer_status_approved": "Təsdiqlənib",
+  "transfer_status_rejected": "Rədd edilib",
+  "transfer_no_request_title": "Başqalarının nəticələrini bağla",
+  "transfer_no_request_description": "Əgər nəticələriniz ironman.az saytında varsa, onları köçürə bilərik",
+  "transfer_select_athlete": "Atleti seçin",
+  "transfer_search_athletes": "Atletləri axtar",
+  "transfer_no_athletes_found": "Heç bir atlet tapılmadı",
+  "transfer_start_typing": "Axtarış üçün yazmağa başlayın",
+  "transfer_results_count": "{count, plural, =0{nəticə yoxdur} =1{1 nəticə} other{{count} nəticə}}",
+  "@transfer_results_count": {
+    "description": "Results count for transfer athlete",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transfer_last_race": "Son yarış: {location}",
+  "@transfer_last_race": {
+    "description": "Last race location for transfer athlete",
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "transfer_confirm_title": "Nəticələr bağlansın?",
+  "transfer_confirm_description": "{name} atletinin bütün nəticələrini öz profilinizə əlavə etmək üçün sorğu göndərilsin?",
+  "@transfer_confirm_description": {
+    "description": "Transfer confirmation description",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transfer_confirm_button": "Təsdiqlə",
+  "transfer_request_created": "Sorğu yaradıldı. İnzibatçı tərəfindən nəzərdən keçiriləcək",
+  "transfer_request_error": "Sorğu göndərilmədi. Yenidən cəhd edin"
 }
 
