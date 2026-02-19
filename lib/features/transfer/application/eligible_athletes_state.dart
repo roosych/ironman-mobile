@@ -20,6 +20,9 @@ class EligibleAthletesState {
   /// Загружены ли все атлеты с сервера
   final bool allAthletesLoaded;
 
+  /// Выбранный атлет
+  final EligibleAthleteModel? selectedAthlete;
+
   const EligibleAthletesState({
     this.allAthletes = const [],
     this.athletes = const [],
@@ -27,6 +30,7 @@ class EligibleAthletesState {
     this.error,
     this.searchQuery = '',
     this.allAthletesLoaded = false,
+    this.selectedAthlete,
   });
 
   /// Есть ли найденные атлеты
@@ -41,6 +45,9 @@ class EligibleAthletesState {
   /// Можно ли показать сообщение "Не найдено"
   bool get canShowEmptyMessage => hasSearched && !isLoading && !hasAthletes && !hasError;
 
+  /// Есть ли выбранный атлет
+  bool get isAthleteSelected => selectedAthlete != null;
+
   /// Создает копию состояния с измененными полями
   EligibleAthletesState copyWith({
     List<EligibleAthleteModel>? allAthletes,
@@ -49,7 +56,9 @@ class EligibleAthletesState {
     String? error,
     String? searchQuery,
     bool? allAthletesLoaded,
+    EligibleAthleteModel? selectedAthlete,
     bool clearError = false,
+    bool clearSelectedAthlete = false,
   }) {
     return EligibleAthletesState(
       allAthletes: allAthletes ?? this.allAthletes,
@@ -58,6 +67,7 @@ class EligibleAthletesState {
       error: clearError ? null : (error ?? this.error),
       searchQuery: searchQuery ?? this.searchQuery,
       allAthletesLoaded: allAthletesLoaded ?? this.allAthletesLoaded,
+      selectedAthlete: clearSelectedAthlete ? null : (selectedAthlete ?? this.selectedAthlete),
     );
   }
 
@@ -71,7 +81,8 @@ class EligibleAthletesState {
           isLoading == other.isLoading &&
           error == other.error &&
           searchQuery == other.searchQuery &&
-          allAthletesLoaded == other.allAthletesLoaded;
+          allAthletesLoaded == other.allAthletesLoaded &&
+          selectedAthlete == other.selectedAthlete;
 
   @override
   int get hashCode =>
@@ -80,11 +91,13 @@ class EligibleAthletesState {
       isLoading.hashCode ^
       error.hashCode ^
       searchQuery.hashCode ^
-      allAthletesLoaded.hashCode;
+      allAthletesLoaded.hashCode ^
+      selectedAthlete.hashCode;
 
   @override
   String toString() {
     return 'EligibleAthletesState{allAthletes: ${allAthletes.length}, athletes: ${athletes.length}, '
-           'isLoading: $isLoading, error: $error, searchQuery: $searchQuery, allAthletesLoaded: $allAthletesLoaded}';
+           'isLoading: $isLoading, error: $error, searchQuery: $searchQuery, allAthletesLoaded: $allAthletesLoaded, '
+           'selectedAthlete: $selectedAthlete}';
   }
 }

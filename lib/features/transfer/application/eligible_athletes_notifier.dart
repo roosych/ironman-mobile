@@ -113,6 +113,18 @@ class EligibleAthletesNotifier extends StateNotifier<EligibleAthletesState> {
     state = state.copyWith(clearError: true);
   }
 
+  /// Выбирает атлета
+  void selectAthlete(EligibleAthleteModel athlete) {
+    state = state.copyWith(
+      selectedAthlete: athlete,
+    );
+  }
+
+  /// Очищает выбор атлета
+  void clearSelection() {
+    state = state.copyWith(clearSelectedAthlete: true);
+  }
+
   /// Сбрасывает состояние к начальному
   void reset() {
     _debounceTimer?.cancel();

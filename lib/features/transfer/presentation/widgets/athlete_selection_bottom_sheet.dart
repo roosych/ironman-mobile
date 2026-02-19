@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_button_styles.dart';
 import '../../models/eligible_athlete_model.dart';
 import '../../application/eligible_athletes_state.dart';
 import '../../providers/transfer_providers.dart';
@@ -22,6 +23,7 @@ class _AthleteSelectionBottomSheetState
     extends ConsumerState<AthleteSelectionBottomSheet> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -41,8 +43,15 @@ class _AthleteSelectionBottomSheetState
     super.dispose();
   }
 
-  /// Обработка выбора атлета
-  Future<void> _onAthleteSelected(EligibleAthleteModel athlete) async {
+  /// Обработка клика по карточке атлета (только выбор)
+  void _onAthleteSelected(EligibleAthleteModel athlete) {
+    ref.read(eligibleAthletesProvider.notifier).selectAthlete(athlete);
+  }
+
+  /// Обработка сохранения выбранного атлета
+  Future<void> _onSavePressed(EligibleAthleteModel athlete) async {
+    if (_isSaving) return;
+
     final localizations = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
 
@@ -50,52 +59,55 @@ class _AthleteSelectionBottomSheetState
     final confirmed = await _showConfirmationDialog(athlete, localizations);
     if (!confirmed) return;
 
-    // Сразу закрываем BottomSheet
-    navigator.pop();
+    setState(() {
+      _isSaving = true;
+    });
 
-    // Запускаем создание заявки в фоне
-    _createTransferRequestInBackground(athlete, localizations);
-  }
+    try {
+      // Запускаем создание заявки
+      final success = await ref
+          .read(transferStatusProvider.notifier)
+          .createTransferRequest(athlete.id);
 
-  /// Создает заявку в фоне и показывает результат
-  Future<void> _createTransferRequestInBackground(
-    EligibleAthleteModel athlete,
-    AppLocalizations localizations,
-  ) async {
-    // Создаем заявку
-    final success = await ref
-        .read(transferStatusProvider.notifier)
-        .createTransferRequest(athlete.id);
+      if (!mounted) return;
 
-    // Проверяем что виджет еще существует
-    if (!mounted) return;
+      if (success) {
+        // Сразу закрываем BottomSheet
+        navigator.pop();
 
-    if (success) {
-      // Показываем успешное уведомление
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(localizations.transfer_request_created),
-          backgroundColor: Colors.green.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        // Показываем успешное уведомление
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(localizations.transfer_request_created),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
 
-      // Обновляем результаты пользователя
-      _refreshUserResults();
-    } else {
-      // Показываем ошибку
-      final error = ref.read(transferStatusProvider).error ??
-          localizations.transfer_request_error;
+        // Обновляем результаты пользователя
+        _refreshUserResults();
+      } else {
+        // Показываем ошибку
+        final error = ref.read(transferStatusProvider).error ??
+            localizations.transfer_request_error;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red.shade600,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
+
 
   /// Показывает dialog подтверждения выбора атлета
   Future<bool> _showConfirmationDialog(
@@ -322,6 +334,17 @@ class _AthleteSelectionBottomSheetState
                   theme,
                 ),
               ),
+
+              // Save button - показывается только при выборе атлета
+              if (athletesState.isAthleteSelected)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 20),
+                    child: _buildSaveButton(athletesState, localizations),
+                  ),
+                ),
             ],
           ),
         );
@@ -363,13 +386,14 @@ class _AthleteSelectionBottomSheetState
       padding: EdgeInsets.only(
         left: 20.0,
         right: 20.0,
-        bottom: bottomPadding + 16.0, // Отступ для системных кнопок + дополнительный отступ
+        bottom: bottomPadding + 16.0 + (athletesState.isAthleteSelected ? 100.0 : 0.0), // Учитываем системные кнопки + место для кнопки "Сохранить"
       ),
       itemCount: athletesState.athletes.length,
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final athlete = athletesState.athletes[index];
-        return _buildAthleteCard(athlete, localizations, theme);
+        final isSelected = athletesState.selectedAthlete?.id == athlete.id;
+        return _buildAthleteCard(athlete, isSelected, localizations, theme);
       },
     );
   }
@@ -437,20 +461,24 @@ class _AthleteSelectionBottomSheetState
   /// Строит карточку атлета
   Widget _buildAthleteCard(
     EligibleAthleteModel athlete,
+    bool isSelected,
     AppLocalizations localizations,
     ThemeData theme,
   ) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: theme.colorScheme.surfaceContainerHighest,
-      child: InkWell(
-        onTap: () => _onAthleteSelected(athlete),
-        borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: () => _onAthleteSelected(athlete),
+      borderRadius: BorderRadius.circular(12),
+      child: Card(
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isSelected ? AppColors.ironmanRed : Colors.transparent,
+            width: 2,
+          ),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               // Info
@@ -472,7 +500,7 @@ class _AthleteSelectionBottomSheetState
                         athlete.totalRaces,
                       ),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha:0.7),
+                        color: AppColors.ironmanTextSecondary,
                       ),
                     ),
                     if (athlete.lastRaceLocation != null) ...[
@@ -482,7 +510,7 @@ class _AthleteSelectionBottomSheetState
                           athlete.lastRaceLocation!,
                         ),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha:0.5),
+                          color: AppColors.ironmanTextSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -492,14 +520,54 @@ class _AthleteSelectionBottomSheetState
                 ),
               ),
 
-              // Arrow icon
-              HugeIcon(
-                icon: HugeIcons.strokeRoundedArrowRight01,
-                color: theme.colorScheme.onSurface.withValues(alpha:0.5),
-                size: 20,
-              ),
+              // Индикатор выбора
+              if (isSelected)
+                const HugeIcon(
+                  icon: HugeIcons.strokeRoundedCheckmarkCircle02,
+                  color: AppColors.ironmanRed,
+                  size: 24,
+                ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Кнопка сохранения
+  Widget _buildSaveButton(EligibleAthletesState state, AppLocalizations localizations) {
+    if (_isSaving) {
+      return SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: AppButtonStyles.primaryGradient,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Center(
+            child: SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: AppButtonStyles.gradientElevatedButton(
+        text: localizations.transfer_confirm_button,
+        onPressed: () => _onSavePressed(state.selectedAthlete!),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
     );
