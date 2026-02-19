@@ -4,7 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
-import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
+import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../domain/upcoming_race.dart';
 import '../application/upcoming_races_notifier.dart';
@@ -60,6 +60,12 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
     }
   }
 
+  void _loadNextPage() {
+    ref.read(globalUpcomingRacesProvider.notifier).loadNextPage(
+      onlyFuture: false,
+    );
+  }
+
   void _showErrorSafely(dynamic error) {
     if (!mounted) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -107,7 +113,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showAddUpcomingRaceBottomSheet(context);
+          showRaceSelectionBottomSheet(context);
           // Обновление списка произойдет автоматически через провайдер в BottomSheet
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -226,15 +232,40 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
 
     return RefreshIndicator(
       onRefresh: _refreshAllRaces,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
-        itemCount: activeRaces.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: UpcomingRaceCard(race: activeRaces[index]),
-          );
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
+          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
+            if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _loadNextPage();
+                }
+              });
+            }
+          }
+          return false;
         },
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
+          itemCount: activeRaces.length + (state.isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            // Показываем индикатор загрузки в конце списка
+            if (index == activeRaces.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: UpcomingRaceCard(race: activeRaces[index]),
+            );
+          },
+        ),
       ),
     );
   }
@@ -261,15 +292,40 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
 
     return RefreshIndicator(
       onRefresh: _refreshAllRaces,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
-        itemCount: pastRaces.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: UpcomingRaceCard(race: pastRaces[index]),
-          );
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
+          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
+            if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _loadNextPage();
+                }
+              });
+            }
+          }
+          return false;
         },
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
+          itemCount: pastRaces.length + (state.isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            // Показываем индикатор загрузки в конце списка
+            if (index == pastRaces.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: UpcomingRaceCard(race: pastRaces[index]),
+            );
+          },
+        ),
       ),
     );
   }

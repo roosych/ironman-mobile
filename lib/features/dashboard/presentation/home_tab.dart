@@ -985,10 +985,10 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   }
 
   void _loadAllRaces() {
-    // Используем отдельный провайдер для главного экрана
+    // Используем отдельный провайдер для Dashboard - только первая страница (15 записей)
     ref
-        .read(globalUpcomingRacesProvider.notifier)
-        .loadUpcomingRaces(
+        .read(dashboardUpcomingRacesProvider.notifier)
+        .loadUpcomingRacesFirstPage(
           onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
         );
   }
@@ -1079,10 +1079,10 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
-    final state = ref.watch(globalUpcomingRacesProvider);
+    final state = ref.watch(dashboardUpcomingRacesProvider);
 
     // Слушаем ошибки
-    ref.listen<UpcomingRacesState>(globalUpcomingRacesProvider, (
+    ref.listen<UpcomingRacesState>(dashboardUpcomingRacesProvider, (
       previous,
       next,
     ) {

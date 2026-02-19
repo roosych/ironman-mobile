@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/upcoming_race.dart';
+import '../domain/upcoming_races_response.dart';
 
 class UpcomingRacesApiException implements Exception {
   final String message;
@@ -17,7 +18,7 @@ class UpcomingRacesApi {
   UpcomingRacesApi({ApiClient? client}) : _client = client ?? ApiClient();
 
   /// Получить список предстоящих гонок
-  /// 
+  ///
   /// [userProfileId] - фильтр по ID профиля пользователя
   /// [raceType] - фильтр по типу гонки (например, 'ironman')
   /// [onlyFuture] - если true, показывать только будущие гонки (по умолчанию true)
@@ -48,25 +49,16 @@ class UpcomingRacesApi {
         throw UpcomingRacesApiException('Пустой ответ от сервера');
       }
 
+      // Обновленный формат ответа с success и meta
       if (data['success'] == true && data['data'] != null) {
-        final dataList = data['data'];
-
-        // Проверяем, что data является List
-        if (dataList is! List) {
+        try {
+          final racesResponse = UpcomingRacesResponse.fromJson(data);
+          return racesResponse.data;
+        } catch (e) {
           throw UpcomingRacesApiException(
-            'Ожидался список гонок, получен другой тип данных',
+            'Неверный формат ответа: ${e.toString()}',
           );
         }
-
-        final List<dynamic> racesJson = dataList;
-        return racesJson.map((json) {
-          if (json is! Map<String, dynamic>) {
-            throw UpcomingRacesApiException(
-              'Неверный формат элемента гонки',
-            );
-          }
-          return UpcomingRace.fromJson(json);
-        }).toList();
       }
 
       // Если success != true, но нет ошибки, возвращаем пустой список
@@ -81,6 +73,71 @@ class UpcomingRacesApi {
       }
 
       // Более детальная информация об ошибке
+      if (e.response != null) {
+        final statusCode = e.response!.statusCode;
+        final errorData = e.response!.data;
+        if (errorData is Map && errorData['message'] != null) {
+          throw UpcomingRacesApiException(errorData['message'] as String);
+        }
+        throw UpcomingRacesApiException(
+          'Ошибка загрузки данных (HTTP $statusCode)',
+        );
+      }
+
+      throw UpcomingRacesApiException(
+        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+      );
+    } catch (e) {
+      if (e is UpcomingRacesApiException) {
+        rethrow;
+      }
+      throw UpcomingRacesApiException('Произошла ошибка: ${e.toString()}');
+    }
+  }
+
+  /// Получить пагинированный ответ со всеми данными (links, meta)
+  ///
+  /// [userProfileId] - фильтр по ID профиля пользователя
+  /// [raceType] - фильтр по типу гонки (например, 'ironman_70_3')
+  /// [onlyFuture] - если true, показывать только будущие гонки (по умолчанию true)
+  /// [page] - номер страницы для пагинации
+  Future<UpcomingRacesResponse> fetchUpcomingRacesWithPagination({
+    int? userProfileId,
+    String? raceType,
+    bool onlyFuture = true,
+    int page = 1,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (userProfileId != null) {
+        queryParams['user_profile_id'] = userProfileId;
+      }
+      if (raceType != null && raceType.isNotEmpty) {
+        queryParams['race_type'] = raceType;
+      }
+      queryParams['only_future'] = onlyFuture;
+      queryParams['page'] = page;
+
+      final response = await _client.get<Map<String, dynamic>>(
+        '/upcoming-races',
+        queryParameters: queryParams,
+      );
+
+      final data = response.data;
+      if (data == null) {
+        throw UpcomingRacesApiException('Пустой ответ от сервера');
+      }
+
+      return UpcomingRacesResponse.fromJson(data);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw UpcomingRacesApiException('Превышено время ожидания');
+      }
+      if (e.type == DioExceptionType.connectionError) {
+        throw UpcomingRacesApiException('NETWORK_NO_CONNECTION');
+      }
+
       if (e.response != null) {
         final statusCode = e.response!.statusCode;
         final errorData = e.response!.data;
