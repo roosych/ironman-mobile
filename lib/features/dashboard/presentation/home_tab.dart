@@ -200,6 +200,62 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     return personalBests;
   }
 
+  Future<void> _refreshAllData() async {
+    try {
+      debugPrint('HomeTab: Pull-to-refresh triggered');
+
+      // Обновляем данные параллельно для лучшей производительности
+      final futures = <Future<void>>[
+        // Обновить профиль пользователя и статистику
+        ref.read(authProvider.notifier).refreshUser(),
+
+        // Обновить upcoming races для dashboard
+        _refreshUpcomingRaces(),
+
+        // Обновить уведомления
+        _refreshNotifications(),
+      ];
+
+      // Добавляем обновление результатов, если есть profileId
+      final profileId = _getProfileId();
+      if (profileId != null) {
+        futures.add(_refreshResults(profileId));
+      }
+
+      await Future.wait(futures);
+      debugPrint('HomeTab: Pull-to-refresh completed successfully');
+    } catch (e) {
+      debugPrint('HomeTab: Pull-to-refresh error: $e');
+      // Ошибки уже обработаны в соответствующих провайдерах
+    }
+  }
+
+  Future<void> _refreshResults(int profileId) async {
+    try {
+      await ref.read(raceResultsProvider.notifier).refreshResults(profileId);
+    } catch (e) {
+      debugPrint('HomeTab: Error refreshing results: $e');
+    }
+  }
+
+  Future<void> _refreshUpcomingRaces() async {
+    try {
+      ref.read(dashboardUpcomingRacesProvider.notifier).loadUpcomingRacesFirstPage(
+        onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
+      );
+    } catch (e) {
+      debugPrint('HomeTab: Error refreshing upcoming races: $e');
+    }
+  }
+
+  Future<void> _refreshNotifications() async {
+    try {
+      ref.read(notificationsProvider.notifier).load();
+    } catch (e) {
+      debugPrint('HomeTab: Error refreshing notifications: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -244,12 +300,17 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               ),
             ),
           ),
-          // Main content
+          // Main content with pull-to-refresh
           SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+            child: RefreshIndicator(
+              color: AppColors.ironmanRed,
+              displacement: 80.0, // Центрирование индикатора
+              onRefresh: _refreshAllData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
               // Top section with avatar and notifications
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -379,7 +440,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               ),
 
               const SizedBox(height: 12),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
