@@ -384,7 +384,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   const SizedBox(width: 8),
                   // Название страны
                   Text(
-                    (Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!).toUpperCase(),
+                    Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColors.ironmanWhite,
                       fontSize: 16,
@@ -396,7 +396,8 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             ),
           ],
           // Блок рейтинга (показываем только если есть данные рейтинга)
-          if (athlete.ranking != null) ...[
+          if (athlete.ranking != null &&
+              (athlete.ranking!.ironman != null || athlete.ranking!.ironman703 != null)) ...[
             const SizedBox(height: 16),
             _buildRatingBlock(context, theme, athlete),
           ],

@@ -29,6 +29,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   String? _selectedRaceType;
   bool _isSaving = false;
 
+  // Переменные для отслеживания валидации
+  bool _showDateValidation = false;
+  bool _showTotalTimeValidation = false;
+
   // Duration переменные для времени
   Duration _totalTime = Duration.zero;
   Duration _swimTime = Duration.zero;
@@ -66,6 +70,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
+        _showDateValidation = false; // Убираем ошибку после выбора даты
       });
     }
   }
@@ -267,7 +272,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                     size: 20,
                   ),
                   suffixIcon: const Icon(Icons.arrow_drop_down),
-                  errorText: _selectedDate == null ? localizations.add_result_date_required : null,
+                  errorText: (_showDateValidation && _selectedDate == null) ? localizations.add_result_date_required : null,
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
@@ -369,10 +374,13 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
               onTap: () => _pickTime(
                 title: localizations.add_result_total_time,
                 initial: _totalTime,
-                onConfirm: (d) => setState(() => _totalTime = d),
+                onConfirm: (d) => setState(() {
+                  _totalTime = d;
+                  _showTotalTimeValidation = false; // Убираем ошибку после выбора времени
+                }),
               ),
             ),
-            if (_totalTime.inSeconds == 0)
+            if (_showTotalTimeValidation && _totalTime.inSeconds == 0)
               Padding(
                 padding: const EdgeInsets.only(left: 12, top: 4),
                 child: Text(
@@ -503,7 +511,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   : AppButtonStyles.gradientElevatedButton(
                       text: localizations.add_result_save,
                       onPressed: () {
-                        setState(() {}); // Trigger rebuild to show validation errors
+                        setState(() {
+                          _showDateValidation = true;
+                          _showTotalTimeValidation = true;
+                        }); // Trigger rebuild to show validation errors
                         if (_formKey.currentState!.validate() && _selectedDate != null && _totalTime.inSeconds > 0) {
                           _saveResult();
                         }
