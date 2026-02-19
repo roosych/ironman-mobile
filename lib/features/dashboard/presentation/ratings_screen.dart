@@ -230,7 +230,14 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                               ),
                               indicator: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: AppColors.ironmanRed,
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppColors.primaryGradientStart,
+                                    AppColors.primaryGradientEnd,
+                                  ],
+                                ),
                               ),
                               indicatorSize: TabBarIndicatorSize.tab,
                               dividerColor: Colors.transparent,
@@ -466,12 +473,16 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
-              indicator: UnderlineTabIndicator(
-                borderSide: const BorderSide(
-                  color: AppColors.ironmanRed,
-                  width: 3,
+              indicator: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(3)),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primaryGradientStart,
+                    AppColors.primaryGradientEnd,
+                  ],
                 ),
-                insets: const EdgeInsets.symmetric(horizontal: 16),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,

@@ -342,13 +342,8 @@ class _AddPhotoCard extends StatelessWidget {
       onTap: isLoading ? null : onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-            width: 2,
-            strokeAlign: BorderSide.strokeAlignInside,
-          ),
         ),
         child: isLoading
             ? const Center(

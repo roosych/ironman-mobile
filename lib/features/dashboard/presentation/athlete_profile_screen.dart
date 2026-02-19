@@ -186,7 +186,14 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                         .withValues(alpha: 0.5),
                     indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: AppColors.ironmanRed,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.primaryGradientStart,
+                          AppColors.primaryGradientEnd,
+                        ],
+                      ),
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,

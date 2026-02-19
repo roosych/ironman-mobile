@@ -72,7 +72,7 @@ class ResultCard extends ConsumerWidget {
                   result.athleteName!.isNotEmpty)
                 Center(
                   child: Text(
-                    result.athleteName!,
+                    result.athleteName!.toUpperCase(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize:

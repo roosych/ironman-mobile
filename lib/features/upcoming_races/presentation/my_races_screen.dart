@@ -4,7 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
-import 'package:ironman_mobile/shared/widgets/add_upcoming_race_bottom_sheet.dart';
+import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../domain/upcoming_race.dart';
 import '../application/upcoming_races_notifier.dart';
@@ -166,15 +166,42 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showAddUpcomingRaceBottomSheet(context);
-          // Обновление списка произойдет автоматически через провайдер в BottomSheet
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryGradientStart,
+              AppColors.primaryGradientEnd,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              showRaceSelectionBottomSheet(context);
+              // Обновление списка произойдет автоматически через провайдер в BottomSheet
+            },
+            borderRadius: BorderRadius.circular(28),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -193,7 +220,14 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
               unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: AppColors.ironmanRed,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primaryGradientStart,
+                    AppColors.primaryGradientEnd,
+                  ],
+                ),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,

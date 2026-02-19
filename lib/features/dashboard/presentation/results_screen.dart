@@ -10,6 +10,9 @@ import 'package:ironman_mobile/features/results/application/race_results_state.d
 import 'package:ironman_mobile/shared/widgets/result_card.dart';
 import 'package:ironman_mobile/features/results/presentation/add_result_screen.dart';
 import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
+import 'package:ironman_mobile/features/transfer/providers/transfer_providers.dart';
+import 'package:ironman_mobile/features/transfer/presentation/widgets/transfer_status_card.dart';
+import 'package:ironman_mobile/features/transfer/presentation/widgets/athlete_selection_bottom_sheet.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -41,6 +44,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllResults();
+
+        // Проактивно загружаем transfer статус для авторизованных пользователей
+        // чтобы при переключении на "Мои результаты" данные уже были готовы
+        if (_isUserAuthenticated()) {
+          _loadTransferStatus();
+        }
       }
     });
     _searchController = TextEditingController();
@@ -76,6 +85,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           
           // Провайдер сам проверит еще раз, нужно ли загружать данные
           _loadResults();
+
+          // Transfer статус уже загружен в initState, дополнительная загрузка не нужна
         });
       }
     }
@@ -109,11 +120,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   int? _getProfileId() {
     final user = ref.read(authProvider).user;
-    if (user?.profile is Map<String, dynamic>) {
-      final profile = user!.profile as Map<String, dynamic>;
-      return profile['id'] as int?;
-    }
-    return null;
+    return user?.profile?.id;
   }
 
   bool _isUserAuthenticated() {
@@ -161,10 +168,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Future<void> _refreshResults() async {
     final profileId = _getProfileId();
     if (profileId != null) {
+      // Обновляем результаты (основная функциональность)
+      await ref.read(raceResultsProvider.notifier).refreshResults(profileId);
+
+      // Обновляем статус заявки на перенос независимо (если API доступен)
       try {
-        await ref.read(raceResultsProvider.notifier).refreshResults(profileId);
+        ref.read(transferStatusProvider.notifier).refreshStatus();
       } catch (e) {
-        // Ошибка уже обработана в провайдере, алерт покажется через listener
+        // Игнорируем ошибки transfer API - это не критично для основной функциональности
       }
     }
   }
@@ -178,6 +189,25 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   void _loadAllResults() {
     ref.read(allRaceResultsProvider.notifier).loadAllResults();
+  }
+
+  void _loadTransferStatus() {
+    // Проверяем авторизацию перед запросом
+    final authState = ref.read(authProvider);
+    if (authState.status != AuthStatus.authenticated || authState.user == null) {
+      debugPrint('🚫 _loadTransferStatus: пользователь не авторизован, пропускаем загрузку transfer статуса');
+      return;
+    }
+
+    debugPrint('✅ _loadTransferStatus: пользователь авторизован, загружаем transfer статус');
+    debugPrint('👤 User ID: ${authState.user?.profile?.id}');
+
+    try {
+      ref.read(transferStatusProvider.notifier).loadCurrentStatus();
+    } catch (e) {
+      debugPrint('❌ _loadTransferStatus: ошибка при загрузке transfer статуса: $e');
+      // Игнорируем ошибки - transfer функционал не критичен
+    }
   }
 
   Future<void> _refreshAllResults() async {
@@ -201,6 +231,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
              location.contains(query) ||
              raceType.contains(query);
     }).toList();
+  }
+
+  /// Показывает BottomSheet для выбора атлета-донора результатов
+  void _showAthleteSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AthleteSelectionBottomSheet(),
+    );
   }
 
   @override
@@ -332,18 +372,45 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           animation: _tabController!,
           builder: (context, child) {
             return _tabController!.index == 1
-                ? FloatingActionButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AddResultScreen(),
+                ? Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.primaryGradientStart,
+                          AppColors.primaryGradientEnd,
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
                         ),
-                      );
-                    },
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: const CircleBorder(),
-                    child: const Icon(Icons.add),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const AddResultScreen(),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(28),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
                   )
                 : const SizedBox.shrink();
           },
@@ -469,7 +536,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             ),
                             indicator: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: AppColors.ironmanRed,
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.primaryGradientStart,
+                                  AppColors.primaryGradientEnd,
+                                ],
+                              ),
                             ),
                             indicatorSize: TabBarIndicatorSize.tab,
                             dividerColor: Colors.transparent,
@@ -533,54 +607,74 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       );
     }
 
-    if (filteredResults.isEmpty && !state.isLoading) {
-      return Center(
-        child: Text(AppLocalizations.of(context)!.results_no_results),
-      );
-    }
-
     return RefreshIndicator(
       onRefresh: _refreshResults,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
-          if (scrollInfo.metrics.pixels >=
-              scrollInfo.metrics.maxScrollExtent * 0.8) {
-            if (state.hasMorePages &&
-                !state.isLoadingMore &&
-                !state.isLoading) {
-              // Используем addPostFrameCallback чтобы избежать модификации провайдера во время обработки события
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _loadNextPage();
-                }
-              });
-            }
-          }
-          return false;
-        },
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: filteredResults.length + (state.isLoadingMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            // Показываем индикатор загрузки в конце списка
-            if (index == filteredResults.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
+      child: Column(
+        children: [
+          // НОВОЕ: Блок статуса переноса результатов ВЫШЕ списка результатов
+          Consumer(
+            builder: (context, ref, _) {
+              final transferState = ref.watch(transferStatusProvider);
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: ResultCard(
-                result: filteredResults[index],
-                isMyResults: true,
-                showBorder: false,
-              ),
-            );
-          },
-        ),
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TransferStatusCard(
+                  state: transferState,
+                  onTransferRequest: () => _showAthleteSelectionBottomSheet(context),
+                ),
+              );
+            },
+          ),
+
+          // Существующий список результатов или empty state
+          Expanded(
+            child: filteredResults.isEmpty && !state.isLoading
+                ? Center(
+                    child: Text(AppLocalizations.of(context)!.results_no_results),
+                  )
+                : NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
+                      if (scrollInfo.metrics.pixels >=
+                          scrollInfo.metrics.maxScrollExtent * 0.8) {
+                        if (state.hasMorePages &&
+                            !state.isLoadingMore &&
+                            !state.isLoading) {
+                          // Используем addPostFrameCallback чтобы избежать модификации провайдера во время обработки события
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              _loadNextPage();
+                            }
+                          });
+                        }
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: filteredResults.length + (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        // Показываем индикатор загрузки в конце списка
+                        if (index == filteredResults.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: ResultCard(
+                            result: filteredResults[index],
+                            isMyResults: true,
+                            showBorder: false,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }

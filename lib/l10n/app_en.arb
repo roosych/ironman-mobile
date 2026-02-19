@@ -601,7 +601,7 @@
   "@edit_profile_social_links": {
     "description": "Social links section title"
   },
-  "edit_profile_save_button": "SAVE CHANGES",
+  "edit_profile_save_button": "Save",
   "@edit_profile_save_button": {
     "description": "Save button text"
   },

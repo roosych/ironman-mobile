@@ -155,14 +155,13 @@ class UpcomingRaceCard extends StatelessWidget {
                   isPast
                       ? localizations.upcoming_completed
                       : localizations.common_days(daysUntil).toUpperCase(),
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isPast
                         ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
-                        : daysUntil <= 14 
-                            ? theme.colorScheme.error 
+                        : daysUntil <= 14
+                            ? theme.colorScheme.error
                             : theme.colorScheme.primary,
-                    fontSize: 18,
                   ),
                 ),
               ],

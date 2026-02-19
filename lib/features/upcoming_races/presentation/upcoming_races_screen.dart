@@ -111,15 +111,42 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showRaceSelectionBottomSheet(context);
-          // Обновление списка произойдет автоматически через провайдер в BottomSheet
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryGradientStart,
+              AppColors.primaryGradientEnd,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              showRaceSelectionBottomSheet(context);
+              // Обновление списка произойдет автоматически через провайдер в BottomSheet
+            },
+            borderRadius: BorderRadius.circular(28),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -138,7 +165,14 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
               unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: AppColors.ironmanRed,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primaryGradientStart,
+                    AppColors.primaryGradientEnd,
+                  ],
+                ),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
