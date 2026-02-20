@@ -1047,7 +1047,7 @@ class AppLocalizationsAz extends AppLocalizations {
       'Əgər nəticələriniz ironman.az saytında varsa, onları köçürə bilərik';
 
   @override
-  String get transfer_attach_results => 'Nəticələri bağla';
+  String get transfer_attach_results => 'Sorğu göndər';
 
   @override
   String get transfer_status_pending => 'Gözləyir';

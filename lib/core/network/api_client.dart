@@ -281,6 +281,7 @@ class _AuthInterceptor extends Interceptor {
       '/auth/register',
       '/auth/forgot-password',
       '/auth/reset-password',
+      '/auth/locale',         // обновление языка пользователя
       // Password change (can return 403 for wrong current password)
       '/user/password',       // смена пароля
       // Non-critical GETs where 401 не должен ронять сессию

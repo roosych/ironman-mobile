@@ -612,82 +612,87 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
     return RefreshIndicator(
       onRefresh: _refreshResults,
-      child: Column(
-        children: [
-          // НОВОЕ: Блок статуса переноса результатов ВЫШЕ списка результатов
-          Consumer(
-            builder: (context, ref, _) {
-              final transferState = ref.watch(transferStatusProvider);
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
+          if (scrollInfo.metrics.pixels >=
+              scrollInfo.metrics.maxScrollExtent * 0.8) {
+            if (state.hasMorePages &&
+                !state.isLoadingMore &&
+                !state.isLoading) {
+              // Используем addPostFrameCallback чтобы избежать модификации провайдера во время обработки события
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _loadNextPage();
+                }
+              });
+            }
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            // НОВОЕ: Блок статуса переноса результатов ВЫШЕ списка результатов
+            Consumer(
+              builder: (context, ref, _) {
+                final transferState = ref.watch(transferStatusProvider);
 
-              // Не показываем блок если:
-              // 1. Заявка одобрена - результаты уже видны
-              // 2. Статус еще загружается - ждем окончательного результата
-              // 3. Статус еще не загружался (начальное состояние) - ждем первого результата
-              if ((transferState.request?.status.isApproved ?? false) ||
-                  transferState.isLoading ||
-                  (transferState.request == null && !transferState.hasError && !transferState.isLoading)) {
-                return const SizedBox.shrink();
-              }
+                // Не показываем блок только если:
+                // 1. Заявка одобрена - результаты уже видны
+                // 2. Статус еще загружается - ждем окончательного результата
+                if ((transferState.request?.status.isApproved ?? false) ||
+                    transferState.isLoading) {
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                }
 
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TransferStatusCard(
-                  state: transferState,
-                  onTransferRequest: () => _showAthleteSelectionBottomSheet(context),
-                ),
-              );
-            },
-          ),
-
-          // Существующий список результатов или empty state
-          Expanded(
-            child: filteredResults.isEmpty && !state.isLoading
-                ? Center(
-                    child: Text(AppLocalizations.of(context)!.results_no_results),
-                  )
-                : NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
-                      if (scrollInfo.metrics.pixels >=
-                          scrollInfo.metrics.maxScrollExtent * 0.8) {
-                        if (state.hasMorePages &&
-                            !state.isLoadingMore &&
-                            !state.isLoading) {
-                          // Используем addPostFrameCallback чтобы избежать модификации провайдера во время обработки события
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted) {
-                              _loadNextPage();
-                            }
-                          });
-                        }
-                      }
-                      return false;
-                    },
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: filteredResults.length + (state.isLoadingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        // Показываем индикатор загрузки в конце списка
-                        if (index == filteredResults.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: ResultCard(
-                            result: filteredResults[index],
-                            isMyResults: true,
-                            showBorder: false,
-                          ),
-                        );
-                      },
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TransferStatusCard(
+                      state: transferState,
+                      onTransferRequest: () => _showAthleteSelectionBottomSheet(context),
                     ),
                   ),
-          ),
-        ],
+                );
+              },
+            ),
+
+            // Список результатов или empty state
+            filteredResults.isEmpty && !state.isLoading
+                ? SliverFillRemaining(
+                    child: Center(
+                      child: Text(AppLocalizations.of(context)!.results_no_results),
+                    ),
+                  )
+                : SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          // Показываем индикатор загрузки в конце списка
+                          if (index == filteredResults.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: ResultCard(
+                              result: filteredResults[index],
+                              isMyResults: true,
+                              showBorder: false,
+                            ),
+                          );
+                        },
+                        childCount: filteredResults.length + (state.isLoadingMore ? 1 : 0),
+                      ),
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }
