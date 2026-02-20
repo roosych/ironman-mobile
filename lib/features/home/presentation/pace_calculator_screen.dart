@@ -454,27 +454,43 @@ class DistanceTabs extends StatelessWidget {
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: Material(
-                color: isSelected
-                    ? AppColors.ironmanRed
-                    : AppColors.ironmanGray,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: () => onTabSelected(tab),
+              child: Container(
+                decoration: isSelected
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryGradientStart,
+                            AppColors.primaryGradientEnd,
+                          ],
+                        ),
+                      )
+                    : BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.ironmanGray,
+                      ),
+                child: Material(
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Center(
-                      child: Text(
-                        getTabLabel(tab),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontSize: 16,
-                          color: isSelected
-                              ? AppColors.ironmanWhite
-                              : AppColors.ironmanTextSecondary,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
+                  child: InkWell(
+                    onTap: () => onTabSelected(tab),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: Text(
+                          getTabLabel(tab),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontSize: 16,
+                            color: isSelected
+                                ? AppColors.ironmanWhite
+                                : AppColors.ironmanTextSecondary,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
