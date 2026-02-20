@@ -1124,4 +1124,122 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get transfer_confirm_button => 'Təsdiqlə';
+
+  @override
+  String get api_error_empty_response => 'Serverdən boş cavab';
+
+  @override
+  String get api_error_timeout => 'Gözləmə müddəti keçdi';
+
+  @override
+  String get api_error_network_no_connection => 'İnternet bağlantısı yoxdur';
+
+  @override
+  String api_error_http_status(int status) {
+    return 'Məlumat yüklənməsi xətası (HTTP $status)';
+  }
+
+  @override
+  String api_error_generic(String message) {
+    return 'Məlumat yüklənməsi xətası: $message';
+  }
+
+  @override
+  String api_error_unexpected(String error) {
+    return 'Xəta baş verdi: $error';
+  }
+
+  @override
+  String get api_error_invalid_data_format =>
+      'Məlumat siyahısı gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_invalid_item_format =>
+      'Məlumat elementinin formatı düzgün deyil';
+
+  @override
+  String get api_error_races_format =>
+      'Yarış siyahısı gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_race_item_format =>
+      'Yarış elementinin formatı düzgün deyil';
+
+  @override
+  String get api_error_rankings_format =>
+      'Reytinq siyahısı gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_ranking_item_format =>
+      'Reytinq elementinin formatı düzgün deyil';
+
+  @override
+  String get api_error_athletes_format =>
+      'Atletlər siyahısı gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_athlete_item_format =>
+      'Atlet elementinin formatı düzgün deyil';
+
+  @override
+  String get api_error_athlete_object_format =>
+      'Atlet obyekti gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_athlete_not_found =>
+      'Atlet məlumatları əldə edilə bilmədi';
+
+  @override
+  String get api_error_records_object_format =>
+      'Rekorlar obyekti gözlənilirdi, başqa tip alındı';
+
+  @override
+  String get api_error_records_not_found =>
+      'Rekor məlumatları əldə edilə bilmədi';
+
+  @override
+  String get api_error_upcoming_race_create_failed => 'Yarış yaradıla bilmədi';
+
+  @override
+  String get api_error_upcoming_race_object_format =>
+      'Yarış obyekti gözlənilirdi, başqa tip alındı';
+
+  @override
+  String api_error_server(String status) {
+    return 'Server xətası ($status)';
+  }
+
+  @override
+  String get api_error_athletes_loading =>
+      'Atletlərin yüklənməsində xəta baş verdi';
+
+  @override
+  String get transfer_api_conflict => 'Sorğu yaradarkən münaqişə';
+
+  @override
+  String get transfer_api_validation => 'Məlumat yoxlanması xətası';
+
+  @override
+  String get transfer_api_server_error =>
+      'Serverlə əlaqə qurarkən xəta baş verdi';
+
+  @override
+  String get transfer_status_timeout =>
+      'Status yeniləyərkən gözləmə müddəti keçdi';
+
+  @override
+  String get transfer_status_load_failed =>
+      'Transfer sorğusunun statusu yüklənə bilmədi';
+
+  @override
+  String get transfer_status_create_failed =>
+      'Transfer sorğusu yaradıla bilmədi';
+
+  @override
+  String get transfer_status_update_failed =>
+      'Transfer statusu yenilənə bilmədi';
+
+  @override
+  String get api_error_transfer_create_failed =>
+      'Transfer sorğusu yaradıla bilmədi';
 }

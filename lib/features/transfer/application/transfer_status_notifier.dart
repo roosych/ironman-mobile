@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../infrastructure/transfer_api.dart';
-import '../infrastructure/transfer_api_exception.dart';
+import '../../../core/errors/api_exception.dart';
 import 'transfer_status_state.dart';
 
 /// Notifier для управления статусом заявки на перенос результатов
@@ -33,15 +33,15 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
       debugPrint('⏰ TransferStatusNotifier: timeout при загрузке статуса');
       state = state.copyWith(
         isLoading: false,
-        error: 'Request timeout. Check internet connection and try again.',
+        error: 'api_error_timeout',
       );
     } on TransferApiException catch (e) {
-      debugPrint('🚨 TransferStatusNotifier: ошибка API при загрузке статуса: ${e.message}');
+      debugPrint('🚨 TransferStatusNotifier: ошибка API при загрузке статуса: ${e.localizationKey}');
 
       // Если ошибка авторизации, пытаемся fallback через создание заявки с фейковым ID
-      if (e.message.contains('Authentication token required') ||
-          e.message.contains('Unauthenticated') ||
-          e.message.contains('401')) {
+      if (e.originalMessage?.contains('Authentication token required') == true ||
+          e.originalMessage?.contains('Unauthenticated') == true ||
+          e.originalMessage?.contains('401') == true) {
         debugPrint('🔄 TransferStatusNotifier: пробуем fallback через создание фейковой заявки');
         await _tryLoadStatusViaCreateRequest();
         return;
@@ -49,13 +49,13 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
 
       state = state.copyWith(
         isLoading: false,
-        error: e.message,
+        error: e.localizationKey,
       );
     } catch (e) {
       debugPrint('❌ TransferStatusNotifier: неожиданная ошибка при загрузке статуса: $e');
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to load transfer request status',
+        error: 'transfer_status_load_failed',
       );
     }
   }
@@ -110,7 +110,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } on TimeoutException {
       state = state.copyWith(
         isSubmitting: false,
-        error: 'Request timeout. Check internet connection and try again.',
+        error: 'api_error_timeout',
       );
       return false;
     } on TransferApiException catch (e) {
@@ -122,7 +122,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } catch (e) {
       state = state.copyWith(
         isSubmitting: false,
-        error: 'Failed to create transfer request',
+        error: 'transfer_status_create_failed',
       );
       return false;
     }
@@ -150,14 +150,14 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } on TimeoutException {
       state = state.copyWith(
         isLoading: false,
-        error: 'Превышено время ожидания при обновлении статуса',
+        error: 'transfer_status_timeout',
       );
     } on TransferApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e.localizationKey);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to update transfer status',
+        error: 'transfer_status_update_failed',
       );
     }
   }

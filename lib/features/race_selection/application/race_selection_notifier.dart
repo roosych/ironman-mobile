@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import '../infrastructure/races_api.dart';
 import '../models/race_model.dart';
+import '../../../core/errors/api_exception.dart';
 import 'race_selection_state.dart';
 
 /// Notifier для управления состоянием выбора гонки
@@ -40,22 +41,20 @@ class RaceSelectionNotifier extends StateNotifier<RaceSelectionState> {
       if (mounted) {
         state = state.copyWith(
           isLoading: false,
-          error: 'Превышено время ожидания. Проверьте подключение к интернету.',
+          error: 'api_error_timeout',
         );
       }
       rethrow;
     } catch (e) {
       if (mounted) {
-        String errorMessage = 'Не удалось загрузить список гонок';
-        if (e.toString().contains('NETWORK_NO_CONNECTION')) {
-          errorMessage = 'Отсутствует подключение к интернету';
-        } else if (e is RacesApiException) {
-          errorMessage = e.message;
+        String errorKey = 'error_unexpected';
+        if (e is RacesApiException) {
+          errorKey = e.localizationKey;
         }
 
         state = state.copyWith(
           isLoading: false,
-          error: errorMessage,
+          error: errorKey,
         );
       }
       rethrow;

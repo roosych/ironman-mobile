@@ -155,15 +155,14 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     } on TimeoutException {
       state = state.copyWith(
         isLoading: false,
-        error:
-            'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'api_error_timeout',
         hasLoadedOnce: true,
       );
     } catch (e) {
       debugPrint('NotificationsNotifier: load error: $e');
       state = state.copyWith(
         isLoading: false,
-        error: 'Произошла ошибка',
+        error: 'error_unexpected',
         hasLoadedOnce: true,
       );
     }

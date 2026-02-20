@@ -1,16 +1,9 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../domain/athlete.dart';
 import '../domain/personal_record.dart';
-
-class AthletesApiException implements Exception {
-  final String message;
-
-  AthletesApiException(this.message);
-
-  @override
-  String toString() => message;
-}
 
 class AthletesApi {
   final ApiClient _client;
@@ -25,7 +18,9 @@ class AthletesApi {
 
       final data = response.data;
       if (data == null) {
-        throw AthletesApiException('Пустой ответ от сервера');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -33,16 +28,16 @@ class AthletesApi {
 
         // Проверяем, что data является List
         if (dataList is! List) {
-          throw AthletesApiException(
-            'Ожидался список атлетов, получен другой тип данных',
+          throw const AthletesApiException(
+            localizationKey: ApiErrorKeys.athletesFormat,
           );
         }
 
         final List<dynamic> athletesJson = dataList;
         return athletesJson.map((json) {
           if (json is! Map<String, dynamic>) {
-            throw AthletesApiException(
-              'Неверный формат элемента атлета',
+            throw const AthletesApiException(
+              localizationKey: ApiErrorKeys.athleteItemFormat,
             );
           }
           return Athlete.fromJson(json);
@@ -54,21 +49,38 @@ class AthletesApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw AthletesApiException('Превышено время ожидания');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw AthletesApiException('NETWORK_NO_CONNECTION');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
       final statusCode = e.response?.statusCode;
       final message = e.response?.data?['message'] as String?;
+      if (message != null) {
+        throw AthletesApiException(
+          localizationKey: ApiErrorKeys.generic,
+          parameters: {'message': message},
+          originalMessage: message,
+        );
+      }
       throw AthletesApiException(
-        message ?? 'Ошибка сервера ($statusCode)',
+        localizationKey: ApiErrorKeys.server,
+        parameters: {'status': statusCode?.toString() ?? 'Unknown'},
+        originalMessage: 'Server error ($statusCode)',
       );
     } catch (e) {
       if (e is AthletesApiException) {
         rethrow;
       }
-      throw AthletesApiException('Произошла ошибка: ${e.toString()}');
+      throw AthletesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 
@@ -80,38 +92,59 @@ class AthletesApi {
 
       final data = response.data;
       if (data == null) {
-        throw AthletesApiException('Пустой ответ от сервера');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
         final athleteData = data['data'];
         if (athleteData is! Map<String, dynamic>) {
-          throw AthletesApiException(
-            'Ожидался объект атлета, получен другой тип данных',
+          throw const AthletesApiException(
+            localizationKey: ApiErrorKeys.athleteObjectFormat,
           );
         }
         return Athlete.fromJson(athleteData);
       }
 
-      throw AthletesApiException('Не удалось получить данные атлета');
+      throw const AthletesApiException(
+        localizationKey: ApiErrorKeys.athleteNotFound,
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw AthletesApiException('Превышено время ожидания');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw AthletesApiException('NETWORK_NO_CONNECTION');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
       final statusCode = e.response?.statusCode;
       final message = e.response?.data?['message'] as String?;
+      if (message != null) {
+        throw AthletesApiException(
+          localizationKey: ApiErrorKeys.generic,
+          parameters: {'message': message},
+          originalMessage: message,
+        );
+      }
       throw AthletesApiException(
-        message ?? 'Ошибка сервера ($statusCode)',
+        localizationKey: ApiErrorKeys.server,
+        parameters: {'status': statusCode?.toString() ?? 'Unknown'},
+        originalMessage: 'Server error ($statusCode)',
       );
     } catch (e) {
       if (e is AthletesApiException) {
         rethrow;
       }
-      throw AthletesApiException('Произошла ошибка: ${e.toString()}');
+      throw AthletesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 
@@ -123,38 +156,59 @@ class AthletesApi {
 
       final data = response.data;
       if (data == null) {
-        throw AthletesApiException('Пустой ответ от сервера');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
         final recordsData = data['data'];
         if (recordsData is! Map<String, dynamic>) {
-          throw AthletesApiException(
-            'Ожидался объект records, получен другой тип данных',
+          throw const AthletesApiException(
+            localizationKey: ApiErrorKeys.recordsObjectFormat,
           );
         }
         return Records.fromJson(recordsData);
       }
 
-      throw AthletesApiException('Не удалось получить данные records');
+      throw const AthletesApiException(
+        localizationKey: ApiErrorKeys.recordsNotFound,
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw AthletesApiException('Превышено время ожидания');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw AthletesApiException('NETWORK_NO_CONNECTION');
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
       final statusCode = e.response?.statusCode;
       final message = e.response?.data?['message'] as String?;
+      if (message != null) {
+        throw AthletesApiException(
+          localizationKey: ApiErrorKeys.generic,
+          parameters: {'message': message},
+          originalMessage: message,
+        );
+      }
       throw AthletesApiException(
-        message ?? 'Ошибка сервера ($statusCode)',
+        localizationKey: ApiErrorKeys.server,
+        parameters: {'status': statusCode?.toString() ?? 'Unknown'},
+        originalMessage: 'Server error ($statusCode)',
       );
     } catch (e) {
       if (e is AthletesApiException) {
         rethrow;
       }
-      throw AthletesApiException('Произошла ошибка: ${e.toString()}');
+      throw AthletesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 

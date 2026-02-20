@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import '../infrastructure/rankings_api.dart';
+import '../../../core/errors/api_exception.dart';
 import 'rankings_state.dart';
 
 final rankingsProvider =
@@ -57,17 +58,17 @@ class RankingsNotifier extends StateNotifier<RankingsState> {
     } on TimeoutException {
       state = state.copyWith(
         isLoading: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'api_error_timeout',
       );
     } on RankingsApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.message,
+        error: e.localizationKey,
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Произошла ошибка',
+        error: 'error_unexpected',
       );
     }
   }
@@ -90,12 +91,12 @@ class RankingsNotifier extends StateNotifier<RankingsState> {
       );
     } on TimeoutException {
       state = state.copyWith(
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'api_error_timeout',
       );
     } on RankingsApiException catch (e) {
-      state = state.copyWith(error: e.message);
+      state = state.copyWith(error: e.localizationKey);
     } catch (e) {
-      state = state.copyWith(error: 'Произошла ошибка');
+      state = state.copyWith(error: 'error_unexpected');
     }
   }
 

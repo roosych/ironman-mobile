@@ -1,16 +1,8 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../models/race_model.dart';
-
-/// API исключения для работы с гонками
-class RacesApiException implements Exception {
-  final String message;
-
-  RacesApiException(this.message);
-
-  @override
-  String toString() => message;
-}
 
 /// API слой для получения доступных гонок
 class RacesApi {
@@ -30,7 +22,9 @@ class RacesApi {
 
       final data = response.data;
       if (data == null) {
-        throw RacesApiException('Пустой ответ от сервера');
+        throw const RacesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       // Проверяем успешность запроса
@@ -39,16 +33,16 @@ class RacesApi {
 
         // Проверяем, что data является List
         if (dataList is! List) {
-          throw RacesApiException(
-            'Ожидался список гонок, получен другой тип данных',
+          throw const RacesApiException(
+            localizationKey: ApiErrorKeys.racesFormat,
           );
         }
 
         final List<dynamic> racesJson = dataList;
         return racesJson.map((json) {
           if (json is! Map<String, dynamic>) {
-            throw RacesApiException(
-              'Неверный формат элемента гонки',
+            throw const RacesApiException(
+              localizationKey: ApiErrorKeys.raceItemFormat,
             );
           }
           return RaceModel.fromJson(json);
@@ -61,10 +55,14 @@ class RacesApi {
       // Обработка сетевых ошибок
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RacesApiException('Превышено время ожидания');
+        throw const RacesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RacesApiException('NETWORK_NO_CONNECTION');
+        throw const RacesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
 
       // Более детальная информация об ошибке
@@ -74,23 +72,35 @@ class RacesApi {
 
         // Пытаемся извлечь сообщение об ошибке из ответа
         if (errorData is Map && errorData['message'] != null) {
-          throw RacesApiException(errorData['message'] as String);
+          throw RacesApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
         }
 
         throw RacesApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
         );
       }
 
       throw RacesApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
       );
     } catch (e) {
       // Обработка любых других исключений
       if (e is RacesApiException) {
         rethrow;
       }
-      throw RacesApiException('Произошла ошибка: ${e.toString()}');
+      throw RacesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 }

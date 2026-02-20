@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../features/auth/infrastructure/auth_api.dart';
 import '../../features/profile/infrastructure/profile_api.dart';
+import '../../core/errors/api_exception.dart';
 import 'alert_helper.dart';
+import 'api_error_localizer.dart';
 
 /// Centralized error handler for showing error alerts
 class ErrorHandler {
@@ -19,14 +21,21 @@ class ErrorHandler {
     final localizations = AppLocalizations.of(context);
     if (localizations == null) return;
 
+    // Handle ApiException - use localized error messages
+    if (error is ApiException) {
+      final message = ApiErrorLocalizer.localize(context, error);
+      _showErrorSnackBar(context, message, localizations);
+      return;
+    }
+
     // Handle AuthApiException - show the specific error message from API
     // API messages are already localized on the backend, so show them directly
     if (error is AuthApiException) {
       final message = error.firstError;
-      
+
       // Check if it's a network error code that needs client-side localization
       final localizedMessage = _localizeNetworkError(message, localizations);
-      
+
       _showErrorSnackBar(context, localizedMessage, localizations);
       return;
     }
@@ -35,17 +44,18 @@ class ErrorHandler {
     // API messages are already localized on the backend, so show them directly
     if (error is ProfileApiException) {
       final message = error.message;
-      
+
       // Check if it's a network error code that needs client-side localization
       final localizedMessage = _localizeNetworkError(message, localizations);
-      
+
       _showErrorSnackBar(context, localizedMessage, localizations);
       return;
     }
 
-    // Handle string errors directly (assume they're already localized from API)
+    // Handle string errors - check if it's a localization key
     if (error is String) {
-      _showErrorSnackBar(context, error, localizations);
+      final localizedMessage = _localizeNetworkError(error, localizations);
+      _showErrorSnackBar(context, localizedMessage, localizations);
       return;
     }
 
@@ -81,6 +91,60 @@ class ErrorHandler {
         return localizations.error_server_error;
       case 'error_unexpected':
         return localizations.error_unexpected;
+      // New API error keys
+      case 'api_error_empty_response':
+        return localizations.api_error_empty_response;
+      case 'api_error_timeout':
+        return localizations.api_error_timeout;
+      case 'api_error_network_no_connection':
+        return localizations.api_error_network_no_connection;
+      case 'api_error_invalid_data_format':
+        return localizations.api_error_invalid_data_format;
+      case 'api_error_invalid_item_format':
+        return localizations.api_error_invalid_item_format;
+      case 'api_error_races_format':
+        return localizations.api_error_races_format;
+      case 'api_error_race_item_format':
+        return localizations.api_error_race_item_format;
+      case 'api_error_rankings_format':
+        return localizations.api_error_rankings_format;
+      case 'api_error_ranking_item_format':
+        return localizations.api_error_ranking_item_format;
+      // Athletes errors
+      case 'api_error_athletes_format':
+        return localizations.api_error_athletes_format;
+      case 'api_error_athlete_item_format':
+        return localizations.api_error_athlete_item_format;
+      case 'api_error_athlete_object_format':
+        return localizations.api_error_athlete_object_format;
+      case 'api_error_athlete_not_found':
+        return localizations.api_error_athlete_not_found;
+      case 'api_error_records_object_format':
+        return localizations.api_error_records_object_format;
+      case 'api_error_records_not_found':
+        return localizations.api_error_records_not_found;
+      case 'api_error_athletes_loading':
+        return localizations.api_error_athletes_loading;
+      // Upcoming races errors
+      case 'api_error_upcoming_race_create_failed':
+        return localizations.api_error_upcoming_race_create_failed;
+      case 'api_error_upcoming_race_object_format':
+        return localizations.api_error_upcoming_race_object_format;
+      // Transfer errors
+      case 'transfer_api_conflict':
+        return localizations.transfer_api_conflict;
+      case 'transfer_api_validation':
+        return localizations.transfer_api_validation;
+      case 'transfer_api_server_error':
+        return localizations.transfer_api_server_error;
+      case 'transfer_status_timeout':
+        return localizations.transfer_status_timeout;
+      case 'transfer_status_load_failed':
+        return localizations.transfer_status_load_failed;
+      case 'transfer_status_create_failed':
+        return localizations.transfer_status_create_failed;
+      case 'transfer_status_update_failed':
+        return localizations.transfer_status_update_failed;
       default:
         // If message starts with NETWORK_SERVER_ERROR_, it's a server error
         if (message.startsWith('NETWORK_SERVER_ERROR_')) {
@@ -101,26 +165,23 @@ class ErrorHandler {
           error.type == DioExceptionType.receiveTimeout;
     }
 
-    // Check error message for network-related keywords
+    // Check error message for network-related error codes and keys
     final errorMessage = _getErrorMessage(error).toLowerCase();
 
-    final networkKeywords = [
-      'нет подключения',
-      'no connection',
+    final networkKeys = [
+      'network_no_connection',
+      'network_connection_error',
+      'network_timeout',
+      'network_error',
+      'api_error_network_no_connection',
+      'api_error_timeout',
       'connection error',
       'connection timeout',
-      'network',
-      'интернет',
-      'internet',
-      'bağlantı',
-      'şəbəkə',
-      'подключения к сети',
-      'подключения к серверу',
       'connectionerror',
       'connectiontimeout',
     ];
 
-    return networkKeywords.any((keyword) => errorMessage.contains(keyword));
+    return networkKeys.any((key) => errorMessage.contains(key.toLowerCase()));
   }
 
   /// Extracts error message from various error types

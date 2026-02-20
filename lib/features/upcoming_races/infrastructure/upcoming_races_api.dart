@@ -1,16 +1,9 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../domain/upcoming_race.dart';
 import '../domain/upcoming_races_response.dart';
-
-class UpcomingRacesApiException implements Exception {
-  final String message;
-
-  UpcomingRacesApiException(this.message);
-
-  @override
-  String toString() => message;
-}
 
 class UpcomingRacesApi {
   final ApiClient _client;
@@ -46,7 +39,9 @@ class UpcomingRacesApi {
 
       final data = response.data;
       if (data == null) {
-        throw UpcomingRacesApiException('Пустой ответ от сервера');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       // Обновленный формат ответа с success и meta
@@ -56,7 +51,9 @@ class UpcomingRacesApi {
           return racesResponse.data;
         } catch (e) {
           throw UpcomingRacesApiException(
-            'Неверный формат ответа: ${e.toString()}',
+            localizationKey: ApiErrorKeys.invalidDataFormat,
+            parameters: {'error': e.toString()},
+            originalMessage: 'Invalid response format: ${e.toString()}',
           );
         }
       }
@@ -66,10 +63,14 @@ class UpcomingRacesApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw UpcomingRacesApiException('Превышено время ожидания');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw UpcomingRacesApiException('NETWORK_NO_CONNECTION');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
 
       // Более детальная информация об ошибке
@@ -77,21 +78,33 @@ class UpcomingRacesApi {
         final statusCode = e.response!.statusCode;
         final errorData = e.response!.data;
         if (errorData is Map && errorData['message'] != null) {
-          throw UpcomingRacesApiException(errorData['message'] as String);
+          throw UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
         }
         throw UpcomingRacesApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
         );
       }
 
       throw UpcomingRacesApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
       );
     } catch (e) {
       if (e is UpcomingRacesApiException) {
         rethrow;
       }
-      throw UpcomingRacesApiException('Произошла ошибка: ${e.toString()}');
+      throw UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 
@@ -125,38 +138,56 @@ class UpcomingRacesApi {
 
       final data = response.data;
       if (data == null) {
-        throw UpcomingRacesApiException('Пустой ответ от сервера');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       return UpcomingRacesResponse.fromJson(data);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw UpcomingRacesApiException('Превышено время ожидания');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw UpcomingRacesApiException('NETWORK_NO_CONNECTION');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
 
       if (e.response != null) {
         final statusCode = e.response!.statusCode;
         final errorData = e.response!.data;
         if (errorData is Map && errorData['message'] != null) {
-          throw UpcomingRacesApiException(errorData['message'] as String);
+          throw UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
         }
         throw UpcomingRacesApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
         );
       }
 
       throw UpcomingRacesApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
       );
     } catch (e) {
       if (e is UpcomingRacesApiException) {
         rethrow;
       }
-      throw UpcomingRacesApiException('Произошла ошибка: ${e.toString()}');
+      throw UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 
@@ -176,14 +207,16 @@ class UpcomingRacesApi {
 
       final data = response.data;
       if (data == null) {
-        throw UpcomingRacesApiException('Пустой ответ от сервера');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
         final raceJson = data['data'];
         if (raceJson is! Map<String, dynamic>) {
-          throw UpcomingRacesApiException(
-            'Ожидался объект гонки, получен другой тип данных',
+          throw const UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.upcomingRaceObjectFormat,
           );
         }
         return UpcomingRace.fromJson(raceJson);
@@ -191,26 +224,40 @@ class UpcomingRacesApi {
 
       // Если success != true, пытаемся извлечь сообщение об ошибке
       if (data['message'] != null) {
-        throw UpcomingRacesApiException(data['message'] as String);
+        throw UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.generic,
+          parameters: {'message': data['message'] as String},
+          originalMessage: data['message'] as String,
+        );
       }
       if (data['errors'] != null) {
         final errors = data['errors'] as Map<String, dynamic>?;
         if (errors != null && errors.isNotEmpty) {
           final firstError = errors.values.first;
           if (firstError is List && firstError.isNotEmpty) {
-            throw UpcomingRacesApiException(firstError.first as String);
+            throw UpcomingRacesApiException(
+              localizationKey: ApiErrorKeys.generic,
+              parameters: {'message': firstError.first as String},
+              originalMessage: firstError.first as String,
+            );
           }
         }
       }
 
-      throw UpcomingRacesApiException('Не удалось создать гонку');
+      throw const UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.upcomingRaceCreateFailed,
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw UpcomingRacesApiException('Превышено время ожидания');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw UpcomingRacesApiException('NETWORK_NO_CONNECTION');
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
 
       // Более детальная информация об ошибке
@@ -218,30 +265,46 @@ class UpcomingRacesApi {
         final statusCode = e.response!.statusCode;
         final errorData = e.response!.data;
         if (errorData is Map && errorData['message'] != null) {
-          throw UpcomingRacesApiException(errorData['message'] as String);
+          throw UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
         }
         if (errorData is Map && errorData['errors'] != null) {
           final errors = errorData['errors'] as Map<String, dynamic>?;
           if (errors != null && errors.isNotEmpty) {
             final firstError = errors.values.first;
             if (firstError is List && firstError.isNotEmpty) {
-              throw UpcomingRacesApiException(firstError.first as String);
+              throw UpcomingRacesApiException(
+                localizationKey: ApiErrorKeys.generic,
+                parameters: {'message': firstError.first as String},
+                originalMessage: firstError.first as String,
+              );
             }
           }
         }
         throw UpcomingRacesApiException(
-          'Ошибка создания гонки (HTTP $statusCode)',
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
         );
       }
 
       throw UpcomingRacesApiException(
-        'Ошибка создания гонки: ${e.message ?? 'Неизвестная ошибка'}',
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
       );
     } catch (e) {
       if (e is UpcomingRacesApiException) {
         rethrow;
       }
-      throw UpcomingRacesApiException('Произошла ошибка: ${e.toString()}');
+      throw UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 }

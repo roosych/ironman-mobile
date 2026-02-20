@@ -2169,6 +2169,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get transfer_confirm_button;
+
+  /// Empty API response error
+  ///
+  /// In en, this message translates to:
+  /// **'Empty response from server'**
+  String get api_error_empty_response;
+
+  /// API timeout error
+  ///
+  /// In en, this message translates to:
+  /// **'Request timeout exceeded'**
+  String get api_error_timeout;
+
+  /// No network connection error
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get api_error_network_no_connection;
+
+  /// HTTP error with status code
+  ///
+  /// In en, this message translates to:
+  /// **'Loading error (HTTP {status})'**
+  String api_error_http_status(int status);
+
+  /// Generic API error with message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading error: {message}'**
+  String api_error_generic(String message);
+
+  /// Unexpected error
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: {error}'**
+  String api_error_unexpected(String error);
+
+  /// Invalid data format error
+  ///
+  /// In en, this message translates to:
+  /// **'Expected data list, received different type'**
+  String get api_error_invalid_data_format;
+
+  /// Invalid item format error
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid data item format'**
+  String get api_error_invalid_item_format;
+
+  /// Invalid races data format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected races list, received different type'**
+  String get api_error_races_format;
+
+  /// Invalid race item format
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid race item format'**
+  String get api_error_race_item_format;
+
+  /// Invalid rankings data format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected rankings list, received different type'**
+  String get api_error_rankings_format;
+
+  /// Invalid ranking item format
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid ranking item format'**
+  String get api_error_ranking_item_format;
+
+  /// Invalid athletes data format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected athletes list, received different type'**
+  String get api_error_athletes_format;
+
+  /// Invalid athlete item format
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid athlete item format'**
+  String get api_error_athlete_item_format;
+
+  /// Invalid athlete object format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected athlete object, received different type'**
+  String get api_error_athlete_object_format;
+
+  /// Athlete data not found
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get athlete data'**
+  String get api_error_athlete_not_found;
+
+  /// Invalid records object format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected records object, received different type'**
+  String get api_error_records_object_format;
+
+  /// Records data not found
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get records data'**
+  String get api_error_records_not_found;
+
+  /// Failed to create upcoming race
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create race'**
+  String get api_error_upcoming_race_create_failed;
+
+  /// Invalid upcoming race object format
+  ///
+  /// In en, this message translates to:
+  /// **'Expected race object, received different type'**
+  String get api_error_upcoming_race_object_format;
+
+  /// Server error with status code
+  ///
+  /// In en, this message translates to:
+  /// **'Server error ({status})'**
+  String api_error_server(String status);
+
+  /// Error loading athletes
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading athletes'**
+  String get api_error_athletes_loading;
+
+  /// Transfer request conflict error
+  ///
+  /// In en, this message translates to:
+  /// **'Conflict when creating request'**
+  String get transfer_api_conflict;
+
+  /// Transfer validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Data validation error'**
+  String get transfer_api_validation;
+
+  /// Transfer server error
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while contacting the server'**
+  String get transfer_api_server_error;
+
+  /// Transfer status timeout error
+  ///
+  /// In en, this message translates to:
+  /// **'Request timeout when updating status'**
+  String get transfer_status_timeout;
+
+  /// Failed to load transfer status
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load transfer request status'**
+  String get transfer_status_load_failed;
+
+  /// Failed to create transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create transfer request'**
+  String get transfer_status_create_failed;
+
+  /// Failed to update transfer status
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update transfer status'**
+  String get transfer_status_update_failed;
+
+  /// API error when creating transfer request
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create transfer request'**
+  String get api_error_transfer_create_failed;
 }
 
 class _AppLocalizationsDelegate

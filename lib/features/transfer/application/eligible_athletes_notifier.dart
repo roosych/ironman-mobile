@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import '../infrastructure/transfer_api.dart';
-import '../infrastructure/transfer_api_exception.dart';
+import '../../../core/errors/api_exception.dart';
 import '../models/eligible_athlete_model.dart';
 import 'eligible_athletes_state.dart';
 
@@ -47,17 +47,17 @@ class EligibleAthletesNotifier extends StateNotifier<EligibleAthletesState> {
     } on TimeoutException {
       state = state.copyWith(
         isLoading: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'api_error_timeout',
       );
     } on TransferApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.message,
+        error: e.localizationKey,
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Произошла ошибка при загрузке атлетов',
+        error: 'api_error_athletes_loading',
       );
     }
   }

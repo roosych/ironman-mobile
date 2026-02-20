@@ -405,6 +405,68 @@
   },
   "transfer_confirm_button": "Təsdiqlə",
   "transfer_request_created": "Sorğu yaradıldı. İnzibatçı tərəfindən nəzərdən keçiriləcək",
-  "transfer_request_error": "Sorğu göndərilmədi. Yenidən cəhd edin"
+  "transfer_request_error": "Sorğu göndərilmədi. Yenidən cəhd edin",
+  "api_error_empty_response": "Serverdən boş cavab",
+  "api_error_timeout": "Gözləmə müddəti keçdi",
+  "api_error_network_no_connection": "İnternet bağlantısı yoxdur",
+  "api_error_http_status": "Məlumat yüklənməsi xətası (HTTP {status})",
+  "@api_error_http_status": {
+    "description": "HTTP error with status code",
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "api_error_generic": "Məlumat yüklənməsi xətası: {message}",
+  "@api_error_generic": {
+    "description": "Generic API error with message",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_unexpected": "Xəta baş verdi: {error}",
+  "@api_error_unexpected": {
+    "description": "Unexpected error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_invalid_data_format": "Məlumat siyahısı gözlənilirdi, başqa tip alındı",
+  "api_error_invalid_item_format": "Məlumat elementinin formatı düzgün deyil",
+  "api_error_races_format": "Yarış siyahısı gözlənilirdi, başqa tip alındı",
+  "api_error_race_item_format": "Yarış elementinin formatı düzgün deyil",
+  "api_error_rankings_format": "Reytinq siyahısı gözlənilirdi, başqa tip alındı",
+  "api_error_ranking_item_format": "Reytinq elementinin formatı düzgün deyil",
+  "api_error_athletes_format": "Atletlər siyahısı gözlənilirdi, başqa tip alındı",
+  "api_error_athlete_item_format": "Atlet elementinin formatı düzgün deyil",
+  "api_error_athlete_object_format": "Atlet obyekti gözlənilirdi, başqa tip alındı",
+  "api_error_athlete_not_found": "Atlet məlumatları əldə edilə bilmədi",
+  "api_error_records_object_format": "Rekorlar obyekti gözlənilirdi, başqa tip alındı",
+  "api_error_records_not_found": "Rekor məlumatları əldə edilə bilmədi",
+  "api_error_upcoming_race_create_failed": "Yarış yaradıla bilmədi",
+  "api_error_upcoming_race_object_format": "Yarış obyekti gözlənilirdi, başqa tip alındı",
+  "api_error_server": "Server xətası ({status})",
+  "@api_error_server": {
+    "description": "Server error with status code",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_athletes_loading": "Atletlərin yüklənməsində xəta baş verdi",
+  "transfer_api_conflict": "Sorğu yaradarkən münaqişə",
+  "transfer_api_validation": "Məlumat yoxlanması xətası",
+  "transfer_api_server_error": "Serverlə əlaqə qurarkən xəta baş verdi",
+  "transfer_status_timeout": "Status yeniləyərkən gözləmə müddəti keçdi",
+  "transfer_status_load_failed": "Transfer sorğusunun statusu yüklənə bilmədi",
+  "transfer_status_create_failed": "Transfer sorğusu yaradıla bilmədi",
+  "transfer_status_update_failed": "Transfer statusu yenilənə bilmədi",
+  "api_error_transfer_create_failed": "Transfer sorğusu yaradıla bilmədi"
 }
 

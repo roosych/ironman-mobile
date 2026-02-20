@@ -1261,6 +1261,146 @@
   "transfer_confirm_button": "Confirm",
   "@transfer_confirm_button": {
     "description": "Confirm button in confirmation dialog"
+  },
+  "api_error_empty_response": "Empty response from server",
+  "@api_error_empty_response": {
+    "description": "Empty API response error"
+  },
+  "api_error_timeout": "Request timeout exceeded",
+  "@api_error_timeout": {
+    "description": "API timeout error"
+  },
+  "api_error_network_no_connection": "No internet connection",
+  "@api_error_network_no_connection": {
+    "description": "No network connection error"
+  },
+  "api_error_http_status": "Loading error (HTTP {status})",
+  "@api_error_http_status": {
+    "description": "HTTP error with status code",
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "api_error_generic": "Loading error: {message}",
+  "@api_error_generic": {
+    "description": "Generic API error with message",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_unexpected": "An error occurred: {error}",
+  "@api_error_unexpected": {
+    "description": "Unexpected error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_invalid_data_format": "Expected data list, received different type",
+  "@api_error_invalid_data_format": {
+    "description": "Invalid data format error"
+  },
+  "api_error_invalid_item_format": "Invalid data item format",
+  "@api_error_invalid_item_format": {
+    "description": "Invalid item format error"
+  },
+  "api_error_races_format": "Expected races list, received different type",
+  "@api_error_races_format": {
+    "description": "Invalid races data format"
+  },
+  "api_error_race_item_format": "Invalid race item format",
+  "@api_error_race_item_format": {
+    "description": "Invalid race item format"
+  },
+  "api_error_rankings_format": "Expected rankings list, received different type",
+  "@api_error_rankings_format": {
+    "description": "Invalid rankings data format"
+  },
+  "api_error_ranking_item_format": "Invalid ranking item format",
+  "@api_error_ranking_item_format": {
+    "description": "Invalid ranking item format"
+  },
+  "api_error_athletes_format": "Expected athletes list, received different type",
+  "@api_error_athletes_format": {
+    "description": "Invalid athletes data format"
+  },
+  "api_error_athlete_item_format": "Invalid athlete item format",
+  "@api_error_athlete_item_format": {
+    "description": "Invalid athlete item format"
+  },
+  "api_error_athlete_object_format": "Expected athlete object, received different type",
+  "@api_error_athlete_object_format": {
+    "description": "Invalid athlete object format"
+  },
+  "api_error_athlete_not_found": "Failed to get athlete data",
+  "@api_error_athlete_not_found": {
+    "description": "Athlete data not found"
+  },
+  "api_error_records_object_format": "Expected records object, received different type",
+  "@api_error_records_object_format": {
+    "description": "Invalid records object format"
+  },
+  "api_error_records_not_found": "Failed to get records data",
+  "@api_error_records_not_found": {
+    "description": "Records data not found"
+  },
+  "api_error_upcoming_race_create_failed": "Failed to create race",
+  "@api_error_upcoming_race_create_failed": {
+    "description": "Failed to create upcoming race"
+  },
+  "api_error_upcoming_race_object_format": "Expected race object, received different type",
+  "@api_error_upcoming_race_object_format": {
+    "description": "Invalid upcoming race object format"
+  },
+  "api_error_server": "Server error ({status})",
+  "@api_error_server": {
+    "description": "Server error with status code",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_athletes_loading": "An error occurred while loading athletes",
+  "@api_error_athletes_loading": {
+    "description": "Error loading athletes"
+  },
+  "transfer_api_conflict": "Conflict when creating request",
+  "@transfer_api_conflict": {
+    "description": "Transfer request conflict error"
+  },
+  "transfer_api_validation": "Data validation error",
+  "@transfer_api_validation": {
+    "description": "Transfer validation error"
+  },
+  "transfer_api_server_error": "An error occurred while contacting the server",
+  "@transfer_api_server_error": {
+    "description": "Transfer server error"
+  },
+  "transfer_status_timeout": "Request timeout when updating status",
+  "@transfer_status_timeout": {
+    "description": "Transfer status timeout error"
+  },
+  "transfer_status_load_failed": "Failed to load transfer request status",
+  "@transfer_status_load_failed": {
+    "description": "Failed to load transfer status"
+  },
+  "transfer_status_create_failed": "Failed to create transfer request",
+  "@transfer_status_create_failed": {
+    "description": "Failed to create transfer request"
+  },
+  "transfer_status_update_failed": "Failed to update transfer status",
+  "@transfer_status_update_failed": {
+    "description": "Failed to update transfer status"
+  },
+  "api_error_transfer_create_failed": "Failed to create transfer request",
+  "@api_error_transfer_create_failed": {
+    "description": "API error when creating transfer request"
   }
 }
 

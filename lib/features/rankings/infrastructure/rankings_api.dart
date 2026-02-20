@@ -1,15 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../domain/ranking.dart';
-
-class RankingsApiException implements Exception {
-  final String message;
-  RankingsApiException(this.message);
-
-  @override
-  String toString() => message;
-}
 
 class RankingsApi {
   final ApiClient _client;
@@ -33,7 +27,9 @@ class RankingsApi {
 
       final data = response.data;
       if (data == null) {
-        throw RankingsApiException('Пустой ответ от сервера');
+        throw const RankingsApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -41,16 +37,16 @@ class RankingsApi {
 
         // Проверяем, что data является List
         if (dataList is! List) {
-          throw RankingsApiException(
-            'Ожидался список рейтингов, получен другой тип данных',
+          throw const RankingsApiException(
+            localizationKey: ApiErrorKeys.rankingsFormat,
           );
         }
 
         final List<dynamic> rankingsJson = dataList;
         final rankings = rankingsJson.map((json) {
           if (json is! Map<String, dynamic>) {
-            throw RankingsApiException(
-              'Неверный формат элемента рейтинга',
+            throw const RankingsApiException(
+              localizationKey: ApiErrorKeys.rankingItemFormat,
             );
           }
           return Ranking.fromJson(json);
@@ -85,10 +81,14 @@ class RankingsApi {
       debugPrint('RankingsApi.getRankings DioException: $e');
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RankingsApiException('Превышено время ожидания');
+        throw const RankingsApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RankingsApiException('NETWORK_NO_CONNECTION');
+        throw const RankingsApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
       }
 
       // Более детальная информация об ошибке
@@ -96,21 +96,33 @@ class RankingsApi {
         final statusCode = e.response!.statusCode;
         final errorData = e.response!.data;
         if (errorData is Map && errorData['message'] != null) {
-          throw RankingsApiException(errorData['message'] as String);
+          throw RankingsApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
         }
         throw RankingsApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
         );
       }
 
       throw RankingsApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
       );
     } catch (e) {
       if (e is RankingsApiException) {
         rethrow;
       }
-      throw RankingsApiException('Произошла ошибка: ${e.toString()}');
+      throw RankingsApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
     }
   }
 }

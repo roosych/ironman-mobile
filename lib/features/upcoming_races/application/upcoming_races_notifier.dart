@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/errors/api_exception.dart';
 import '../infrastructure/upcoming_races_api.dart';
 import 'upcoming_races_state.dart';
 
@@ -87,7 +88,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
         paginationMeta: racesResponse.meta,
       );
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e.localizationKey);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: 'Произошла ошибка');
     }
@@ -129,7 +130,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
         paginationMeta: racesResponse.meta,
       );
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(isLoading: false, error: e.message);
+      state = state.copyWith(isLoading: false, error: e.localizationKey);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: 'Произошла ошибка');
     }
@@ -166,7 +167,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
         paginationMeta: racesResponse.meta,
       );
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(isLoadingMore: false, error: e.message);
+      state = state.copyWith(isLoadingMore: false, error: e.localizationKey);
     } catch (e) {
       state = state.copyWith(isLoadingMore: false, error: 'Произошла ошибка');
     }
@@ -197,7 +198,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
         paginationMeta: racesResponse.meta,
       );
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(error: e.message);
+      state = state.copyWith(error: e.localizationKey);
     } catch (e) {
       state = state.copyWith(error: 'Произошла ошибка');
     }
@@ -219,7 +220,7 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
       // Добавляем новую гонку в список
       state = state.copyWith(races: [newRace, ...state.races]);
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(error: e.message);
+      state = state.copyWith(error: e.localizationKey);
       rethrow;
     } catch (e) {
       state = state.copyWith(error: 'Произошла ошибка');

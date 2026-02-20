@@ -1122,4 +1122,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transfer_confirm_button => 'Confirm';
+
+  @override
+  String get api_error_empty_response => 'Empty response from server';
+
+  @override
+  String get api_error_timeout => 'Request timeout exceeded';
+
+  @override
+  String get api_error_network_no_connection => 'No internet connection';
+
+  @override
+  String api_error_http_status(int status) {
+    return 'Loading error (HTTP $status)';
+  }
+
+  @override
+  String api_error_generic(String message) {
+    return 'Loading error: $message';
+  }
+
+  @override
+  String api_error_unexpected(String error) {
+    return 'An error occurred: $error';
+  }
+
+  @override
+  String get api_error_invalid_data_format =>
+      'Expected data list, received different type';
+
+  @override
+  String get api_error_invalid_item_format => 'Invalid data item format';
+
+  @override
+  String get api_error_races_format =>
+      'Expected races list, received different type';
+
+  @override
+  String get api_error_race_item_format => 'Invalid race item format';
+
+  @override
+  String get api_error_rankings_format =>
+      'Expected rankings list, received different type';
+
+  @override
+  String get api_error_ranking_item_format => 'Invalid ranking item format';
+
+  @override
+  String get api_error_athletes_format =>
+      'Expected athletes list, received different type';
+
+  @override
+  String get api_error_athlete_item_format => 'Invalid athlete item format';
+
+  @override
+  String get api_error_athlete_object_format =>
+      'Expected athlete object, received different type';
+
+  @override
+  String get api_error_athlete_not_found => 'Failed to get athlete data';
+
+  @override
+  String get api_error_records_object_format =>
+      'Expected records object, received different type';
+
+  @override
+  String get api_error_records_not_found => 'Failed to get records data';
+
+  @override
+  String get api_error_upcoming_race_create_failed => 'Failed to create race';
+
+  @override
+  String get api_error_upcoming_race_object_format =>
+      'Expected race object, received different type';
+
+  @override
+  String api_error_server(String status) {
+    return 'Server error ($status)';
+  }
+
+  @override
+  String get api_error_athletes_loading =>
+      'An error occurred while loading athletes';
+
+  @override
+  String get transfer_api_conflict => 'Conflict when creating request';
+
+  @override
+  String get transfer_api_validation => 'Data validation error';
+
+  @override
+  String get transfer_api_server_error =>
+      'An error occurred while contacting the server';
+
+  @override
+  String get transfer_status_timeout => 'Request timeout when updating status';
+
+  @override
+  String get transfer_status_load_failed =>
+      'Failed to load transfer request status';
+
+  @override
+  String get transfer_status_create_failed =>
+      'Failed to create transfer request';
+
+  @override
+  String get transfer_status_update_failed =>
+      'Failed to update transfer status';
+
+  @override
+  String get api_error_transfer_create_failed =>
+      'Failed to create transfer request';
 }

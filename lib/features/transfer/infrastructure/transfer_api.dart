@@ -1,15 +1,86 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../models/transfer_request_model.dart';
 import '../models/eligible_athlete_model.dart';
-import 'transfer_api_exception.dart';
 
 /// API сервис для операций переноса результатов
 class TransferApi {
   final ApiClient _client;
 
   TransferApi({ApiClient? client}) : _client = client ?? ApiClient();
+
+  /// Helper метод для создания TransferApiException из DioException
+  TransferApiException _handleDioException(DioException e) {
+    final statusCode = e.response?.statusCode;
+    final data = e.response?.data;
+
+    // Обработка специфичных ошибок переноса
+    if (statusCode == 409 && data != null && data['message'] != null) {
+      return TransferApiException(
+        localizationKey: ApiErrorKeys.transferConflict,
+        originalMessage: data['message']?.toString(),
+      );
+    }
+
+    if (statusCode == 422 && data != null) {
+      // Ошибки валидации
+      if (data['errors'] is Map) {
+        final errors = data['errors'] as Map<String, dynamic>;
+        final fieldErrors = <String, List<String>>{};
+
+        errors.forEach((field, messages) {
+          if (messages is List) {
+            fieldErrors[field] = messages.map((m) => m.toString()).toList();
+          }
+        });
+
+        final message = data['message']?.toString() ?? 'Validation error';
+        return TransferApiException(
+          localizationKey: ApiErrorKeys.transferValidation,
+          originalMessage: message,
+          fieldErrors: fieldErrors,
+        );
+      }
+    }
+
+    // Обработка типов DioException
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.sendTimeout:
+        return const TransferApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
+
+      case DioExceptionType.connectionError:
+        return const TransferApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
+
+      case DioExceptionType.badResponse:
+        final message = data?['message']?.toString();
+        if (message != null) {
+          return TransferApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': message},
+            originalMessage: message,
+          );
+        }
+        return TransferApiException(
+          localizationKey: ApiErrorKeys.server,
+          parameters: {'status': statusCode?.toString() ?? 'Unknown'},
+          originalMessage: 'Server error ($statusCode)',
+        );
+
+      default:
+        return const TransferApiException(
+          localizationKey: ApiErrorKeys.transferServerError,
+        );
+    }
+  }
 
   /// Получить текущий статус заявки на перенос
   ///
@@ -50,12 +121,16 @@ class TransferApi {
         return null;
       }
 
-      throw TransferApiException.fromDioException(e);
+      throw _handleDioException(e);
     } catch (e) {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('An error occurred: ${e.toString()}');
+      throw TransferApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: 'An error occurred: ${e.toString()}',
+      );
     }
   }
 
@@ -83,7 +158,9 @@ class TransferApi {
 
       final data = response.data;
       if (data == null) {
-        throw const TransferApiException('Пустой ответ от сервера');
+        throw const TransferApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -92,7 +169,7 @@ class TransferApi {
         // Проверяем, что data является List
         if (dataList is! List) {
           throw const TransferApiException(
-            'Ожидался список атлетов, получен другой тип данных',
+            localizationKey: ApiErrorKeys.athletesFormat,
           );
         }
 
@@ -100,7 +177,7 @@ class TransferApi {
         return athletesJson.map((json) {
           if (json is! Map<String, dynamic>) {
             throw const TransferApiException(
-              'Неверный формат элемента атлета',
+              localizationKey: ApiErrorKeys.athleteItemFormat,
             );
           }
           return EligibleAthleteModel.fromJson(json);
@@ -110,12 +187,15 @@ class TransferApi {
       // Если success != true, возвращаем пустой список
       return [];
     } on DioException catch (e) {
-      throw TransferApiException.fromDioException(e);
+      throw _handleDioException(e);
     } catch (e) {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('Failed to search athletes: ${e.toString()}');
+      throw TransferApiException(
+        localizationKey: ApiErrorKeys.athletesLoading,
+        originalMessage: e.toString(),
+      );
     }
   }
 
@@ -140,7 +220,9 @@ class TransferApi {
 
       final data = response.data;
       if (data == null) {
-        throw const TransferApiException('Пустой ответ от сервера');
+        throw const TransferApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -150,7 +232,11 @@ class TransferApi {
 
       // Если success != true, это ошибка
       final message = data['message'] as String? ?? 'Failed to create request';
-      throw TransferApiException(message);
+      throw TransferApiException(
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': message},
+        originalMessage: message,
+      );
     } on DioException catch (e) {
       // Специфичная обработка конфликтов (409 - уже есть активная заявка)
       if (e.response?.statusCode == 409) {
@@ -168,15 +254,21 @@ class TransferApi {
         }
 
         final message = data?['message']?.toString() ?? 'У вас уже есть активная заявка на перенос';
-        throw TransferApiException(message);
+        throw TransferApiException(
+          localizationKey: ApiErrorKeys.transferConflict,
+          originalMessage: message,
+        );
       }
 
-      throw TransferApiException.fromDioException(e);
+      throw _handleDioException(e);
     } catch (e) {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('Failed to create transfer request: ${e.toString()}');
+      throw TransferApiException(
+        localizationKey: ApiErrorKeys.transferCreateFailed,
+        originalMessage: 'Failed to create transfer request: ${e.toString()}',
+      );
     }
   }
 }

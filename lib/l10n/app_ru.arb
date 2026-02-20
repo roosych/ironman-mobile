@@ -385,6 +385,68 @@
   "transfer_request_error": "Не удалось создать заявку на перенос",
   "transfer_confirm_title": "Подтвердить перенос",
   "transfer_confirm_description": "Запросить перенос результатов от {name} в ваш профиль?",
-  "transfer_confirm_button": "Подтвердить"
+  "transfer_confirm_button": "Подтвердить",
+  "api_error_empty_response": "Пустой ответ от сервера",
+  "api_error_timeout": "Превышено время ожидания",
+  "api_error_network_no_connection": "Отсутствует подключение к интернету",
+  "api_error_http_status": "Ошибка загрузки данных (HTTP {status})",
+  "@api_error_http_status": {
+    "description": "HTTP ошибка с кодом статуса",
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "api_error_generic": "Ошибка загрузки данных: {message}",
+  "@api_error_generic": {
+    "description": "Общая ошибка API с сообщением",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_unexpected": "Произошла ошибка: {error}",
+  "@api_error_unexpected": {
+    "description": "Неожиданная ошибка",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_invalid_data_format": "Ожидался список данных, получен другой тип",
+  "api_error_invalid_item_format": "Неверный формат элемента данных",
+  "api_error_races_format": "Ожидался список гонок, получен другой тип данных",
+  "api_error_race_item_format": "Неверный формат элемента гонки",
+  "api_error_rankings_format": "Ожидался список рейтингов, получен другой тип данных",
+  "api_error_ranking_item_format": "Неверный формат элемента рейтинга",
+  "api_error_athletes_format": "Ожидался список атлетов, получен другой тип данных",
+  "api_error_athlete_item_format": "Неверный формат элемента атлета",
+  "api_error_athlete_object_format": "Ожидался объект атлета, получен другой тип данных",
+  "api_error_athlete_not_found": "Не удалось получить данные атлета",
+  "api_error_records_object_format": "Ожидался объект records, получен другой тип данных",
+  "api_error_records_not_found": "Не удалось получить данные records",
+  "api_error_upcoming_race_create_failed": "Не удалось создать гонку",
+  "api_error_upcoming_race_object_format": "Ожидался объект гонки, получен другой тип данных",
+  "api_error_server": "Ошибка сервера ({status})",
+  "@api_error_server": {
+    "description": "Server error with status code",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "api_error_athletes_loading": "Произошла ошибка при загрузке атлетов",
+  "transfer_api_conflict": "Конфликт при создании заявки",
+  "transfer_api_validation": "Ошибка валидации данных",
+  "transfer_api_server_error": "Произошла ошибка при обращении к серверу",
+  "transfer_status_timeout": "Превышено время ожидания при обновлении статуса",
+  "transfer_status_load_failed": "Failed to load transfer request status",
+  "transfer_status_create_failed": "Failed to create transfer request",
+  "transfer_status_update_failed": "Failed to update transfer status",
+  "api_error_transfer_create_failed": "Не удалось создать заявку на перенос"
 }
 

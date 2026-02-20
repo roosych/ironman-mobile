@@ -1125,4 +1125,120 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get transfer_confirm_button => 'Подтвердить';
+
+  @override
+  String get api_error_empty_response => 'Пустой ответ от сервера';
+
+  @override
+  String get api_error_timeout => 'Превышено время ожидания';
+
+  @override
+  String get api_error_network_no_connection =>
+      'Отсутствует подключение к интернету';
+
+  @override
+  String api_error_http_status(int status) {
+    return 'Ошибка загрузки данных (HTTP $status)';
+  }
+
+  @override
+  String api_error_generic(String message) {
+    return 'Ошибка загрузки данных: $message';
+  }
+
+  @override
+  String api_error_unexpected(String error) {
+    return 'Произошла ошибка: $error';
+  }
+
+  @override
+  String get api_error_invalid_data_format =>
+      'Ожидался список данных, получен другой тип';
+
+  @override
+  String get api_error_invalid_item_format => 'Неверный формат элемента данных';
+
+  @override
+  String get api_error_races_format =>
+      'Ожидался список гонок, получен другой тип данных';
+
+  @override
+  String get api_error_race_item_format => 'Неверный формат элемента гонки';
+
+  @override
+  String get api_error_rankings_format =>
+      'Ожидался список рейтингов, получен другой тип данных';
+
+  @override
+  String get api_error_ranking_item_format =>
+      'Неверный формат элемента рейтинга';
+
+  @override
+  String get api_error_athletes_format =>
+      'Ожидался список атлетов, получен другой тип данных';
+
+  @override
+  String get api_error_athlete_item_format => 'Неверный формат элемента атлета';
+
+  @override
+  String get api_error_athlete_object_format =>
+      'Ожидался объект атлета, получен другой тип данных';
+
+  @override
+  String get api_error_athlete_not_found => 'Не удалось получить данные атлета';
+
+  @override
+  String get api_error_records_object_format =>
+      'Ожидался объект records, получен другой тип данных';
+
+  @override
+  String get api_error_records_not_found =>
+      'Не удалось получить данные records';
+
+  @override
+  String get api_error_upcoming_race_create_failed =>
+      'Не удалось создать гонку';
+
+  @override
+  String get api_error_upcoming_race_object_format =>
+      'Ожидался объект гонки, получен другой тип данных';
+
+  @override
+  String api_error_server(String status) {
+    return 'Ошибка сервера ($status)';
+  }
+
+  @override
+  String get api_error_athletes_loading =>
+      'Произошла ошибка при загрузке атлетов';
+
+  @override
+  String get transfer_api_conflict => 'Конфликт при создании заявки';
+
+  @override
+  String get transfer_api_validation => 'Ошибка валидации данных';
+
+  @override
+  String get transfer_api_server_error =>
+      'Произошла ошибка при обращении к серверу';
+
+  @override
+  String get transfer_status_timeout =>
+      'Превышено время ожидания при обновлении статуса';
+
+  @override
+  String get transfer_status_load_failed =>
+      'Failed to load transfer request status';
+
+  @override
+  String get transfer_status_create_failed =>
+      'Failed to create transfer request';
+
+  @override
+  String get transfer_status_update_failed =>
+      'Failed to update transfer status';
+
+  @override
+  String get api_error_transfer_create_failed =>
+      'Не удалось создать заявку на перенос';
 }
