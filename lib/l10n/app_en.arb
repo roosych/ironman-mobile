@@ -132,6 +132,10 @@
   "@home_greeting": {
     "description": "Greeting text before user name"
   },
+  "home_greeting_welcome": "Welcome back,",
+  "@home_greeting_welcome": {
+    "description": "Welcome back greeting text"
+  },
   "home_finishes": "finishes",
   "@home_finishes": {
     "description": "Finishes label"

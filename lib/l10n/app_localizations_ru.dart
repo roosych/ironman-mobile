@@ -108,6 +108,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home_greeting => 'Привет,';
 
   @override
+  String get home_greeting_welcome => 'С возвращением,';
+
+  @override
   String get home_finishes => 'финишов';
 
   @override

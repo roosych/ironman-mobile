@@ -13,6 +13,7 @@ import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
 import 'package:ironman_mobile/features/transfer/providers/transfer_providers.dart';
 import 'package:ironman_mobile/features/transfer/presentation/widgets/transfer_status_card.dart';
 import 'package:ironman_mobile/features/transfer/presentation/widgets/athlete_selection_bottom_sheet.dart';
+import 'package:ironman_mobile/features/transfer/models/transfer_status_enum.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -86,7 +87,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           // Провайдер сам проверит еще раз, нужно ли загружать данные
           _loadResults();
 
-          // Transfer статус уже загружен в initState, дополнительная загрузка не нужна
+          // Также проверяем актуальность transfer статуса при переходе на таб
+          final transferState = ref.read(transferStatusProvider);
+          // Загружаем transfer статус если:
+          // 1. Статус не загружался (нет заявки и нет ошибки и не идет загрузка)
+          // 2. Или есть ошибка (нужно повторить попытку)
+          if ((transferState.request == null && !transferState.hasError && !transferState.isLoading) ||
+              transferState.hasError) {
+            _loadTransferStatus();
+          }
         });
       }
     }
@@ -199,8 +208,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       return;
     }
 
+    final transferState = ref.read(transferStatusProvider);
     debugPrint('✅ _loadTransferStatus: пользователь авторизован, загружаем transfer статус');
     debugPrint('👤 User ID: ${authState.user?.profile?.id}');
+    debugPrint('🔍 Current transfer state: request=${transferState.request?.status}, isLoading=${transferState.isLoading}, hasError=${transferState.hasError}');
 
     try {
       ref.read(transferStatusProvider.notifier).loadCurrentStatus();
@@ -607,6 +618,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Consumer(
             builder: (context, ref, _) {
               final transferState = ref.watch(transferStatusProvider);
+
+              // Не показываем блок если:
+              // 1. Заявка одобрена - результаты уже видны
+              // 2. Статус еще загружается - ждем окончательного результата
+              // 3. Статус еще не загружался (начальное состояние) - ждем первого результата
+              if ((transferState.request?.status.isApproved ?? false) ||
+                  transferState.isLoading ||
+                  (transferState.request == null && !transferState.hasError && !transferState.isLoading)) {
+                return const SizedBox.shrink();
+              }
 
               return Padding(
                 padding: const EdgeInsets.all(16.0),

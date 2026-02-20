@@ -47,9 +47,9 @@ class TransferRequestModel {
     final sourceAthlete = json['source_athlete'] as Map<String, dynamic>?;
 
     return TransferRequestModel(
-      id: (json['id'] as num?)?.toInt() ?? 0,
+      id: _parseIntSafe(json['id']),
       sourceAthleteId: sourceAthlete != null
-          ? (sourceAthlete['id'] as num?)?.toInt() ?? 0
+          ? _parseIntSafe(sourceAthlete['id'])
           : 0,
       sourceAthleteName: sourceAthlete != null
           ? sourceAthlete['name']?.toString() ?? 'Неизвестный атлет'
@@ -63,8 +63,30 @@ class TransferRequestModel {
       reviewedAt: json['reviewed_at'] != null
           ? DateTime.tryParse(json['reviewed_at'].toString())
           : null,
-      reviewedBy: (json['reviewed_by'] as num?)?.toInt(),
+      reviewedBy: _parseIntSafeNullable(json['reviewed_by']),
     );
+  }
+
+  /// Безопасный парсинг int из dynamic (может быть String, int, num или null)
+  static int _parseIntSafe(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  /// Безопасный парсинг int? из dynamic (может быть String, int, num или null)
+  static int? _parseIntSafeNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) {
+      return int.tryParse(value);
+    }
+    return null;
   }
 
   /// Преобразует модель в JSON данные

@@ -390,11 +390,25 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                     horizontal: 16.0,
                     vertical: 8.0,
                   ),
-                  child: Text(
-                    '${AppLocalizations.of(context)!.home_greeting} ${user.name.toUpperCase()}!',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.home_greeting_welcome,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                        ),
+                      ),
+                      Text(
+                        user.name.toUpperCase(),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -921,7 +935,7 @@ class _MyResultsExpandableCardState
                                   16.0,
                                   16.0,
                                   16.0,
-                                  32.0,
+                                  48.0,
                                 ),
                                 itemCount:
                                     approvedResults.length +

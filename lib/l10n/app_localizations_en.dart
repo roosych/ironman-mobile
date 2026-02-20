@@ -108,6 +108,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home_greeting => 'Hello,';
 
   @override
+  String get home_greeting_welcome => 'Welcome back,';
+
+  @override
   String get home_finishes => 'finishes';
 
   @override

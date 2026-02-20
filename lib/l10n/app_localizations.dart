@@ -298,6 +298,12 @@ abstract class AppLocalizations {
   /// **'Hello,'**
   String get home_greeting;
 
+  /// Welcome back greeting text
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back,'**
+  String get home_greeting_welcome;
+
   /// Finishes label
   ///
   /// In en, this message translates to:
