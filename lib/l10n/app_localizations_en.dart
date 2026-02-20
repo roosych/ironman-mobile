@@ -446,6 +446,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get policies_title => 'Policies';
 
   @override
+  String get settings_policies_and_terms => 'Policies and Terms';
+
+  @override
   String get policy_not_available => 'Policy not available';
 
   @override

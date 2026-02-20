@@ -141,6 +141,7 @@
   "register_privacy_policy_link": "Политикой конфиденциальности",
   "register_privacy_policy_required": "Необходимо согласиться с Политикой конфиденциальности",
   "policies_title": "Политики",
+  "settings_policies_and_terms": "Политики и условия",
   "policy_not_available": "Политика недоступна",
   "policy_load_error": "Не удалось загрузить политику",
   "retry": "Повторить",

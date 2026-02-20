@@ -311,7 +311,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.error ?? 'Ошибка загрузки',
+                state.error ?? AppLocalizations.of(context)!.common_loading_error,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -320,7 +320,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                 onPressed: () {
                   ref.read(athletesProvider.notifier).loadAthletes();
                 },
-                child: const Text('Повторить'),
+                child: Text(AppLocalizations.of(context)!.common_retry),
               ),
             ],
           ),

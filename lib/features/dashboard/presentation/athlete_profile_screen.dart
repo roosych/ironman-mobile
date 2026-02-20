@@ -171,6 +171,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   margin: const EdgeInsets.only(
                     left: 16,
                     right: 16,
+                    top: 16,
                     bottom: 16,
                   ),
                   decoration: BoxDecoration(
@@ -410,7 +411,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
         // Блок рейтинга (показываем только если есть данные рейтинга)
         if (athlete.ranking != null &&
             (athlete.ranking!.ironman != null || athlete.ranking!.ironman703 != null)) ...[
-          const SizedBox(height: 16),
+          SizedBox(height: athlete.countryIso != null ? 16 : 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0), // Match tab block margins
             child: _buildRatingBlock(context, theme, athlete),
@@ -437,7 +438,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       if (next.hasError && previous?.error != next.error && mounted) {
         AlertHelper.showError(
           context,
-          next.error ?? 'Ошибка загрузки',
+          next.error ?? localizations.common_loading_error,
           buttonText: localizations.error_ok,
         );
       }
@@ -663,7 +664,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     // Слушаем ошибки
     ref.listen<RaceResultsState>(athleteRaceResultsProvider(widget.athlete.id), (previous, next) {
       if (next.hasError && previous?.error != next.error && mounted) {
-        ErrorHandler.showError(context, next.error ?? 'Ошибка загрузки');
+        ErrorHandler.showError(context, next.error ?? localizations.common_loading_error);
       }
     });
 
@@ -722,7 +723,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                resultsState.error ?? 'Ошибка загрузки',
+                resultsState.error ?? localizations.common_loading_error,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
@@ -733,7 +734,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       .read(athleteRaceResultsProvider(widget.athlete.id).notifier)
                       .loadResults(widget.athlete.id);
                 },
-                child: const Text('Повторить'),
+                child: Text(localizations.common_retry),
               ),
             ],
           ),
@@ -820,7 +821,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       if (next.hasError && previous?.error != next.error && mounted) {
         AlertHelper.showError(
           context,
-          next.error ?? 'Ошибка загрузки',
+          next.error ?? localizations.common_loading_error,
           buttonText: localizations.error_ok,
         );
       }
@@ -836,7 +837,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                recordsState.error ?? 'Ошибка загрузки',
+                recordsState.error ?? localizations.common_loading_error,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
@@ -847,7 +848,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       .read(recordsProvider(widget.athlete.id).notifier)
                       .loadRecords();
                 },
-                child: const Text('Повторить'),
+                child: Text(localizations.common_retry),
               ),
             ],
           ),
@@ -954,7 +955,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       if (next.hasError && previous?.error != next.error && mounted) {
         AlertHelper.showError(
           context,
-          next.error ?? 'Ошибка загрузки',
+          next.error ?? localizations.common_loading_error,
           buttonText: localizations.error_ok,
         );
       }
@@ -970,7 +971,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                upcomingRacesState.error ?? 'Ошибка загрузки',
+                upcomingRacesState.error ?? localizations.common_loading_error,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
@@ -982,7 +983,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     onlyFuture: true,
                   );
                 },
-                child: const Text('Повторить'),
+                child: Text(localizations.common_retry),
               ),
             ],
           ),
@@ -1363,10 +1364,10 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   _StickyTabBarDelegate({required this.child});
 
   @override
-  double get minExtent => 72; // TabBar height (~48) + padding (8) + bottom margin (16)
+  double get minExtent => 88; // TabBar height (~48) + padding (8) + top margin (16) + bottom margin (16)
 
   @override
-  double get maxExtent => 72;
+  double get maxExtent => 88;
 
   @override
   Widget build(

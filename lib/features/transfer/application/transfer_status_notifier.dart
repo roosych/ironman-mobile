@@ -33,7 +33,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
       debugPrint('⏰ TransferStatusNotifier: timeout при загрузке статуса');
       state = state.copyWith(
         isLoading: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'Request timeout. Check internet connection and try again.',
       );
     } on TransferApiException catch (e) {
       debugPrint('🚨 TransferStatusNotifier: ошибка API при загрузке статуса: ${e.message}');
@@ -55,7 +55,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
       debugPrint('❌ TransferStatusNotifier: неожиданная ошибка при загрузке статуса: $e');
       state = state.copyWith(
         isLoading: false,
-        error: 'Произошла ошибка при загрузке статуса заявки',
+        error: 'Failed to load transfer request status',
       );
     }
   }
@@ -110,7 +110,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } on TimeoutException {
       state = state.copyWith(
         isSubmitting: false,
-        error: 'Превышено время ожидания. Проверьте интернет и попробуйте ещё раз.',
+        error: 'Request timeout. Check internet connection and try again.',
       );
       return false;
     } on TransferApiException catch (e) {
@@ -122,7 +122,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } catch (e) {
       state = state.copyWith(
         isSubmitting: false,
-        error: 'Произошла ошибка при создании заявки на перенос',
+        error: 'Failed to create transfer request',
       );
       return false;
     }
@@ -157,7 +157,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Произошла ошибка при обновлении статуса',
+        error: 'Failed to update transfer status',
       );
     }
   }

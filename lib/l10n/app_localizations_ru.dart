@@ -447,6 +447,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get policies_title => 'Политики';
 
   @override
+  String get settings_policies_and_terms => 'Политики и условия';
+
+  @override
   String get policy_not_available => 'Политика недоступна';
 
   @override

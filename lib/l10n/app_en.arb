@@ -553,6 +553,10 @@
   "@policies_title": {
     "description": "Policy screen title"
   },
+  "settings_policies_and_terms": "Policies and Terms",
+  "@settings_policies_and_terms": {
+    "description": "Settings menu item for policies and terms"
+  },
   "policy_not_available": "Policy not available",
   "@policy_not_available": {
     "description": "Policy not available message"

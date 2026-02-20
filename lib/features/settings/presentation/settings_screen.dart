@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'dart:async';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../application/locale_notifier.dart';
@@ -9,6 +10,7 @@ import '../../auth/infrastructure/auth_repository.dart';
 import '../../../core/services/notification_permission_service.dart';
 import '../../../core/services/fcm_service.dart';
 import '../../../core/theme/app_button_styles.dart';
+import '../../policies/presentation/policy_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -132,22 +134,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated) {
       final localeForApi = ref.read(localeProvider.notifier).getLocaleForApi();
-      try {
-        final repository = AuthRepository();
-        final success = await repository.updateLocale(localeForApi);
-        if (success) {
-          // Обновляем пользователя в состоянии
-          final user = authState.user;
-          if (user != null) {
-            ref
-                .read(authProvider.notifier)
-                .updateUser(user.copyWith(locale: localeForApi));
+
+      // Выполняем обновление локали на сервере в фоновом режиме
+      // Не блокируем UI и не показываем ошибки, так как локаль уже обновлена локально
+      unawaited((() async {
+        try {
+          final repository = AuthRepository();
+          final success = await repository.updateLocale(localeForApi);
+          if (success && mounted) {
+            // Обновляем пользователя в состоянии только если виджет все еще mounted
+            final user = authState.user;
+            if (user != null) {
+              ref
+                  .read(authProvider.notifier)
+                  .updateUser(user.copyWith(locale: localeForApi));
+            }
           }
+        } catch (e) {
+          debugPrint('Error updating locale on backend: $e');
+          // Полностью игнорируем все ошибки - локаль уже обновлена локально
         }
-      } catch (e) {
-        debugPrint('Error updating locale on backend: $e');
-        // Не показываем ошибку пользователю, так как locale уже изменен локально
-      }
+      })());
     }
 
     // Сбрасываем состояние загрузки
@@ -192,91 +199,117 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
+      body: Column(
         children: [
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide.none,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          localizations.settings_language,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      if (_isUpdatingLocale)
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ),
-                    ],
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide.none,
                   ),
-                ),
-                RadioGroup<Locale>(
-                  groupValue: locale,
-                  onChanged: (Locale? value) {
-                    if (!_isUpdatingLocale) {
-                      _handleLocaleChange(value);
-                    }
-                  },
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RadioListTile<Locale>(
-                        title: Text(localizations.language_azerbaijani),
-                        value: const Locale('az'),
-                        enabled: !_isUpdatingLocale,
-                        activeColor: Theme.of(context).colorScheme.primary,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                localizations.settings_language,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            if (_isUpdatingLocale)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                      Divider(
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                      RadioListTile<Locale>(
-                        title: Text(localizations.language_english),
-                        value: const Locale('en'),
-                        enabled: !_isUpdatingLocale,
-                        activeColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      Divider(
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                      RadioListTile<Locale>(
-                        title: Text(localizations.language_russian),
-                        value: const Locale('ru'),
-                        enabled: !_isUpdatingLocale,
-                        activeColor: Theme.of(context).colorScheme.primary,
+                      RadioGroup<Locale>(
+                        groupValue: locale,
+                        onChanged: (Locale? value) {
+                          if (!_isUpdatingLocale) {
+                            _handleLocaleChange(value);
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            RadioListTile<Locale>(
+                              title: Text(localizations.language_azerbaijani),
+                              value: const Locale('az'),
+                              enabled: !_isUpdatingLocale,
+                              activeColor: Theme.of(context).colorScheme.primary,
+                            ),
+                            Divider(
+                              height: 1,
+                              indent: 16,
+                              endIndent: 16,
+                              color: Theme.of(context).colorScheme.outlineVariant,
+                            ),
+                            RadioListTile<Locale>(
+                              title: Text(localizations.language_english),
+                              value: const Locale('en'),
+                              enabled: !_isUpdatingLocale,
+                              activeColor: Theme.of(context).colorScheme.primary,
+                            ),
+                            Divider(
+                              height: 1,
+                              indent: 16,
+                              endIndent: 16,
+                              color: Theme.of(context).colorScheme.outlineVariant,
+                            ),
+                            RadioListTile<Locale>(
+                              title: Text(localizations.language_russian),
+                              value: const Locale('ru'),
+                              enabled: !_isUpdatingLocale,
+                              activeColor: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // Notification Permission Banner (if denied)
+                if (!_isCheckingPermission && _isNotificationDenied) ...[
+                  const SizedBox(height: 16),
+                  _buildNotificationPermissionBanner(context, localizations),
+                ],
+
+                // Policies Section
+                const SizedBox(height: 16),
+                _buildPoliciesCard(context, localizations),
               ],
             ),
           ),
-          // Notification Permission Banner (if denied)
-          if (!_isCheckingPermission && _isNotificationDenied) ...[
-            const SizedBox(height: 16),
-            _buildNotificationPermissionBanner(context, localizations),
-          ],
+          // Version info fixed at bottom
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 16.0,
+              top: 8.0,
+            ),
+            child: Text(
+              'Версия 1.0.0',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 12,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -338,6 +371,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Виджет карточки политик
+  Widget _buildPoliciesCard(BuildContext context, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide.none,
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const PolicyScreen(),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedLicenseDraft,
+                color: theme.colorScheme.onSurface,
+                size: 24,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  localizations.settings_policies_and_terms,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowRight01,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                size: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );

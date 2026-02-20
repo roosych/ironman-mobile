@@ -447,6 +447,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get policies_title => 'Siyasətlər';
 
   @override
+  String get settings_policies_and_terms => 'Məxfilik siyasəti və şərtlər';
+
+  @override
   String get policy_not_available => 'Siyasət mövcud deyil';
 
   @override

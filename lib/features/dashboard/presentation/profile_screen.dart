@@ -148,7 +148,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Center(
                       child: Text(
                         displayName.toUpperCase(),
-                        style: Theme.of(context).textTheme.headlineMedium
+                        style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),

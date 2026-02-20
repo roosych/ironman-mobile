@@ -25,7 +25,7 @@ class RaceResultsApi {
 
       final data = response.data;
       if (data == null) {
-        throw RaceResultsApiException('Пустой ответ от сервера');
+        throw RaceResultsApiException('Empty server response');
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -54,7 +54,7 @@ class RaceResultsApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Превышено время ожидания');
+        throw RaceResultsApiException('Request timeout');
       }
       if (e.type == DioExceptionType.connectionError) {
         throw RaceResultsApiException('NETWORK_NO_CONNECTION');
@@ -68,18 +68,18 @@ class RaceResultsApi {
           throw RaceResultsApiException(errorData['message'] as String);
         }
         throw RaceResultsApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          'Failed to load data (HTTP $statusCode)',
         );
       }
 
       throw RaceResultsApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        'Failed to load data: ${e.message ?? 'Unknown error'}',
       );
     } catch (e) {
       if (e is RaceResultsApiException) {
         rethrow;
       }
-      throw RaceResultsApiException('Произошла ошибка: ${e.toString()}');
+      throw RaceResultsApiException('An error occurred: ${e.toString()}');
     }
   }
 
@@ -99,7 +99,7 @@ class RaceResultsApi {
 
       final data = response.data;
       if (data == null) {
-        throw RaceResultsApiException('Пустой ответ от сервера');
+        throw RaceResultsApiException('Empty server response');
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -168,7 +168,7 @@ class RaceResultsApi {
       
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Превышено время ожидания');
+        throw RaceResultsApiException('Request timeout');
       }
       if (e.type == DioExceptionType.connectionError) {
         throw RaceResultsApiException('NETWORK_NO_CONNECTION');
@@ -182,18 +182,18 @@ class RaceResultsApi {
           throw RaceResultsApiException(errorData['message'] as String);
         }
         throw RaceResultsApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          'Failed to load data (HTTP $statusCode)',
         );
       }
 
       throw RaceResultsApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        'Failed to load data: ${e.message ?? 'Unknown error'}',
       );
     } catch (e) {
       if (e is RaceResultsApiException) {
         rethrow;
       }
-      throw RaceResultsApiException('Произошла ошибка: ${e.toString()}');
+      throw RaceResultsApiException('An error occurred: ${e.toString()}');
     }
   }
 
@@ -213,7 +213,7 @@ class RaceResultsApi {
 
       final data = response.data;
       if (data == null) {
-        throw RaceResultsApiException('Пустой ответ от сервера');
+        throw RaceResultsApiException('Empty server response');
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -269,7 +269,7 @@ class RaceResultsApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Превышено время ожидания');
+        throw RaceResultsApiException('Request timeout');
       }
       if (e.type == DioExceptionType.connectionError) {
         throw RaceResultsApiException('NETWORK_NO_CONNECTION');
@@ -283,18 +283,18 @@ class RaceResultsApi {
           throw RaceResultsApiException(errorData['message'] as String);
         }
         throw RaceResultsApiException(
-          'Ошибка загрузки данных (HTTP $statusCode)',
+          'Failed to load data (HTTP $statusCode)',
         );
       }
 
       throw RaceResultsApiException(
-        'Ошибка загрузки данных: ${e.message ?? 'Неизвестная ошибка'}',
+        'Failed to load data: ${e.message ?? 'Unknown error'}',
       );
     } catch (e) {
       if (e is RaceResultsApiException) {
         rethrow;
       }
-      throw RaceResultsApiException('Произошла ошибка: ${e.toString()}');
+      throw RaceResultsApiException('An error occurred: ${e.toString()}');
     }
   }
 
@@ -347,7 +347,7 @@ class RaceResultsApi {
 
       final data = response.data;
       if (data == null) {
-        throw RaceResultsApiException('Пустой ответ от сервера');
+        throw RaceResultsApiException('Empty server response');
       }
 
       if (data['success'] == true && data['data'] != null) {
@@ -362,12 +362,12 @@ class RaceResultsApi {
 
       // Если success != true, пытаемся извлечь сообщение об ошибке
       final errorMessage = data['message'] as String? ?? 
-          'Ошибка при создании результата';
+          'Failed to create result';
       throw RaceResultsApiException(errorMessage);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Превышено время ожидания');
+        throw RaceResultsApiException('Request timeout');
       }
       if (e.type == DioExceptionType.connectionError) {
         throw RaceResultsApiException('NETWORK_NO_CONNECTION');
@@ -381,18 +381,18 @@ class RaceResultsApi {
           throw RaceResultsApiException(errorData['message'] as String);
         }
         throw RaceResultsApiException(
-          'Ошибка при создании результата (HTTP $statusCode)',
+          'Failed to create result (HTTP $statusCode)',
         );
       }
 
       throw RaceResultsApiException(
-        'Ошибка при создании результата: ${e.message ?? 'Неизвестная ошибка'}',
+        'Failed to create result: ${e.message ?? 'Unknown error'}',
       );
     } catch (e) {
       if (e is RaceResultsApiException) {
         rethrow;
       }
-      throw RaceResultsApiException('Произошла ошибка: ${e.toString()}');
+      throw RaceResultsApiException('An error occurred: ${e.toString()}');
     }
   }
 }

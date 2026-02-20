@@ -940,6 +940,12 @@ abstract class AppLocalizations {
   /// **'Policies'**
   String get policies_title;
 
+  /// Settings menu item for policies and terms
+  ///
+  /// In en, this message translates to:
+  /// **'Policies and Terms'**
+  String get settings_policies_and_terms;
+
   /// Policy not available message
   ///
   /// In en, this message translates to:

@@ -55,7 +55,7 @@ class TransferApi {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('Произошла ошибка: ${e.toString()}');
+      throw TransferApiException('An error occurred: ${e.toString()}');
     }
   }
 
@@ -115,7 +115,7 @@ class TransferApi {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('Произошла ошибка при поиске атлетов: ${e.toString()}');
+      throw TransferApiException('Failed to search athletes: ${e.toString()}');
     }
   }
 
@@ -149,7 +149,7 @@ class TransferApi {
       }
 
       // Если success != true, это ошибка
-      final message = data['message'] as String? ?? 'Не удалось создать заявку';
+      final message = data['message'] as String? ?? 'Failed to create request';
       throw TransferApiException(message);
     } on DioException catch (e) {
       // Специфичная обработка конфликтов (409 - уже есть активная заявка)
@@ -176,7 +176,7 @@ class TransferApi {
       if (e is TransferApiException) {
         rethrow;
       }
-      throw TransferApiException('Произошла ошибка при создании заявки: ${e.toString()}');
+      throw TransferApiException('Failed to create transfer request: ${e.toString()}');
     }
   }
 }
