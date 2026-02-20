@@ -144,6 +144,28 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     });
   }
 
+  /// Локализация ошибки по ключу
+  String _localizeError(BuildContext context, String? errorKey) {
+    if (errorKey == null) {
+      return AppLocalizations.of(context)!.common_loading_error;
+    }
+
+    final localizations = AppLocalizations.of(context)!;
+
+    switch (errorKey) {
+      case 'api_error_timeout':
+        return localizations.api_error_timeout;
+      case 'api_error_unexpected':
+        return localizations.api_error_unexpected('Network error');
+      case 'api_error_generic':
+        return localizations.api_error_generic('Loading failed');
+      case 'api_error_network_no_connection':
+        return localizations.api_error_network_no_connection;
+      default:
+        return errorKey.isNotEmpty ? errorKey : localizations.common_loading_error;
+    }
+  }
+
   Future<void> _markAllAsRead() async {
     try {
       await ref.read(notificationsProvider.notifier).markAllAsRead();
@@ -252,8 +274,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        state.error ??
-                            AppLocalizations.of(context)!.common_loading_error,
+                        _localizeError(context, state.error),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
@@ -544,23 +565,30 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
         children: [
           Positioned.fill(
             child: Container(
-              color: theme.cardColor,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE53E3E).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
               alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 8, left: 8),
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onDelete,
                 child: Container(
-                  width: 36,
-                  height: 36,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: theme.cardColor,
+                    color: const Color(0xFFE53E3E).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
+                      width: 1,
+                    ),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.delete_outline,
-                    color: AppColors.ironmanRed,
-                    size: 20,
+                    color: Color(0xFFE53E3E),
+                    size: 22,
                   ),
                 ),
               ),
@@ -568,21 +596,29 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
           ),
           Transform.translate(
             offset: Offset(-_offset, 0),
-            child: Card(
-              color: theme.cardColor,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.shadowColor.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: InkWell(
-                onTap: () {
-                  widget.onCloseSwipe();
-                  _animateTo(0);
-                  widget.onOpen();
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    widget.onCloseSwipe();
+                    _animateTo(0);
+                    widget.onOpen();
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -665,6 +701,7 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
                       ],
                     ],
                   ),
+                ),
                 ),
               ),
             ),

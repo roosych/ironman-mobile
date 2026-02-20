@@ -83,6 +83,22 @@ class UpcomingRacesApiException extends ApiException {
       );
 }
 
+/// Исключение для ошибок API уведомлений
+class NotificationsApiException extends ApiException {
+  const NotificationsApiException({
+    required super.localizationKey,
+    super.parameters,
+    super.originalMessage,
+  });
+
+  /// Создание исключения с простым сообщением
+  factory NotificationsApiException.message(String message) => NotificationsApiException(
+        localizationKey: 'api_error_generic',
+        parameters: {'message': message},
+        originalMessage: message,
+      );
+}
+
 /// Исключение для ошибок Transfer API
 class TransferApiException extends ApiException {
   /// Ошибки валидации по полям (если есть)
