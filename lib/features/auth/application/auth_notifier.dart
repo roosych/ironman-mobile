@@ -463,15 +463,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
         debugPrint('=== AUTH: Error clearing provider states: $e ===');
       }
 
-      // ВАЖНО: Очищаем навигационный стек после logout
+      // ВАЖНО: Очищаем навигационный стек после logout и возвращаем на главный экран.
+      // Используем pushNamedAndRemoveUntil вместо popUntil, чтобы гарантировать
+      // корректную навигацию независимо от состояния стека (например, если DashboardScreen
+      // стал корневым маршрутом после Register -> Login flow).
       Future.microtask(() {
         try {
-          if (navigatorKey.currentState?.canPop() == true) {
-            debugPrint('=== AUTH: Clearing navigation stack after logout ===');
-            navigatorKey.currentState?.popUntil((route) => route.isFirst);
-          }
+          debugPrint('=== AUTH: Navigating to root after logout ===');
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            '/',
+            (route) => false,
+          );
         } catch (e) {
-          debugPrint('=== AUTH: Error clearing navigation stack: $e ===');
+          debugPrint('=== AUTH: Error navigating after logout: $e ===');
         }
       });
     }

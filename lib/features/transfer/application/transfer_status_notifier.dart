@@ -27,6 +27,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
       debugPrint('✅ TransferStatusNotifier: получили статус заявки: ${request != null ? "found" : "null"}');
       state = state.copyWith(
         request: request,
+        clearRequest: request == null,
         isLoading: false,
       );
     } on TimeoutException {
@@ -146,7 +147,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
       final request = await _api.getCurrentTransferStatus()
           .timeout(_requestTimeout);
 
-      state = state.copyWith(request: request, isLoading: false);
+      state = state.copyWith(request: request, clearRequest: request == null, isLoading: false);
     } on TimeoutException {
       state = state.copyWith(
         isLoading: false,
