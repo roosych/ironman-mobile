@@ -1402,6 +1402,18 @@ abstract class AppLocalizations {
   /// **'Social links not specified'**
   String get athlete_profile_social_links_not_specified;
 
+  /// Photos tab title on athlete profile
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get athlete_profile_photos_tab;
+
+  /// Empty state for athlete photos
+  ///
+  /// In en, this message translates to:
+  /// **'No photos yet'**
+  String get athlete_profile_no_photos;
+
   /// Server error message
   ///
   /// In en, this message translates to:

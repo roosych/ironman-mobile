@@ -861,6 +861,14 @@
   "@athlete_profile_social_links_not_specified": {
     "description": "Social links not specified message"
   },
+  "athlete_profile_photos_tab": "Photos",
+  "@athlete_profile_photos_tab": {
+    "description": "Photos tab title on athlete profile"
+  },
+  "athlete_profile_no_photos": "No photos yet",
+  "@athlete_profile_no_photos": {
+    "description": "Empty state for athlete photos"
+  },
   "error_server_error": "Something went wrong, please try again later",
   "@error_server_error": {
     "description": "Server error message"

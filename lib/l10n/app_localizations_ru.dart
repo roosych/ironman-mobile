@@ -686,6 +686,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Социальные сети не указаны';
 
   @override
+  String get athlete_profile_photos_tab => 'Фото';
+
+  @override
+  String get athlete_profile_no_photos => 'Фото пока нет';
+
+  @override
   String get error_server_error => 'Что-то пошло не так, попробуйте позже';
 
   @override

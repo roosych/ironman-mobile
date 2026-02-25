@@ -686,6 +686,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Social links not specified';
 
   @override
+  String get athlete_profile_photos_tab => 'Photos';
+
+  @override
+  String get athlete_profile_no_photos => 'No photos yet';
+
+  @override
   String get error_server_error =>
       'Something went wrong, please try again later';
 

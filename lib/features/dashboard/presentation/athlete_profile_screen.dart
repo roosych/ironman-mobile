@@ -21,6 +21,8 @@ import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_notifier.dart';
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_state.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
+import 'package:ironman_mobile/features/dashboard/application/athlete_photos_notifier.dart';
+import 'athlete_photo_viewer_screen.dart';
 
 class AthleteProfileScreen extends ConsumerStatefulWidget {
   final Athlete athlete;
@@ -39,7 +41,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 1);
 
     // Загружаем все данные при инициализации
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,6 +63,13 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       _loadResults();
       _loadRecords();
       _loadUpcomingRaces();
+      _loadPhotos();
+    }
+  }
+
+  void _loadPhotos() {
+    if (mounted) {
+      ref.read(athletePhotosProvider(widget.athlete.id).notifier).loadPhotos();
     }
   }
 
@@ -287,6 +296,26 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                           },
                         ),
                       ),
+                      Tab(
+                        icon: AnimatedBuilder(
+                          animation: _tabController,
+                          builder: (context, child) {
+                            if (!mounted) {
+                              return const SizedBox.shrink();
+                            }
+                            final currentTheme = Theme.of(context);
+                            final isSelected = _tabController.index == 4;
+                            return HugeIcon(
+                              icon: HugeIcons.strokeRoundedImage01,
+                              size: 24,
+                              color: isSelected
+                                  ? AppColors.ironmanWhite
+                                  : currentTheme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -301,6 +330,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             _buildResultsTab(context, theme, localizations),
             _buildPersonalBestsTab(context, theme, localizations),
             _buildUpcomingRacesTab(context, theme, localizations),
+            _buildPhotosTab(context, theme, localizations),
           ],
         ),
       ),
@@ -1215,6 +1245,126 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       ],
     );
   }
+
+  Widget _buildPhotosTab(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations localizations,
+  ) {
+    final photosState = ref.watch(athletePhotosProvider(widget.athlete.id));
+
+    if (photosState.isLoading && photosState.photos.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (photosState.hasError && photosState.photos.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                photosState.error ?? localizations.common_loading_error,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadPhotos,
+                child: Text(localizations.common_retry),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (photosState.photos.isEmpty) {
+      return Center(
+        child: Text(
+          localizations.athlete_profile_no_photos,
+          style: theme.textTheme.bodyLarge,
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => _loadPhotos(),
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollEndNotification &&
+              notification.metrics.pixels >=
+                  notification.metrics.maxScrollExtent * 0.8) {
+            ref
+                .read(athletePhotosProvider(widget.athlete.id).notifier)
+                .loadNextPage();
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 4,
+                  mainAxisSpacing: 4,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final photo = photosState.photos[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => AthletePhotoViewerScreen(
+                              photos: photosState.photos,
+                              initialIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Image.network(
+                          ImageUrlHelper.getFullImageUrl(photo.url),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Center(
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedImageNotFound01,
+                                  color: Colors.white38,
+                                  size: 32,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: photosState.photos.length,
+                ),
+              ),
+            ),
+            if (photosState.isLoadingMore)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _PersonalBestsCard extends StatelessWidget {
@@ -1356,6 +1506,7 @@ class _PersonalBestsCard extends StatelessWidget {
       ),
     );
   }
+
 }
 
 class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {

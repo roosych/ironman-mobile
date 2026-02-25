@@ -218,6 +218,8 @@
   "athlete_profile_social_links": "Социальные сети",
   "athlete_profile_info_not_available": "Информация отсутствует",
   "athlete_profile_social_links_not_specified": "Социальные сети не указаны",
+  "athlete_profile_photos_tab": "Фото",
+  "athlete_profile_no_photos": "Фото пока нет",
   "error_server_error": "Что-то пошло не так, попробуйте позже",
   "error_no_internet": "Проверьте подключение к интернету и попробуйте снова",
   "error_no_network_connection": "Отсутствует подключение к интернету",

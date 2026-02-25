@@ -217,6 +217,8 @@
   "athlete_profile_social_links": "Sosial şəbəkələr",
   "athlete_profile_info_not_available": "Məlumat mövcud deyil",
   "athlete_profile_social_links_not_specified": "Sosial şəbəkələr göstərilməyib",
+  "athlete_profile_photos_tab": "Şəkillər",
+  "athlete_profile_no_photos": "Hələ şəkil yoxdur",
   "error_server_error": "Server xətası, zəhmət olmasa az sonra yenidən cəhd edin",
   "error_no_internet": "İnternet bağlantınızı yoxlayın və yenidən cəhd edin",
   "error_no_network_connection": "İnternet bağlantısı mövcud deyil",

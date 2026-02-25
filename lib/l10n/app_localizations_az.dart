@@ -685,6 +685,12 @@ class AppLocalizationsAz extends AppLocalizations {
       'Sosial şəbəkələr göstərilməyib';
 
   @override
+  String get athlete_profile_photos_tab => 'Şəkillər';
+
+  @override
+  String get athlete_profile_no_photos => 'Hələ şəkil yoxdur';
+
+  @override
   String get error_server_error =>
       'Server xətası, zəhmət olmasa az sonra yenidən cəhd edin';
 

@@ -4,6 +4,7 @@ import '../../../core/errors/api_exception.dart';
 import '../../../core/errors/api_error_keys.dart';
 import '../domain/athlete.dart';
 import '../domain/personal_record.dart';
+import '../domain/photo.dart';
 
 class AthletesApi {
   final ApiClient _client;
@@ -140,6 +141,81 @@ class AthletesApi {
       if (e is AthletesApiException) {
         rethrow;
       }
+      throw AthletesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
+    }
+  }
+
+  Future<({List<Photo> photos, bool hasMore, int currentPage, int lastPage})> fetchAthletePhotos(
+    int athleteId, {
+    int page = 1,
+  }) async {
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        '/athletes/$athleteId/photos',
+        queryParameters: {'page': page},
+      );
+
+      final data = response.data;
+      if (data == null) {
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.emptyResponse,
+        );
+      }
+
+      if (data['success'] == false) {
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.athleteNotFound,
+        );
+      }
+
+      final List<dynamic> photosJson = data['data'] as List<dynamic>? ?? [];
+      final photos = photosJson
+          .whereType<Map<String, dynamic>>()
+          .map(Photo.fromJson)
+          .toList();
+
+      final pagination = data['pagination'] as Map<String, dynamic>?;
+      final currentPage = pagination?['current_page'] as int? ?? 1;
+      final lastPage = pagination?['last_page'] as int? ?? 1;
+
+      return (
+        photos: photos,
+        hasMore: currentPage < lastPage,
+        currentPage: currentPage,
+        lastPage: lastPage,
+      );
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
+      }
+      if (e.type == DioExceptionType.connectionError) {
+        throw const AthletesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
+      }
+      final statusCode = e.response?.statusCode;
+      final message = e.response?.data?['message'] as String?;
+      if (message != null) {
+        throw AthletesApiException(
+          localizationKey: ApiErrorKeys.generic,
+          parameters: {'message': message},
+          originalMessage: message,
+        );
+      }
+      throw AthletesApiException(
+        localizationKey: ApiErrorKeys.server,
+        parameters: {'status': statusCode?.toString() ?? 'Unknown'},
+        originalMessage: 'Server error ($statusCode)',
+      );
+    } catch (e) {
+      if (e is AthletesApiException) rethrow;
       throw AthletesApiException(
         localizationKey: ApiErrorKeys.unexpected,
         parameters: {'error': e.toString()},
