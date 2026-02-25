@@ -332,6 +332,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nav_athletes => 'Атлеты';
 
   @override
+  String get nav_login => 'Войти';
+
+  @override
   String get photo_delete_title => 'Удалить фото?';
 
   @override

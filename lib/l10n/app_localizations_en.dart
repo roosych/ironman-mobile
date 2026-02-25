@@ -331,6 +331,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nav_athletes => 'Athletes';
 
   @override
+  String get nav_login => 'Sign In';
+
+  @override
   String get photo_delete_title => 'Delete photo?';
 
   @override

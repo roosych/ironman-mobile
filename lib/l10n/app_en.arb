@@ -405,6 +405,10 @@
   "@nav_athletes": {
     "description": "Bottom navigation Athletes"
   },
+  "nav_login": "Sign In",
+  "@nav_login": {
+    "description": "Bottom navigation Sign In"
+  },
   "photo_delete_title": "Delete photo?",
   "@photo_delete_title": {
     "description": "Delete photo dialog title"

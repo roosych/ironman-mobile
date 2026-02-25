@@ -263,14 +263,7 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              leading: IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedArrowLeft01,
-                  color: AppColors.ironmanWhite,
-                  size: 24,
-                ),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
+              automaticallyImplyLeading: false,
               title: Text(
                 loc.pace_calculator_appbar_title,
                 style: theme.textTheme.titleLarge?.copyWith(
@@ -305,10 +298,7 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
                 onTap: () => setState(() => _selectedDisciplineIndex = -1),
                 behavior: HitTestBehavior.opaque,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -630,7 +620,7 @@ class DisciplineCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
                 _DisciplineIcon(

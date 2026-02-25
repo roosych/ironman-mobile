@@ -104,6 +104,7 @@
   "nav_results": "Результаты",
   "nav_ratings": "Рейтинги",
   "nav_athletes": "Атлеты",
+  "nav_login": "Войти",
   "photo_delete_title": "Удалить фото?",
   "photo_delete_avatar_warning": "Это фото является вашим аватаром. После удаления аватар будет сброшен.",
   "photo_delete_irreversible": "Это действие нельзя отменить.",

@@ -718,6 +718,12 @@ abstract class AppLocalizations {
   /// **'Athletes'**
   String get nav_athletes;
 
+  /// Bottom navigation Sign In
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get nav_login;
+
   /// Delete photo dialog title
   ///
   /// In en, this message translates to:

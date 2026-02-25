@@ -333,6 +333,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get nav_athletes => 'Atletlər';
 
   @override
+  String get nav_login => 'Daxil ol';
+
+  @override
   String get photo_delete_title => 'Foto silinəcək, əminsiniz?';
 
   @override
