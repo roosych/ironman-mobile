@@ -31,7 +31,7 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: PolicyType.allTypes.length, vsync: this);
   }
 
   @override
@@ -350,66 +350,8 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
               ),
             },
           ),
-          const SizedBox(height: 32),
-          // Footer
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Информация о документе',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildInfoRow('Тип:', policy.typeName),
-                _buildInfoRow('Язык:', policy.language.toUpperCase()),
-                _buildInfoRow('Дата создания:', _formatDate(policy.createdAt)),
-                _buildInfoRow('Последнее обновление:', _formatDate(policy.updatedAt)),
-              ],
-            ),
-          ),
         ],
       ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

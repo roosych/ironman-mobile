@@ -9,6 +9,7 @@ import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/shared/data/countries.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
+import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
 import '../../policies/presentation/policy_screen.dart';
@@ -575,30 +576,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 ],
                               ),
                               const SizedBox(height: 24),
-                              FilledButton(
-                                onPressed: authState.isLoading
-                                    ? null
-                                    : _register,
-                                style: FilledButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
+                              SizedBox(
+                                width: double.infinity,
                                 child: authState.isLoading
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        decoration: AppButtonStyles.primaryGradientDecoration(
+                                          borderRadius: 12,
+                                        ),
+                                        child: const Center(
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       )
-                                    : Text(
-                                        localizations.register_button,
-                                        style: const TextStyle(
+                                    : AppButtonStyles.primaryGradientButton(
+                                        text: localizations.register_button,
+                                        onPressed: _register,
+                                        borderRadius: 12,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        textStyle: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1,

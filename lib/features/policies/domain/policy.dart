@@ -98,7 +98,7 @@ class PolicyType {
   static const dataProcessing = PolicyType(value: 'data_processing', name: 'Data Processing');
   static const cookies = PolicyType(value: 'cookies', name: 'Cookie Policy');
 
-  static const allTypes = [privacy, terms, dataProcessing, cookies];
+  static const allTypes = [privacy, terms/*, dataProcessing, cookies*/];
 
   @override
   String toString() => 'PolicyType(value: $value, name: $name)';
