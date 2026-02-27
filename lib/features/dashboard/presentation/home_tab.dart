@@ -386,10 +386,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               // Greeting section
               if (user != null)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -412,15 +409,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   ),
                 ),
 
-              const SizedBox(height: 16),
-
-              // Notification permission card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: _NotificationPermissionCard(),
-              ),
-
-              const SizedBox(height: 12),
+              // Notification permission card (manages its own spacing)
+              _NotificationPermissionCard(),
 
               // My Results expandable section
               Padding(
@@ -558,7 +548,9 @@ class _NotificationPermissionCardState
       return const SizedBox.shrink();
     }
 
-    return Card(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -654,7 +646,8 @@ class _NotificationPermissionCardState
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

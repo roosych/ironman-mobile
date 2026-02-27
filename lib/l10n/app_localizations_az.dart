@@ -108,7 +108,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get home_greeting => 'Salam,';
 
   @override
-  String get home_greeting_welcome => 'Yenidən xoş gəldin,';
+  String get home_greeting_welcome => 'Xoş gördük,';
 
   @override
   String get home_finishes => 'finiş';
