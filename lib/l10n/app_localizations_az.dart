@@ -1063,28 +1063,28 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get transfer_status_pending_description =>
-      'Your transfer request is being reviewed';
+      'Köçürmə sorğunuz nəzərdən keçirilir';
 
   @override
   String get transfer_status_approved => 'Təsdiqlənib';
 
   @override
   String get transfer_status_approved_description =>
-      'Your results have been successfully transferred';
+      'Nəticələriniz uğurla köçürüldü';
 
   @override
   String get transfer_status_rejected => 'Rədd edilib';
 
   @override
   String get transfer_status_rejected_description =>
-      'Your transfer request was rejected';
+      'Köçürmə sorğunuz imtina edildi';
 
   @override
-  String get transfer_submit_again => 'Submit Again';
+  String get transfer_submit_again => 'Yenidən göndər';
 
   @override
   String transfer_source_athlete(String name) {
-    return 'From: $name';
+    return 'Atlet: $name';
   }
 
   @override

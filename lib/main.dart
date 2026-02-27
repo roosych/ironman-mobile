@@ -96,7 +96,7 @@ class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // Цветовая палитра
-  static const Color ironmanRed = Color.fromARGB(255, 35, 129, 201);
+  static const Color ironmanRed = Color(0xFF2E7D32);
   static const Color ironmanBlack = Color(0xFF0D0D0D);
   static const Color ironmanDarkGray = Color(0xFF1A1A1A);
   static const Color ironmanGray = Color(0xFF2A2A2A);

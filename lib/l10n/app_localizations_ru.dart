@@ -939,7 +939,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pace_calculator_tab_5150 => '5150';
 
   @override
-  String get pace_calculator_appbar_title => 'Калькулятор';
+  String get pace_calculator_appbar_title => 'Калькулятор темпа';
 
   @override
   String get pace_calculator_total_race_time => 'ОБЩЕЕ ВРЕМЯ ГОНКИ';

@@ -372,6 +372,9 @@
   "transfer_status_pending": "Gözləyir",
   "transfer_status_approved": "Təsdiqlənib",
   "transfer_status_rejected": "Rədd edilib",
+  "transfer_status_pending_description": "Köçürmə sorğunuz nəzərdən keçirilir",
+  "transfer_status_approved_description": "Nəticələriniz uğurla köçürüldü",
+  "transfer_status_rejected_description": "Köçürmə sorğunuz imtina edildi",
   "transfer_no_request_title": "Başqalarının nəticələrini bağla",
   "transfer_no_request_description": "Əgər nəticələriniz ironman.az saytında varsa, onları köçürə bilərik",
   "transfer_select_athlete": "Atleti seçin",
@@ -384,6 +387,15 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "transfer_source_athlete": "Atlet: {name}",
+  "@transfer_source_athlete": {
+    "description": "Shows source athlete name",
+    "placeholders": {
+      "name": {
+        "type": "String"
       }
     }
   },
@@ -407,6 +419,7 @@
     }
   },
   "transfer_confirm_button": "Təsdiqlə",
+  "transfer_submit_again": "Yenidən göndər",
   "transfer_request_created": "Sorğu yaradıldı. İnzibatçı tərəfindən nəzərdən keçiriləcək",
   "transfer_request_error": "Sorğu göndərilmədi. Yenidən cəhd edin",
   "api_error_empty_response": "Serverdən boş cavab",

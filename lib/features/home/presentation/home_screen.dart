@@ -74,69 +74,47 @@ class _HomeBottomNav extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 6,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.ironmanGray.withValues(alpha: 0.6),
-                    AppColors.ironmanGray.withValues(alpha: 0),
-                  ],
-                ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavItem(
+                icon: HugeIcons.strokeRoundedStopWatch,
+                label: loc.nav_results,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                color: navColor,
+                onTap: () => onTap(0),
               ),
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedStopWatch,
-                    label: loc.nav_results,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    color: navColor,
-                    onTap: () => onTap(0),
-                  ),
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedAward01,
-                    label: loc.nav_ratings,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    color: navColor,
-                    onTap: () => onTap(1),
-                  ),
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedUserGroup,
-                    label: loc.nav_athletes,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    color: navColor,
-                    onTap: () => onTap(2),
-                  ),
-                  _NavItem(
-                    icon: HugeIcons.strokeRoundedUser,
-                    label: loc.nav_login,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                    color: navColor,
-                    onTap: () => onTap(3),
-                  ),
-                ],
+              _NavItem(
+                icon: HugeIcons.strokeRoundedAward01,
+                label: loc.nav_ratings,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                color: navColor,
+                onTap: () => onTap(1),
               ),
-            ),
+              _NavItem(
+                icon: HugeIcons.strokeRoundedUserGroup,
+                label: loc.nav_athletes,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                color: navColor,
+                onTap: () => onTap(2),
+              ),
+              _NavItem(
+                icon: HugeIcons.strokeRoundedUser,
+                label: loc.nav_login,
+                fontSize: fontSize,
+                iconSize: iconSize,
+                color: navColor,
+                onTap: () => onTap(3),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

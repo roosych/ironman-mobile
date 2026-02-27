@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import '../../features/settings/application/locale_notifier.dart';
@@ -24,60 +25,55 @@ class LanguageSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
 
-    return DropdownButton<Locale>(
-      value: locale,
-      icon: const HugeIcon(
-        icon: HugeIcons.strokeRoundedArrowDown01,
-        size: 20,
-        color: Colors.white70,
-      ),
-      underline: Container(),
-      dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
-      items: const [
-        Locale('az'),
-        Locale('en'),
-        Locale('ru'),
-      ].map<DropdownMenuItem<Locale>>((Locale locale) {
-        return DropdownMenuItem<Locale>(
-          value: locale,
+    return PopupMenuButton<Locale>(
+      onSelected: (Locale newLocale) async {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        await ref.read(localeProvider.notifier).setLocale(newLocale);
+        if (context.mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              final loc = AppLocalizations.of(context);
+              if (loc != null) {
+                AlertHelper.showInfo(context, loc.settings_language_changed);
+              }
+            }
+          });
+        }
+      },
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      itemBuilder: (_) => [
+        const Locale('az'),
+        const Locale('en'),
+        const Locale('ru'),
+      ].map((l) {
+        final isActive = l.languageCode == locale.languageCode;
+        return PopupMenuItem<Locale>(
+          value: l,
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
+              if (isActive)
+                const Icon(Icons.check, color: AppColors.primaryGradientStart, size: 18)
+              else
+                const SizedBox(width: 18),
+              const SizedBox(width: 8),
               Text(
-                _getLanguageName(locale),
-                style: const TextStyle(
+                _getLanguageName(l),
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontWeight:
+                      isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ],
           ),
         );
       }).toList(),
-      onChanged: (Locale? newLocale) async {
-        if (newLocale != null) {
-          // Hide all current SnackBars before language change
-          ScaffoldMessenger.of(context).clearSnackBars();
-
-          await ref.read(localeProvider.notifier).setLocale(newLocale);
-
-          // Wait for Flutter to rebuild with new locale
-          if (context.mounted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                final updatedLocalizations = AppLocalizations.of(context);
-                if (updatedLocalizations != null) {
-                  AlertHelper.showInfo(
-                    context,
-                    updatedLocalizations.settings_language_changed
-                  );
-                }
-              }
-            });
-          }
-        }
-      },
+      child: const HugeIcon(
+        icon: HugeIcons.strokeRoundedEarth,
+        color: Colors.white,
+        size: 22,
+      ),
     );
   }
 }

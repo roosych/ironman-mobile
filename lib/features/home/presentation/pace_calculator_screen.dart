@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
+import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 
 // ---------------------------------------------------------------------------
 // Distance presets (triathlon formats)
@@ -25,9 +28,9 @@ extension DistanceTabExtension on DistanceTab {
   double get bikeKm {
     switch (this) {
       case DistanceTab.full:
-        return 180.2;
+        return 180;
       case DistanceTab.half70_3:
-        return 90.1;
+        return 90;
       case DistanceTab.olympic:
         return 40;
     }
@@ -36,9 +39,9 @@ extension DistanceTabExtension on DistanceTab {
   double get runKm {
     switch (this) {
       case DistanceTab.full:
-        return 42.2;
+        return 42;
       case DistanceTab.half70_3:
-        return 21.1;
+        return 21;
       case DistanceTab.olympic:
         return 10;
     }
@@ -83,14 +86,14 @@ String formatPacePerKm(Duration runTime, double runKm) {
 // Pace Calculator Screen
 // ---------------------------------------------------------------------------
 
-class PaceCalculatorScreen extends StatefulWidget {
+class PaceCalculatorScreen extends ConsumerStatefulWidget {
   const PaceCalculatorScreen({super.key});
 
   @override
-  State<PaceCalculatorScreen> createState() => _PaceCalculatorScreenState();
+  ConsumerState<PaceCalculatorScreen> createState() => _PaceCalculatorScreenState();
 }
 
-class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
+class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
   DistanceTab _selectedTab = DistanceTab.full;
   Duration _swimTime = Duration.zero;
   Duration _t1Time = Duration.zero;
@@ -264,6 +267,16 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               automaticallyImplyLeading: false,
+              leading: (ModalRoute.of(context)?.canPop ?? false)
+                  ? IconButton(
+                      icon: const HugeIcon(
+                        icon: HugeIcons.strokeRoundedArrowLeft01,
+                        color: AppColors.ironmanWhite,
+                        size: 24,
+                      ),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    )
+                  : null,
               title: Text(
                 loc.pace_calculator_appbar_title,
                 style: theme.textTheme.titleLarge?.copyWith(
@@ -272,17 +285,14 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
                 ),
               ),
               centerTitle: true,
-              actions: [
-                IconButton(
-                  icon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedRefresh,
-                    color: AppColors.ironmanWhite,
-                    size: 24,
-                  ),
-                  onPressed: _clearAllTimes,
-                  tooltip: 'Очистить все значения',
-                ),
-              ],
+              actions: ref.watch(authProvider).isAuthenticated
+                  ? null
+                  : const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 16),
+                        child: LanguageSelector(),
+                      ),
+                    ],
             ),
             body: SafeArea(
         child: Column(
@@ -302,7 +312,7 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                    TotalTimeCard(totalTime: _totalTime, totalRaceTimeLabel: loc.pace_calculator_total_race_time),
+                    TotalTimeCard(totalTime: _totalTime, totalRaceTimeLabel: loc.pace_calculator_total_race_time, onReset: _clearAllTimes),
                     const SizedBox(height: 20),
                     DisciplineCard(
                       icon: Icons.pool_outlined,
@@ -345,7 +355,7 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
                     DisciplineCard(
                       icon: Icons.directions_bike_outlined,
                       iconAsset: 'assets/images/svg/bike.png',
-                      label: '${_bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
+                      label: '${_bikeKm % 1 == 0 ? _bikeKm.toInt() : _bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                       duration: _bikeTime,
                       rightLabel: loc.pace_calculator_km_per_h,
                       rightValue: formatSpeedKmh(_bikeKm, _bikeTime),
@@ -382,7 +392,7 @@ class _PaceCalculatorScreenState extends State<PaceCalculatorScreen> {
                     DisciplineCard(
                       icon: Icons.directions_run_outlined,
                       iconAsset: 'assets/images/svg/run.png',
-                      label: '${_runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
+                      label: '${_runKm % 1 == 0 ? _runKm.toInt() : _runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                       duration: _runTime,
                       rightLabel: loc.pace_calculator_min_per_km,
                       rightValue: formatPacePerKm(_runTime, _runKm),
@@ -504,36 +514,56 @@ class TotalTimeCard extends StatelessWidget {
     super.key,
     required this.totalTime,
     required this.totalRaceTimeLabel,
+    required this.onReset,
   });
 
   final Duration totalTime;
   final String totalRaceTimeLabel;
+  final VoidCallback onReset;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            totalRaceTimeLabel,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: AppColors.ironmanTextSecondary,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          totalRaceTimeLabel,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: AppColors.ironmanTextSecondary,
           ),
-          const SizedBox(height: 8),
-          Text(
-            formatDurationHhMmSs(totalTime),
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.ironmanWhite,
-              fontSize: 32,
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 60,
+              child: IconButton(
+                onPressed: onReset,
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedRefresh,
+                  color: AppColors.ironmanWhite,
+                  size: 22,
+                ),
+                padding: EdgeInsets.zero,
+                tooltip: 'Очистить все значения',
+              ),
             ),
-          ),
-        ],
-      ),
+            Text(
+              formatDurationHhMmSs(totalTime),
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.ironmanWhite,
+                fontSize: 32,
+              ),
+            ),
+            const SizedBox(width: 60),
+          ],
+        ),
+      ],
     );
   }
 }
