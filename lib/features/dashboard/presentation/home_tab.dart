@@ -8,8 +8,8 @@ import 'package:ironman_mobile/features/results/application/race_results_notifie
 import 'package:ironman_mobile/features/results/application/race_results_state.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
 import 'package:ironman_mobile/shared/widgets/result_detail_screen.dart';
-import 'package:ironman_mobile/shared/utils/image_url_helper.dart';
 import 'package:ironman_mobile/shared/widgets/result_card.dart';
+import 'package:ironman_mobile/shared/widgets/user_avatar_widget.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/profile_screen.dart'
     as profile;
 import 'package:ironman_mobile/features/notifications/presentation/notifications_screen.dart';
@@ -334,21 +334,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                           MaterialPageRoute(builder: (_) => const profile.ProfileScreen()),
                         );
                       },
-                      child: CircleAvatar(
-                        radius: 32, // Увеличенный размер
-                        backgroundColor: (user?.avatarUrl != null && user?.avatarUrl?.isNotEmpty == true)
-                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
-                            : Theme.of(context).colorScheme.surfaceContainerHighest,
-                        backgroundImage: (user?.avatarUrl != null && user?.avatarUrl?.isNotEmpty == true)
-                            ? NetworkImage(ImageUrlHelper.getFullImageUrl(user!.avatarUrl!))
-                            : null,
-                        child: (user?.avatarUrl == null || user?.avatarUrl?.isEmpty == true)
-                            ? HugeIcon(
-                                icon: HugeIcons.strokeRoundedUser,
-                                size: 32,
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                              )
-                            : null,
+                      child: UserAvatarWidget(
+                        url: user?.avatarUrl,
+                        radius: 32,
                       ),
                     ),
                     // User Profile and Notifications
