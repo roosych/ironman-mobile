@@ -7,6 +7,36 @@ import '../session/session_manager.dart';
 import '../config/app_config.dart';
 import 'interceptors/global_error_interceptor.dart';
 
+class _TokenRefreshLock {
+  static bool _isRefreshing = false;
+  static final List<Completer<bool>> _waiters = [];
+
+  static Future<bool> run(Future<bool> Function() refreshFn) async {
+    if (_isRefreshing) {
+      final completer = Completer<bool>();
+      _waiters.add(completer);
+      return completer.future;
+    }
+    _isRefreshing = true;
+    try {
+      final result = await refreshFn();
+      for (final w in _waiters) {
+        w.complete(result);
+      }
+      _waiters.clear();
+      return result;
+    } catch (_) {
+      for (final w in _waiters) {
+        w.complete(false);
+      }
+      _waiters.clear();
+      return false;
+    } finally {
+      _isRefreshing = false;
+    }
+  }
+}
+
 class ApiClient {
   /// Базовый URL API сервера
   /// Настройки берутся из AppConfig (lib/core/config/app_config.dart)
@@ -32,7 +62,7 @@ class ApiClient {
       ) {
     // Добавляем глобальный обработчик ошибок ПЕРВЫМ (высший приоритет)
     _dio.interceptors.add(GlobalErrorInterceptor());
-    _dio.interceptors.add(_AuthInterceptor(_storage));
+    _dio.interceptors.add(_AuthInterceptor(_storage, _dio));
     if (AppConfig.enableRequestLogging) {
       _dio.interceptors.add(
         LogInterceptor(
@@ -171,8 +201,9 @@ class ApiClient {
 
 class _AuthInterceptor extends Interceptor {
   final SecureStorage _storage;
+  final Dio _dio;
 
-  _AuthInterceptor(this._storage);
+  _AuthInterceptor(this._storage, this._dio);
 
   @override
   void onRequest(
@@ -195,11 +226,11 @@ class _AuthInterceptor extends Interceptor {
     try {
       debugPrint('Getting token from SecureStorage with timeout...');
 
-      // ФИКС: Получаем токен с ОЧЕНЬ коротким таймаутом чтобы не блокировать запрос
+      // Получаем токен с разумным таймаутом (из кэша — мгновенно, из хранилища — до 1.5с)
       final token = await _storage.getToken().timeout(
-        const Duration(milliseconds: 500), // Очень короткий таймаут для interceptor
+        const Duration(milliseconds: 1500),
         onTimeout: () {
-          debugPrint('⚠️ AuthInterceptor: getToken() TIMEOUT после 500мс');
+          debugPrint('⚠️ AuthInterceptor: getToken() TIMEOUT после 1500мс');
           return null;
         },
       );
@@ -219,9 +250,9 @@ class _AuthInterceptor extends Interceptor {
       debugPrint('Getting locale from SharedPreferences with timeout...');
       try {
         final prefs = await SharedPreferences.getInstance().timeout(
-          const Duration(milliseconds: 300), // Очень короткий таймаут для interceptor
+          const Duration(milliseconds: 800),
           onTimeout: () {
-            debugPrint('⚠️ AuthInterceptor: SharedPreferences TIMEOUT после 300мс');
+            debugPrint('⚠️ AuthInterceptor: SharedPreferences TIMEOUT после 800мс');
             throw TimeoutException('SharedPreferences timeout');
           },
         );
@@ -250,52 +281,120 @@ class _AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    debugPrint('=== AuthInterceptor.onError ===');
-    debugPrint('Path: ${err.requestOptions.path}');
-    debugPrint('Status Code: ${err.response?.statusCode}');
-    debugPrint('Error Type: ${err.type}');
-    debugPrint('Response Data: ${err.response?.data}');
+    _handleError(err, handler);
+  }
 
-    // Check for 401 Unauthenticated (skip auth endpoints and session restoration)
-    if (_isUnauthenticatedError(err) &&
-        !_isAuthEndpoint(err.requestOptions.path) &&
-        !_isSessionRestorationRequest(err.requestOptions.path)) {
-      debugPrint('Triggering session expiry for: ${err.requestOptions.path}');
-      // Trigger session expiry handling (non-blocking)
-      SessionManager().handleSessionExpired();
-    } else {
-      debugPrint('Not triggering session expiry (auth endpoint or 401)');
+  Future<void> _handleError(DioException err, ErrorInterceptorHandler handler) async {
+    final path = err.requestOptions.path;
+
+    // Только обрабатываем 401, остальное пропускаем
+    if (!_isUnauthenticatedError(err)) {
+      handler.next(err);
+      return;
     }
 
-    debugPrint('Passing error to next handler...');
+    // Auth-эндпоинты (login, register и т.д.) — 401 ожидаемый, не обрабатываем
+    if (_isAuthOnlyEndpoint(path)) {
+      handler.next(err);
+      return;
+    }
+
+    // Уже пробовали retry — сдаёмся
+    if (err.requestOptions.extra['_retried'] == true) {
+      if (!_isSessionRestorationRequest(path) && !_isSilentEndpoint(path)) {
+        SessionManager().handleSessionExpired();
+      }
+      handler.next(err);
+      return;
+    }
+
+    // Пробуем обновить токен
+    final refreshed = await _TokenRefreshLock.run(() => _doRefresh());
+    if (refreshed) {
+      try {
+        final token = await _storage.getToken();
+        final opts = err.requestOptions;
+        opts.headers['Authorization'] = 'Bearer $token';
+        opts.extra['_retried'] = true;
+        final response = await _dio.fetch(opts);
+        handler.resolve(response);
+        return;
+      } catch (_) {
+        // retry тоже упал — выходим
+      }
+    }
+
+    // Silent-эндпоинты и session restoration — не роняем сессию при неудаче
+    if (!_isSessionRestorationRequest(path) && !_isSilentEndpoint(path)) {
+      SessionManager().handleSessionExpired();
+    }
     handler.next(err);
   }
 
-  /// Check if the request is to an auth endpoint.
-  /// These endpoints are expected to return 401 for invalid credentials,
-  /// so we should NOT trigger session expiry for them.
-  bool _isAuthEndpoint(String path) {
-    const ignorePaths = [
-      // Auth flows
+  Future<bool> _doRefresh() async {
+    try {
+      final refreshToken = await _storage.getRefreshToken();
+      if (refreshToken == null || refreshToken.isEmpty) return false;
+
+      final refreshDio = Dio(BaseOptions(
+        baseUrl: AppConfig.baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 20),
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      ));
+
+      final response = await refreshDio.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
+
+      final data = response.data?['data'] as Map<String, dynamic>?;
+      final newAccessToken = data?['access_token'] as String?;
+      final newRefreshToken = data?['refresh_token'] as String?;
+
+      if (newAccessToken != null && newAccessToken.isNotEmpty) {
+        await _storage.saveToken(newAccessToken);
+        if (newRefreshToken != null && newRefreshToken.isNotEmpty) {
+          await _storage.saveRefreshToken(newRefreshToken);
+        }
+        debugPrint('✅ Token refreshed successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('❌ Token refresh failed: $e');
+      return false;
+    }
+  }
+
+  /// Auth-эндпоинты, где 401 — ожидаемый ответ (неверные credentials).
+  /// Для них НЕ делаем refresh токена и НЕ триггерим logout.
+  bool _isAuthOnlyEndpoint(String path) {
+    const authOnlyPaths = [
       '/auth/login',
       '/auth/register',
-      '/auth/forgot-password',
-      '/auth/reset-password',
-      '/auth/logout',         // выход из аккаунта (токен уже может быть недействителен)
-      '/auth/locale',         // обновление языка пользователя
-      // Password change (can return 403 for wrong current password)
-      '/user/password',       // смена пароля
-      // Non-critical GETs where 401 не должен ронять сессию
-      '/user/photos',         // аватарка
-      '/user/fcm-token',      // регистрация/удаление FCM токена
-      '/upcoming-races',      // список гонок (гость/неверифицированный)
-      '/notifications',       // список уведомлений
-      // Transfer endpoints (may not be implemented yet)
-      '/transfer/current',    // текущий статус заявки на перенос
-      '/transfer/eligible-athletes', // список доступных атлетов
-      '/transfer/request',    // создание заявки на перенос
+      '/auth/password/forgot',
+      '/auth/password/reset',
+      '/auth/logout',
+      '/auth/locale',
+      '/auth/password/change',
     ];
-    return ignorePaths.any((ignorePath) => path.contains(ignorePath));
+    return authOnlyPaths.any((p) => path.contains(p));
+  }
+
+  /// Эндпоинты, где при неудаче refresh токена НЕ нужно вызывать logout.
+  /// Делаем попытку refresh, но при провале — тихо передаём ошибку.
+  bool _isSilentEndpoint(String path) {
+    const silentPaths = [
+      '/user/photos',         // аватарка
+      '/user/fcm-token',      // FCM токен
+      '/races',               // список гонок (гость)
+      '/notifications',       // уведомления
+      '/transfers/current',   // статус заявки на перенос
+      '/transfers/eligible-athletes', // список атлетов
+      '/transfers',           // создание заявки
+    ];
+    return silentPaths.any((p) => path.contains(p));
   }
 
   /// Check if the request is part of session restoration.

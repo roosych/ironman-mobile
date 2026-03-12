@@ -422,6 +422,34 @@ class _AthleteSelectionBottomSheetState
     );
   }
 
+  String _localizeError(String key, AppLocalizations loc) {
+    // Обработка api_error_server:STATUS (закодированный статус-код)
+    if (key.startsWith('api_error_server:')) {
+      final status = key.substring('api_error_server:'.length);
+      return loc.api_error_server(status.isNotEmpty ? status : '?');
+    }
+    switch (key) {
+      case 'api_error_timeout':
+        return loc.api_error_timeout;
+      case 'api_error_empty_response':
+        return loc.api_error_empty_response;
+      case 'api_error_athletes_format':
+        return loc.api_error_athletes_format;
+      case 'api_error_athlete_item_format':
+        return loc.api_error_athlete_item_format;
+      case 'api_error_athletes_loading':
+        return loc.api_error_athletes_loading;
+      case 'api_error_server':
+        return loc.api_error_server('?');
+      case 'api_error_network_no_connection':
+        return loc.api_error_network_no_connection;
+      case 'api_error_unexpected':
+        return loc.api_error_unexpected('');
+      default:
+        return key;
+    }
+  }
+
   /// Строит состояние ошибки
   Widget _buildErrorState(
     String error,
@@ -441,7 +469,7 @@ class _AthleteSelectionBottomSheetState
             ),
             const SizedBox(height: 16),
             Text(
-              error,
+              _localizeError(error, localizations),
               style: theme.textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),

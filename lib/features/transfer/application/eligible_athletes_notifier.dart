@@ -50,9 +50,14 @@ class EligibleAthletesNotifier extends StateNotifier<EligibleAthletesState> {
         error: 'api_error_timeout',
       );
     } on TransferApiException catch (e) {
+      // Для ошибок с параметрами (напр. api_error_server с кодом) кодируем их в строку
+      final errorKey = (e.localizationKey == 'api_error_server' &&
+              e.parameters?['status'] != null)
+          ? 'api_error_server:${e.parameters!['status']}'
+          : e.localizationKey;
       state = state.copyWith(
         isLoading: false,
-        error: e.localizationKey,
+        error: errorKey,
       );
     } catch (e) {
       state = state.copyWith(
