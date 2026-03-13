@@ -27,10 +27,17 @@ class EligibleAthleteModel {
     this.lastRaceDate,
   });
 
+  static int _parseId(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
   /// Создает модель из JSON данных
   factory EligibleAthleteModel.fromJson(Map<String, dynamic> json) {
     return EligibleAthleteModel(
-      id: json['id'] as int,
+      id: _parseId(json['id']),
       name: json['name'] as String,
       avatar: json['avatar'] as String?,
       totalRaces: json['total_races'] as int? ?? 0,

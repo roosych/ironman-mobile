@@ -61,27 +61,14 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
     }
   }
 
-  /// Fallback метод - пытается получить данные существующей заявки через создание фейковой
+  /// Fallback метод при ошибке авторизации - считаем что заявки нет
   Future<void> _tryLoadStatusViaCreateRequest() async {
-    try {
-      debugPrint('🎭 Пытаемся создать фейковую заявку для получения данных существующей');
-      // Используем несуществующий ID чтобы гарантированно получить 409 с данными существующей заявки
-      final request = await _api.createTransferRequest(-1);
-
-      // Получили данные существующей заявки (возвращенные при 409)
-      debugPrint('✅ Получили данные существующей заявки через fallback!');
-      state = state.copyWith(
-        request: request,
-        isLoading: false,
-      );
-    } catch (e) {
-      debugPrint('🚫 Fallback не дал результата: $e');
-      // Любая ошибка в fallback - считаем что заявки нет
-      state = state.copyWith(
-        request: null,
-        isLoading: false,
-      );
-    }
+    debugPrint('🚫 Auth error при загрузке статуса - считаем что заявки нет');
+    state = state.copyWith(
+      request: null,
+      clearRequest: true,
+      isLoading: false,
+    );
   }
 
   /// Создает заявку на перенос результатов
