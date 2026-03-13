@@ -75,8 +75,19 @@ class Stats {
       }
     }
 
+    // Support both formats:
+    // old: stats.summary.total_races
+    // new: stats.total_races (flat)
+    StatsSummary? summary;
+    final summaryJson = json['summary'];
+    if (summaryJson is Map<String, dynamic>) {
+      summary = StatsSummary.fromJson(summaryJson);
+    } else {
+      summary = StatsSummary.fromJson(json);
+    }
+
     return Stats(
-      summary: StatsSummary.fromJson(json['summary'] as Map<String, dynamic>?),
+      summary: summary,
       fastestSwim: json['fastest_swim'] as String?,
       fastestBike: json['fastest_bike'] as String?,
       fastestRun: json['fastest_run'] as String?,

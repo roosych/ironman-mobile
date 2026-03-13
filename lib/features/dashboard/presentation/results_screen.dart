@@ -14,6 +14,7 @@ import 'package:ironman_mobile/features/transfer/providers/transfer_providers.da
 import 'package:ironman_mobile/features/transfer/presentation/widgets/transfer_status_card.dart';
 import 'package:ironman_mobile/features/transfer/presentation/widgets/athlete_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/features/transfer/models/transfer_status_enum.dart';
+import 'package:ironman_mobile/shared/utils/error_handler.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -594,8 +595,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.error ??
-                    AppLocalizations.of(context)!.common_loading_error,
+                state.error != null
+                    ? ErrorHandler.localizeErrorKey(state.error!, AppLocalizations.of(context)!)
+                    : AppLocalizations.of(context)!.common_loading_error,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -715,8 +717,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.error ??
-                    AppLocalizations.of(context)!.common_loading_error,
+                state.error != null
+                    ? ErrorHandler.localizeErrorKey(state.error!, AppLocalizations.of(context)!)
+                    : AppLocalizations.of(context)!.common_loading_error,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),

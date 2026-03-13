@@ -26,69 +26,14 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      final raw = await _service.getNotifications();
-
-      final data = raw['data'];
-      final meta = raw['meta'];
-
-      final notifications = <AppNotification>[];
-
-      // Основная логика парсинга data
-      if (data is List) {
-        for (final item in data) {
-          if (item is Map<String, dynamic>) {
-            try {
-              notifications.add(AppNotification.fromJson(item));
-            } catch (e) {
-              debugPrint('Error parsing notification item: $e');
-            }
-          } else if (item is Map) {
-            try {
-              notifications.add(AppNotification.fromJson(Map<String, dynamic>.from(item)));
-            } catch (e) {
-              debugPrint('Error parsing notification item (Map): $e');
-            }
-          }
-        }
-      }
-
-      // Fallback: если не удалось найти в data, проверяем другие ключи
-      if (notifications.isEmpty && raw['success'] == true) {
-        final successData = raw['data'];
-        if (successData is List) {
-          for (final item in successData) {
-            if (item is Map<String, dynamic>) {
-              try {
-                notifications.add(AppNotification.fromJson(item));
-              } catch (e) {
-                debugPrint('Error parsing notification: $e');
-              }
-            } else if (item is Map) {
-              try {
-                notifications.add(AppNotification.fromJson(Map<String, dynamic>.from(item)));
-              } catch (e) {
-                debugPrint('Error parsing notification: $e');
-              }
-            }
-          }
-        }
-      }
-
-      int unreadCount = 0;
-      if (meta is Map) {
-        final rawUnread = meta['unread_count'];
-        if (rawUnread is num) unreadCount = rawUnread.toInt();
-        if (rawUnread is String) unreadCount = int.tryParse(rawUnread) ?? 0;
-      }
-
-      // Fallback: если meta нет — считаем по isRead
-      if (unreadCount == 0 && notifications.isNotEmpty) {
-        unreadCount = notifications.where((n) => !n.isRead).length;
-      }
+      final raw = await _service.getNotifications(page: 1);
+      final (notifications, unreadCount, currentPage, lastPage) = _parseResponse(raw);
 
       state = state.copyWith(
         notifications: notifications,
         unreadCount: unreadCount,
+        currentPage: currentPage,
+        lastPage: lastPage,
         isLoading: false,
         hasLoadedOnce: true,
       );
@@ -109,7 +54,87 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     }
   }
 
-  Future<void> refresh() => load(force: true);
+  Future<void> loadMore() async {
+    if (state.isLoadingMore || state.isLoading) return;
+    if (!state.hasMorePages) return;
+
+    state = state.copyWith(isLoadingMore: true);
+
+    try {
+      final nextPage = state.currentPage + 1;
+      final raw = await _service.getNotifications(page: nextPage);
+      final (newItems, _, currentPage, lastPage) = _parseResponse(raw);
+
+      state = state.copyWith(
+        notifications: [...state.notifications, ...newItems],
+        currentPage: currentPage,
+        lastPage: lastPage,
+        isLoadingMore: false,
+      );
+    } catch (e) {
+      debugPrint('NotificationsNotifier: loadMore error: $e');
+      state = state.copyWith(isLoadingMore: false);
+    }
+  }
+
+  Future<void> refresh() async {
+    if (state.isLoading) return;
+    state = state.copyWith(isLoading: true, clearError: true, currentPage: 1, lastPage: 1);
+
+    try {
+      final raw = await _service.getNotifications(page: 1);
+      final (notifications, unreadCount, currentPage, lastPage) = _parseResponse(raw);
+
+      state = state.copyWith(
+        notifications: notifications,
+        unreadCount: unreadCount,
+        currentPage: currentPage,
+        lastPage: lastPage,
+        isLoading: false,
+        hasLoadedOnce: true,
+      );
+    } catch (e) {
+      debugPrint('NotificationsNotifier: refresh error: $e');
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  (List<AppNotification>, int, int, int) _parseResponse(Map<String, dynamic> raw) {
+    final data = raw['data'];
+    final meta = raw['meta'];
+
+    final notifications = <AppNotification>[];
+    if (data is List) {
+      for (final item in data) {
+        try {
+          if (item is Map<String, dynamic>) {
+            notifications.add(AppNotification.fromJson(item));
+          } else if (item is Map) {
+            notifications.add(AppNotification.fromJson(Map<String, dynamic>.from(item)));
+          }
+        } catch (e) {
+          debugPrint('Error parsing notification item: $e');
+        }
+      }
+    }
+
+    int unreadCount = 0;
+    int currentPage = 1;
+    int lastPage = 1;
+    if (meta is Map) {
+      final rawUnread = meta['unread_count'];
+      if (rawUnread is num) unreadCount = rawUnread.toInt();
+      if (rawUnread is String) unreadCount = int.tryParse(rawUnread) ?? 0;
+      currentPage = (meta['current_page'] as num?)?.toInt() ?? 1;
+      lastPage = (meta['last_page'] as num?)?.toInt() ?? 1;
+    }
+
+    if (unreadCount == 0 && notifications.isNotEmpty) {
+      unreadCount = notifications.where((n) => !n.isRead).length;
+    }
+
+    return (notifications, unreadCount, currentPage, lastPage);
+  }
 
   Future<void> markAsRead(int id) async {
     // Optimistic update

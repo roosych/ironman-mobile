@@ -91,6 +91,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     ref.listen(editProfileProvider, (previous, next) {
       // Update text controllers when data is loaded from API
       if (previous?.isLoading == true && next.isLoading == false && next.error == null) {
+        FocusScope.of(context).unfocus();
         _nameController.text = next.name;
         _bioController.text = next.athleteProfile.bio ?? '';
         _stravaController.text = next.athleteProfile.socialLinks.strava ?? '';
@@ -117,6 +118,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (next.successMessage != null &&
           previous?.successMessage != next.successMessage) {
         if (mounted) {
+          FocusScope.of(context).unfocus();
           AlertHelper.showSuccess(context, next.successMessage!);
           try {
             ref.read(editProfileProvider.notifier).clearSuccessMessage();

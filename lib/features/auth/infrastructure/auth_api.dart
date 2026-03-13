@@ -6,11 +6,13 @@ import '../domain/user.dart';
 class AuthResponse {
   final User user;
   final String token;
+  final String? refreshToken;
   final String? message;
 
   const AuthResponse({
     required this.user,
     required this.token,
+    this.refreshToken,
     this.message,
   });
 
@@ -40,7 +42,8 @@ class AuthResponse {
 
     return AuthResponse(
       user: User.fromJson(userJson),
-      token: data['token'] as String,
+      token: (data['access_token'] ?? data['token']) as String,
+      refreshToken: data['refresh_token'] as String?,
       message: json['message'] as String?,
     );
   }
@@ -169,19 +172,29 @@ class AuthApi {
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout({String? refreshToken, String? fcmToken}) async {
     try {
-      await _client.post<Map<String, dynamic>>('/auth/logout');
+      final data = <String, dynamic>{};
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        data['refresh_token'] = refreshToken;
+      }
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        data['fcm_token'] = fcmToken;
+      }
+      await _client.post<Map<String, dynamic>>(
+        '/auth/logout',
+        data: data.isEmpty ? null : data,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     }
   }
 
   /// Get current user profile
-  /// GET /auth/user
+  /// GET /user/profile
   Future<User> getCurrentUser() async {
     try {
-      final response = await _client.get<Map<String, dynamic>>('/auth/user');
+      final response = await _client.get<Map<String, dynamic>>('/user/profile');
       final json = response.data!;
 
       if (json['success'] == true) {
@@ -217,14 +230,14 @@ class AuthApi {
   }
 
   /// Forgot password - send reset email
-  /// POST /auth/forgot-password
+  /// POST /auth/password/forgot
   /// Returns the localized success message from API
   Future<String> forgotPassword({required String email}) async {
     try {
       debugPrint('AuthApi.forgotPassword: Starting API call');
 
       final response = await _client.post<Map<String, dynamic>>(
-        '/auth/forgot-password',
+        '/auth/password/forgot',
         data: {'email': email},
       );
 
@@ -264,6 +277,37 @@ class AuthApi {
     } catch (e, stackTrace) {
       debugPrint('AuthApi.forgotPassword: Unexpected error: $e');
       debugPrint('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
+  /// Reset password with OTP
+  /// POST /auth/password/reset
+  Future<String> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final response = await _client.post<Map<String, dynamic>>(
+        '/auth/password/reset',
+        data: {
+          'email': email,
+          'otp': otp,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+      final json = response.data!;
+      if (json['success'] == true) {
+        return json['message'] as String? ?? 'Password reset successfully';
+      }
+      throw _parseError(json);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      if (e is AuthApiException) rethrow;
       rethrow;
     }
   }
@@ -321,7 +365,7 @@ class AuthApi {
   }
 
   /// Change user password
-  /// PUT /user/password
+  /// PUT /auth/password/change
   /// Returns the localized success message from API
   Future<String> changePassword({
     required String currentPassword,
@@ -332,7 +376,7 @@ class AuthApi {
       debugPrint('AuthApi.changePassword: Starting API call');
 
       final response = await _client.put<Map<String, dynamic>>(
-        '/user/password',
+        '/auth/password/change',
         data: {
           'current_password': currentPassword,
           'new_password': newPassword,
@@ -382,6 +426,32 @@ class AuthApi {
       debugPrint('AuthApi.changePassword: Unexpected error: $e');
       debugPrint('Stack trace: $stackTrace');
       rethrow;
+    }
+  }
+
+  /// Refresh access token using refresh token
+  /// POST /auth/refresh
+  Future<({String accessToken, String refreshToken})> refreshTokens(String refreshToken) async {
+    try {
+      final response = await _client.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
+
+      final json = response.data!;
+      final data = json['data'] as Map<String, dynamic>?;
+      final accessToken = data?['access_token'] as String?;
+      final newRefreshToken = data?['refresh_token'] as String?;
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        return (
+          accessToken: accessToken,
+          refreshToken: newRefreshToken ?? refreshToken,
+        );
+      }
+      throw const AuthApiException('Failed to refresh token');
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 

@@ -67,6 +67,12 @@ class ErrorHandler {
     _showErrorSnackBar(context, message, localizations);
   }
 
+  /// Translates an error key string (e.g. 'api_error_timeout') to a localized message.
+  /// Use this when displaying state.error inline in UI (Text widget).
+  static String localizeErrorKey(String key, AppLocalizations localizations) {
+    return _localizeNetworkError(key, localizations);
+  }
+
   /// Localizes network error codes that don't come from API
   /// Returns the original message if it's not a network error code
   static String _localizeNetworkError(String message, AppLocalizations localizations) {
@@ -145,6 +151,15 @@ class ErrorHandler {
         return localizations.transfer_status_create_failed;
       case 'transfer_status_update_failed':
         return localizations.transfer_status_update_failed;
+      // Parametrized keys — параметры теряются при хранении в state как String
+      case 'api_error_http_status':
+        return localizations.error_server_error;
+      case 'api_error_server':
+        return localizations.error_server_error;
+      case 'api_error_generic':
+        return localizations.error_server_error;
+      case 'api_error_unexpected':
+        return localizations.error_unexpected;
       default:
         // If message starts with NETWORK_SERVER_ERROR_, it's a server error
         if (message.startsWith('NETWORK_SERVER_ERROR_')) {

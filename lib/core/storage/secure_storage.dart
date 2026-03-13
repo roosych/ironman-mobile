@@ -5,7 +5,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {
   static const _tokenKey = 'auth_token';
+  static const _refreshTokenKey = 'auth_refresh_token';
   static const _userKey = 'auth_user';
+
+  // In-memory cache — eliminates SecureStorage read contention on parallel requests
+  static String? _cachedToken;
+  static String? _cachedRefreshToken;
 
   final FlutterSecureStorage _storage;
 
@@ -15,51 +20,79 @@ class SecureStorage {
   );
 
   Future<void> saveToken(String token) async {
+    _cachedToken = token;
     try {
-      // ФИКС: Таймаут для записи токена
       await _storage.write(key: _tokenKey, value: token).timeout(
         const Duration(seconds: 2),
       );
       debugPrint('=== SecureStorage: Token saved ===');
-
-      // Проверяем сохранение с таймаутом
-      final verify = await _storage.read(key: _tokenKey).timeout(
-        const Duration(seconds: 2),
-        onTimeout: () => null,
-      );
-      debugPrint('Token verification: ${verify != null ? "${verify.substring(0, 20)}..." : "null"}');
     } catch (e) {
       debugPrint('❌ SecureStorage.saveToken() ERROR: $e');
-      // Не выбрасываем ошибку, чтобы не ломать процесс авторизации
     }
   }
 
   Future<String?> getToken() async {
+    if (_cachedToken != null) return _cachedToken;
     try {
-      // ФИКС: Таймаут 2 секунды для flutter_secure_storage
       final token = await _storage.read(key: _tokenKey).timeout(
         const Duration(seconds: 2),
-        onTimeout: () {
-          debugPrint('⚠️ SecureStorage.getToken() TIMEOUT после 2 секунд');
-          return null; // Возвращаем null при таймауте
-        },
+        onTimeout: () => null,
       );
+      _cachedToken = token;
       debugPrint('=== SecureStorage: Token retrieved ===');
       debugPrint('Token: ${token != null ? "${token.substring(0, 20)}..." : "null"}');
       return token;
     } catch (e) {
       debugPrint('❌ SecureStorage.getToken() ERROR: $e');
-      return null; // Возвращаем null при любой ошибке
+      return null;
     }
   }
 
   Future<void> deleteToken() async {
+    _cachedToken = null;
     try {
       await _storage.delete(key: _tokenKey).timeout(
         const Duration(seconds: 2),
       );
     } catch (e) {
       debugPrint('❌ SecureStorage.deleteToken() ERROR: $e');
+    }
+  }
+
+  Future<void> saveRefreshToken(String token) async {
+    _cachedRefreshToken = token;
+    try {
+      await _storage.write(key: _refreshTokenKey, value: token).timeout(
+        const Duration(seconds: 2),
+      );
+    } catch (e) {
+      debugPrint('❌ SecureStorage.saveRefreshToken() ERROR: $e');
+    }
+  }
+
+  Future<String?> getRefreshToken() async {
+    if (_cachedRefreshToken != null) return _cachedRefreshToken;
+    try {
+      final token = await _storage.read(key: _refreshTokenKey).timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
+      _cachedRefreshToken = token;
+      return token;
+    } catch (e) {
+      debugPrint('❌ SecureStorage.getRefreshToken() ERROR: $e');
+      return null;
+    }
+  }
+
+  Future<void> deleteRefreshToken() async {
+    _cachedRefreshToken = null;
+    try {
+      await _storage.delete(key: _refreshTokenKey).timeout(
+        const Duration(seconds: 2),
+      );
+    } catch (e) {
+      debugPrint('❌ SecureStorage.deleteRefreshToken() ERROR: $e');
     }
   }
 

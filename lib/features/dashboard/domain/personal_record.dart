@@ -51,26 +51,21 @@ class PersonalRecord {
     this.total,
   });
 
+  static DisciplineRecord? _parseField(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return DisciplineRecord.fromJson(value);
+    if (value is Map) return DisciplineRecord.fromJson(Map<String, dynamic>.from(value));
+    return null;
+  }
+
   factory PersonalRecord.fromJson(Map<String, dynamic> json) {
     return PersonalRecord(
-      swim: json['swim'] != null
-          ? DisciplineRecord.fromJson(json['swim'] as Map<String, dynamic>)
-          : null,
-      t1: json['t1'] != null
-          ? DisciplineRecord.fromJson(json['t1'] as Map<String, dynamic>)
-          : null,
-      bike: json['bike'] != null
-          ? DisciplineRecord.fromJson(json['bike'] as Map<String, dynamic>)
-          : null,
-      t2: json['t2'] != null
-          ? DisciplineRecord.fromJson(json['t2'] as Map<String, dynamic>)
-          : null,
-      run: json['run'] != null
-          ? DisciplineRecord.fromJson(json['run'] as Map<String, dynamic>)
-          : null,
-      total: json['total'] != null
-          ? DisciplineRecord.fromJson(json['total'] as Map<String, dynamic>)
-          : null,
+      swim: _parseField(json['swim']),
+      t1: _parseField(json['t1']),
+      bike: _parseField(json['bike']),
+      t2: _parseField(json['t2']),
+      run: _parseField(json['run']),
+      total: _parseField(json['total']),
     );
   }
 
@@ -99,19 +94,18 @@ class Records {
     this.race5150,
   });
 
+  static PersonalRecord? _parseRecord(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return PersonalRecord.fromJson(value);
+    if (value is Map) return PersonalRecord.fromJson(Map<String, dynamic>.from(value));
+    return null;
+  }
+
   factory Records.fromJson(Map<String, dynamic> json) {
     return Records(
-      ironman: json['ironman'] != null
-          ? PersonalRecord.fromJson(json['ironman'] as Map<String, dynamic>)
-          : null,
-      ironman703: json['ironman_70_3'] != null
-          ? PersonalRecord.fromJson(
-              json['ironman_70_3'] as Map<String, dynamic>,
-            )
-          : null,
-      race5150: json['5150'] != null
-          ? PersonalRecord.fromJson(json['5150'] as Map<String, dynamic>)
-          : null,
+      ironman: _parseRecord(json['ironman']),
+      ironman703: _parseRecord(json['ironman_70_3']),
+      race5150: _parseRecord(json['olympic_5150'] ?? json['5150']),
     );
   }
 

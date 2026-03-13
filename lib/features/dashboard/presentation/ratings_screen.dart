@@ -12,6 +12,7 @@ import '../../../shared/utils/image_url_helper.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 import 'package:intl/intl.dart';
+import '../../../shared/utils/error_handler.dart';
 
 class RatingsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
@@ -33,26 +34,32 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
   void initState() {
     super.initState();
     _mainTabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    // Не добавляем слушатель сразу, чтобы избежать вызова при инициализации
-    // Слушатель будет добавлен при первом показе экрана
 
-    // Если экран активен с самого начала (standalone mode), загружаем данные
     if (widget.isActive) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _initializeIfNeeded();
-        final currentState = ref.read(rankingsProvider);
-        if (currentState.rankings.isEmpty && !currentState.isLoading && !currentState.hasError) {
-          ref.read(rankingsProvider.notifier).loadRankings(raceType: 'ironman', discipline: 'total');
-        }
+        if (mounted) _activate();
       });
     }
   }
 
-  void _initializeIfNeeded() {
-    if (!widget.isActive) return;
+  @override
+  void didUpdateWidget(RatingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _activate();
+      });
+    }
+  }
+
+  void _activate() {
     if (!_isInitialized) {
       _isInitialized = true;
       _mainTabController.addListener(_onMainTabChanged);
+    }
+    final currentState = ref.read(rankingsProvider);
+    if (currentState.rankings.isEmpty && !currentState.isLoading && !currentState.hasError) {
+      ref.read(rankingsProvider.notifier).loadRankings(raceType: 'ironman', discipline: 'total');
     }
   }
 
@@ -107,44 +114,6 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
-    // Инициализируем слушатель и загружаем рейтинги при первом показе экрана
-    if (widget.isActive) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _initializeIfNeeded();
-          // Загружаем рейтинги только когда экран активен
-          // Проверяем, не загружаются ли они уже и нет ли ошибки
-          final currentState = ref.read(rankingsProvider);
-          if (currentState.rankings.isEmpty &&
-              !currentState.isLoading &&
-              !currentState.hasError) {
-            ref
-                .read(rankingsProvider.notifier)
-                .loadRankings(raceType: 'ironman', discipline: 'total');
-          }
-        }
-      });
-    }
-
-    // Слушаем изменения выбора только если экран активен
-    if (widget.isActive) {
-      ref.listen<RankingsState>(rankingsProvider, (previous, next) {
-        if (!mounted) return;
-        // Скрываем алерт при ошибке, чтобы не накладываться на сообщение об ошибке
-        if (next.hasError && _showHintAlert) {
-          setState(() {
-            _showHintAlert = false;
-          });
-        }
-        // Скрываем алерт при выборе атлета
-        if (next.selectedAthleteIds.isNotEmpty && _showHintAlert) {
-          setState(() {
-            _showHintAlert = false;
-          });
-        }
-      });
-    }
 
     // Используем watch только если экран активен, иначе используем read чтобы не создавать подписку
     final state = widget.isActive
@@ -580,7 +549,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.error ?? localizations.common_loading_error,
+                state.error != null
+                    ? ErrorHandler.localizeErrorKey(state.error!, localizations)
+                    : localizations.common_loading_error,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),

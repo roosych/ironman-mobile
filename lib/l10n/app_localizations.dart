@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// Application title
   ///
   /// In en, this message translates to:
-  /// **'IRONSTATS'**
+  /// **'TriRank'**
   String get app_title;
 
   /// Login screen title
@@ -807,6 +807,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Avatar successfully updated'**
   String get photo_avatar_updated;
+
+  /// Error message when setting avatar fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to set avatar'**
+  String get photo_avatar_set_error;
 
   /// Add photo button text
   ///
@@ -2017,7 +2023,7 @@ abstract class AppLocalizations {
   /// No description provided for @reset_password_send_button.
   ///
   /// In en, this message translates to:
-  /// **'SEND EMAIL'**
+  /// **'SEND'**
   String get reset_password_send_button;
 
   /// No description provided for @reset_password_remember.
@@ -2031,6 +2037,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in'**
   String get reset_password_sign_in;
+
+  /// No description provided for @reset_password_otp.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Code'**
+  String get reset_password_otp;
+
+  /// No description provided for @reset_password_otp_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the OTP code from your email'**
+  String get reset_password_otp_required;
+
+  /// No description provided for @reset_password_confirm_button.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET PASSWORD'**
+  String get reset_password_confirm_button;
+
+  /// No description provided for @reset_password_resend_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send again'**
+  String get reset_password_resend_button;
 
   /// Notification permission card title
   ///

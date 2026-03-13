@@ -57,7 +57,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -95,7 +95,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
     required Duration initial,
     required ValueChanged<Duration> onConfirm,
   }) async {
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
 
     // Clamp to CupertinoTimerPicker range (0–23:59:59); picker uses this as initial.
     final clampedInitial = Duration(
@@ -201,7 +201,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
       body: Form(
         key: _formKey,
         child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: SingleChildScrollView(
             controller: _scrollController,
             padding: const EdgeInsets.all(16.0),

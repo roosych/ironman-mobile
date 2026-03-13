@@ -46,11 +46,14 @@ class AuthRepository {
       locale: locale,
     );
     await _storage.saveToken(response.token);
-    
+    if (response.refreshToken != null && response.refreshToken!.isNotEmpty) {
+      await _storage.saveRefreshToken(response.refreshToken!);
+    }
+
     // НЕ сохраняем пользователя из ответа логина сразу
     // Сохранение произойдет после проверки профиля в AuthNotifier
     // Это гарантирует, что мы не сохраним устаревшие данные профиля
-    
+
     // Для верифицированных пользователей обогащаем аватаром в фоне
     // Это не блокирует авторизацию
     if (response.user.verified) {
@@ -140,18 +143,12 @@ class AuthRepository {
 
   Future<void> logout() async {
     try {
-      // 1) Удаляем FCM токен на сервере пока access token ещё валиден
-      try {
-        debugPrint('=== Logout: Unregistering FCM token ===');
-        await FcmService().unregisterToken();
-        debugPrint('=== Logout: FCM token unregistered ===');
-      } catch (e) {
-        debugPrint('FCM: Error unregistering token on logout: $e');
-        // Продолжаем logout даже если FCM токен не удалось удалить
-      }
+      // Получаем refresh_token и fcm_token перед очисткой хранилища
+      final refreshToken = await _storage.getRefreshToken();
+      final fcmToken = FcmService().currentToken;
 
-      // 2) Стандартный logout на бэкенде
-      await _api.logout();
+      // Logout на бэкенде с токенами (сервер инвалидирует refresh_token и FCM)
+      await _api.logout(refreshToken: refreshToken, fcmToken: fcmToken);
     } catch (_) {
       // Ignore API errors during logout
     } finally {
@@ -159,6 +156,7 @@ class AuthRepository {
       // Это гарантирует, что при следующем входе не будут использоваться старые данные
       debugPrint('=== Logout: Clearing all user data ===');
       await _storage.deleteToken();
+      await _storage.deleteRefreshToken();
       await _storage.deleteUser();
       
       // Дополнительная проверка: убеждаемся, что данные действительно удалены
@@ -174,6 +172,7 @@ class AuthRepository {
   /// Used after registration to prevent auto-authentication
   Future<void> clearSession() async {
     await _storage.deleteToken();
+    await _storage.deleteRefreshToken();
     await _storage.deleteUser();
   }
 
@@ -294,6 +293,21 @@ class AuthRepository {
   /// Forgot password - send reset email
   Future<String> forgotPassword({required String email}) async {
     return await _api.forgotPassword(email: email);
+  }
+
+  /// Reset password with OTP
+  Future<String> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    return await _api.resetPassword(
+      email: email,
+      otp: otp,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
   }
 
   /// Resend email verification

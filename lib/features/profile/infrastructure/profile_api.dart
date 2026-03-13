@@ -213,7 +213,7 @@ class ProfileApi {
   Future<UserPhoto> uploadPhoto(File file) async {
     final fileName = file.path.split('/').last;
     final formData = FormData.fromMap({
-      'photos[]': await MultipartFile.fromFile(
+      'photos': await MultipartFile.fromFile(
         file.path,
         filename: fileName,
       ),
@@ -229,7 +229,7 @@ class ProfileApi {
 
     final data = response.data as Map<String, dynamic>;
     if (data['success'] == true) {
-      final photos = data['data']['photos'] as List<dynamic>;
+      final photos = data['data'] as List<dynamic>;
       if (photos.isNotEmpty) {
         return UserPhoto.fromJson(photos.first as Map<String, dynamic>);
       }
@@ -248,10 +248,19 @@ class ProfileApi {
 
     final data = response.data as Map<String, dynamic>;
     if (data['success'] == true) {
-      return UserPhoto.fromJson(data['data']['photo'] as Map<String, dynamic>);
+      final photoData = data['data'];
+      // Support both formats: direct object or wrapped {"photo": {...}}
+      if (photoData is Map<String, dynamic>) {
+        final inner = photoData['photo'];
+        if (inner is Map<String, dynamic>) {
+          return UserPhoto.fromJson(inner);
+        }
+        return UserPhoto.fromJson(photoData);
+      }
     }
 
-    throw Exception('Failed to set avatar');
+    final message = data['message'] as String?;
+    throw ProfileApiException(message ?? 'photo_avatar_set_error');
   }
 
   /// Delete photo
@@ -364,7 +373,7 @@ class ProfileApi {
       debugPrint('ProfileApi.changePassword: Token retrieved');
 
       // Prepare request
-      final url = Uri.parse('${AppConfig.baseUrl}/user/password');
+      final url = Uri.parse('${AppConfig.baseUrl}/auth/password/change');
       final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

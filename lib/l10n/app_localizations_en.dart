@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get app_title => 'IRONSTATS';
+  String get app_title => 'TriRank';
 
   @override
   String get login_title => 'Sign in to your account';
@@ -376,6 +376,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get photo_avatar_updated => 'Avatar successfully updated';
+
+  @override
+  String get photo_avatar_set_error => 'Failed to set avatar';
 
   @override
   String get photo_add_button => 'Add';
@@ -1025,13 +1028,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your email and we\'ll send you a link to reset your password.';
 
   @override
-  String get reset_password_send_button => 'SEND EMAIL';
+  String get reset_password_send_button => 'SEND';
 
   @override
   String get reset_password_remember => 'Remember your password?';
 
   @override
   String get reset_password_sign_in => 'Sign in';
+
+  @override
+  String get reset_password_otp => 'OTP Code';
+
+  @override
+  String get reset_password_otp_required =>
+      'Enter the OTP code from your email';
+
+  @override
+  String get reset_password_confirm_button => 'RESET PASSWORD';
+
+  @override
+  String get reset_password_resend_button => 'Send again';
 
   @override
   String get dashboard_notification_card_title => 'Stay updated!';

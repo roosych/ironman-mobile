@@ -110,7 +110,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'IRONSTATS',
+      title: 'TriRank',
       debugShowCheckedModeBanner: false,
       locale: locale,
       supportedLocales: const [Locale('en'), Locale('ru'), Locale('az')],

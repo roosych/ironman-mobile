@@ -43,6 +43,24 @@ class UpcomingRace {
       return defaultValue;
     }
 
+    // Новый формат API: вложенные объекты race и athlete
+    final raceObj = json['race'] as Map<String, dynamic>?;
+    if (raceObj != null) {
+      return UpcomingRace(
+        id: safeInt(json['id']) ?? 0,
+        raceType: safeString(raceObj['type'], ''),
+        raceTypeLabel: safeString(raceObj['type_label'], ''),
+        location: safeString(raceObj['location'], ''),
+        raceDate: safeString(raceObj['date'], ''),
+        countryIso: raceObj['country_iso'] as String?,
+        isActive: true,
+        createdBy: json['athlete'] != null
+            ? CreatedBy.fromJson(json['athlete'] as Map<String, dynamic>)
+            : null,
+      );
+    }
+
+    // Старый плоский формат (обратная совместимость)
     return UpcomingRace(
       id: safeInt(json['id']) ?? 0,
       raceType: safeString(json['race_type'], ''),

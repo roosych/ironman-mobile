@@ -50,7 +50,9 @@
       "Bash(git ls-files:*)",
       "Bash(find:*)",
       "Bash(git restore:*)",
-      "Bash(git clean:*)"
+      "Bash(git clean:*)",
+      "Bash(git -C /c/Users/rkandiba/Desktop/ai_projects/ironman_mobile config user.name && git -C /c/Users/rkandiba/Desktop/ai_projects/ironman_mobile config user.email)",
+      "Bash(git -C /c/Users/rkandiba/Desktop/ai_projects/ironman_mobile config user.name \"roosych\" && git -C /c/Users/rkandiba/Desktop/ai_projects/ironman_mobile config user.email \"ruslankandiba88@gmail.com\")"
     ]
   }
 }

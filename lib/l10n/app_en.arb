@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "app_title": "IRONSTATS",
+  "app_title": "TriRank",
   "@app_title": {
     "description": "Application title"
   },
@@ -464,6 +464,10 @@
   "photo_avatar_updated": "Avatar successfully updated",
   "@photo_avatar_updated": {
     "description": "Avatar updated success message"
+  },
+  "photo_avatar_set_error": "Failed to set avatar",
+  "@photo_avatar_set_error": {
+    "description": "Error message when setting avatar fails"
   },
   "photo_add_button": "Add",
   "@photo_add_button": {
@@ -1147,9 +1151,13 @@
   "athlete_rating_info": "Rating is calculated based on results data from this application",
   "reset_password_title": "Reset Password",
   "reset_password_description": "Enter your email and we'll send you a link to reset your password.",
-  "reset_password_send_button": "SEND EMAIL",
+  "reset_password_send_button": "SEND",
   "reset_password_remember": "Remember your password?",
   "reset_password_sign_in": "Sign in",
+  "reset_password_otp": "OTP Code",
+  "reset_password_otp_required": "Enter the OTP code from your email",
+  "reset_password_confirm_button": "RESET PASSWORD",
+  "reset_password_resend_button": "Send again",
   "dashboard_notification_card_title": "Stay updated!",
   "@dashboard_notification_card_title": {
     "description": "Notification permission card title"

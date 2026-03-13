@@ -9,6 +9,7 @@ import 'package:ironman_mobile/features/dashboard/application/athletes_state.dar
 import 'package:ironman_mobile/features/dashboard/presentation/athlete_profile_screen.dart';
 import 'package:ironman_mobile/shared/widgets/unauthenticated_bottom_nav.dart';
 import '../../../shared/utils/image_url_helper.dart';
+import '../../../shared/utils/error_handler.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 
@@ -311,7 +312,9 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.error ?? AppLocalizations.of(context)!.common_loading_error,
+                state.error != null
+                    ? ErrorHandler.localizeErrorKey(state.error!, AppLocalizations.of(context)!)
+                    : AppLocalizations.of(context)!.common_loading_error,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),

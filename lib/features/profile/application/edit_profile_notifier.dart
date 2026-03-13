@@ -168,8 +168,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
         successMessage: successMessage,
       );
 
-      // Update auth state with fresh data from server
-      await _ref.read(authProvider.notifier).updateUser(user);
+      // Update auth state with fresh data from server (including avatar)
+      await _ref.read(authProvider.notifier).refreshUser();
       debugPrint('🎉 ПРОФИЛЬ УСПЕШНО СОХРАНЕН!');
 
     } catch (e) {

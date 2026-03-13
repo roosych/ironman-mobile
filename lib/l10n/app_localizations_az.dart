@@ -9,7 +9,7 @@ class AppLocalizationsAz extends AppLocalizations {
   AppLocalizationsAz([String locale = 'az']) : super(locale);
 
   @override
-  String get app_title => 'IRONSTATS';
+  String get app_title => 'TriRank';
 
   @override
   String get login_title => 'Hesabınıza daxil olun';
@@ -378,6 +378,9 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get photo_avatar_updated => 'Avatar uğurla yeniləndi';
+
+  @override
+  String get photo_avatar_set_error => 'Avatar təyin edilmədi';
 
   @override
   String get photo_add_button => 'Əlavə et';
@@ -1034,6 +1037,18 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get reset_password_sign_in => 'Daxil ol';
+
+  @override
+  String get reset_password_otp => 'OTP Kodu';
+
+  @override
+  String get reset_password_otp_required => 'E-poçtdakı OTP kodunu daxil edin';
+
+  @override
+  String get reset_password_confirm_button => 'ŞİFRƏNİ SIFIRLA';
+
+  @override
+  String get reset_password_resend_button => 'Yenidən göndər';
 
   @override
   String get dashboard_notification_card_title => 'Xəbərdar qalın!';

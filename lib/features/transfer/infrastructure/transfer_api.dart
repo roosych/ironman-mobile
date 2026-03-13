@@ -93,7 +93,7 @@ class TransferApi {
   Future<TransferRequestModel?> getCurrentTransferStatus() async {
     try {
       final response = await _client.get<Map<String, dynamic>>(
-        '/transfer/current',
+        '/transfers/current',
       );
 
       final data = response.data;
@@ -152,7 +152,7 @@ class TransferApi {
       }
 
       final response = await _client.get<Map<String, dynamic>>(
-        '/transfer/eligible-athletes',
+        '/transfers/eligible-athletes',
         queryParameters: queryParameters.isEmpty ? null : queryParameters,
       );
 
@@ -212,7 +212,7 @@ class TransferApi {
   Future<TransferRequestModel> createTransferRequest(int sourceAthleteId) async {
     try {
       final response = await _client.post<Map<String, dynamic>>(
-        '/transfer/request',
+        '/transfers',
         data: {
           'source_athlete_id': sourceAthleteId,
         },

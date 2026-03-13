@@ -8,6 +8,7 @@ import '../application/policies_state.dart';
 import '../domain/policy.dart';
 import '../../settings/application/locale_notifier.dart';
 import '../../../shared/widgets/language_selector.dart';
+import '../../../core/theme/app_button_styles.dart';
 
 class PolicyScreen extends ConsumerStatefulWidget {
   final String? initialType; // privacy, terms, data_processing, cookies
@@ -226,11 +227,19 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
+            AppButtonStyles.primaryGradientButton(
+              text: localizations.retry,
               onPressed: () {
                 ref.read(policiesProvider.notifier).refreshCurrentPolicy();
               },
-              child: Text(localizations.retry),
+              borderRadius: 10,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 0.5,
+              ),
             ),
           ],
         ),

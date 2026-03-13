@@ -33,7 +33,7 @@ class UpcomingRacesApi {
       queryParams['only_future'] = onlyFuture;
 
       final response = await _client.get<Map<String, dynamic>>(
-        '/upcoming-races',
+        '/races/upcoming',
         queryParameters: queryParams.isEmpty ? null : queryParams,
       );
 
@@ -132,7 +132,7 @@ class UpcomingRacesApi {
       queryParams['page'] = page;
 
       final response = await _client.get<Map<String, dynamic>>(
-        '/upcoming-races',
+        '/races/upcoming',
         queryParameters: queryParams,
       );
 
@@ -199,7 +199,7 @@ class UpcomingRacesApi {
   }) async {
     try {
       final response = await _client.post<Map<String, dynamic>>(
-        '/upcoming-races',
+        '/races/upcoming',
         data: {
           'race_id': raceId,
         },
@@ -213,13 +213,27 @@ class UpcomingRacesApi {
       }
 
       if (data['success'] == true && data['data'] != null) {
-        final raceJson = data['data'];
-        if (raceJson is! Map<String, dynamic>) {
+        final dataJson = data['data'];
+        if (dataJson is! Map<String, dynamic>) {
           throw const UpcomingRacesApiException(
             localizationKey: ApiErrorKeys.upcomingRaceObjectFormat,
           );
         }
-        return UpcomingRace.fromJson(raceJson);
+        final raceJson = dataJson['race'] as Map<String, dynamic>?;
+        if (raceJson == null) {
+          throw const UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.upcomingRaceObjectFormat,
+          );
+        }
+        return UpcomingRace(
+          id: dataJson['id'] as int? ?? 0,
+          raceType: raceJson['type'] as String? ?? '',
+          raceTypeLabel: raceJson['type_label'] as String? ?? '',
+          location: raceJson['location'] as String? ?? '',
+          raceDate: raceJson['date'] as String? ?? '',
+          countryIso: raceJson['country_iso'] as String?,
+          isActive: true,
+        );
       }
 
       // Если success != true, пытаемся извлечь сообщение об ошибке

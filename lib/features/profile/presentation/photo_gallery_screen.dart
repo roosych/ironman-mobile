@@ -189,6 +189,16 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     }
   }
 
+  String _localizeError(String error, AppLocalizations? loc) {
+    if (loc == null) return error;
+    switch (error) {
+      case 'photo_avatar_set_error':
+        return loc.photo_avatar_set_error;
+      default:
+        return error;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final photosState = ref.watch(userPhotosProvider);
@@ -198,9 +208,10 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     ref.listen(userPhotosProvider, (previous, next) {
       if (next.error != null && previous?.error != next.error) {
         final loc = AppLocalizations.of(context);
+        final errorMessage = _localizeError(next.error!, loc);
         AlertHelper.showError(
           context,
-          next.error!,
+          errorMessage,
           buttonText: loc?.error_ok,
         );
         ref.read(userPhotosProvider.notifier).clearError();

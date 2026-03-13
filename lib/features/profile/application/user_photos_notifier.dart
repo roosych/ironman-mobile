@@ -169,10 +169,11 @@ class UserPhotosNotifier extends StateNotifier<UserPhotosState> {
 
       return true;
     } catch (e) {
+      final errorMessage = e is ProfileApiException ? e.message : 'photo_avatar_set_error';
       state = state.copyWith(
         isLoading: false,
         isRefreshing: false,
-        error: 'Не удалось установить аватар',
+        error: errorMessage,
       );
       return false;
     }

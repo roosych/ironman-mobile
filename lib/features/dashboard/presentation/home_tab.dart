@@ -22,6 +22,7 @@ import 'package:ironman_mobile/features/race_selection/presentation/widgets/race
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
 import '../../../core/services/notification_permission_service.dart';
+import '../application/records_notifier.dart';
 
 /// Helper function to safely cast personal bests data
 Map<String, dynamic>? _safeGetPersonalBestsData(dynamic data) {
@@ -190,26 +191,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     return user?.profile?.id;
   }
 
-  Map<String, dynamic>? _getPersonalBests() {
-    final user = ref.watch(authProvider).user;
-    final profile = user?.profile;
-    final stats = profile?.stats;
-    final personalBests = stats?.personalBests;
-
-    try {
-      debugPrint('=== _getPersonalBests DEBUG ===');
-      debugPrint('User: ${user != null ? "EXISTS" : "NULL"}');
-      debugPrint('Profile: ${profile != null ? "EXISTS" : "NULL"}');
-      debugPrint('Stats: ${stats != null ? "EXISTS" : "NULL"}');
-      debugPrint('Personal bests from stats.personalBests: $personalBests');
-      debugPrint('RESOLUTION: Accessing personal_bests from correct location: stats.personalBests');
-    } catch (e) {
-      debugPrint('PersonalBests debug logging error (safe to ignore): $e');
-    }
-
-    return personalBests;
-  }
-
   Future<void> _refreshAllData() async {
     try {
       debugPrint('HomeTab: Pull-to-refresh triggered');
@@ -226,10 +207,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         _refreshNotifications(),
       ];
 
-      // Добавляем обновление результатов, если есть profileId
+      // Добавляем обновление результатов и рекордов, если есть profileId
       final profileId = _getProfileId();
       if (profileId != null) {
         futures.add(_refreshResults(profileId));
+        futures.add(ref.read(recordsProvider(profileId).notifier).loadRecords());
       }
 
       await Future.wait(futures);
@@ -250,8 +232,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
   Future<void> _refreshUpcomingRaces() async {
     try {
-      ref.read(dashboardUpcomingRacesProvider.notifier).loadUpcomingRacesFirstPage(
-        onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
+      await ref.read(dashboardUpcomingRacesProvider.notifier).refreshUpcomingRaces(
+        onlyFuture: true,
       );
     } catch (e) {
       debugPrint('HomeTab: Error refreshing upcoming races: $e');
@@ -271,7 +253,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     final authState = ref.watch(authProvider);
     final user = authState.user;
     final totalRaces = _getTotalRaces();
-    final personalBests = _getPersonalBests();
     final resultsState = ref.watch(raceResultsProvider);
     final profileId = _getProfileId();
 
@@ -413,12 +394,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               const SizedBox(height: 12),
 
               // Personal Bests Expandable Section
-              if (personalBests != null)
+              if (profileId != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: _PersonalBestsExpandableCard(
-                    personalBests: personalBests,
-                    profileId: profileId ?? 0,
+                    profileId: profileId,
                     results: resultsState.results
                         .where((r) => r.isApproved)
                         .toList(),
@@ -1056,7 +1036,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
     ref
         .read(dashboardUpcomingRacesProvider.notifier)
         .loadUpcomingRacesFirstPage(
-          onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
+          onlyFuture: true, // Только будущие гонки всех атлетов
         );
   }
 
@@ -1230,30 +1210,40 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   }
 }
 
-class _PersonalBestsExpandableCard extends StatefulWidget {
-  final Map<String, dynamic> personalBests;
+class _PersonalBestsExpandableCard extends ConsumerStatefulWidget {
   final int profileId;
   final List<RaceResult> results;
 
   const _PersonalBestsExpandableCard({
-    required this.personalBests,
     required this.profileId,
     required this.results,
   });
 
   @override
-  State<_PersonalBestsExpandableCard> createState() =>
+  ConsumerState<_PersonalBestsExpandableCard> createState() =>
       _PersonalBestsExpandableCardState();
 }
 
 class _PersonalBestsExpandableCardState
-    extends State<_PersonalBestsExpandableCard> {
+    extends ConsumerState<_PersonalBestsExpandableCard> {
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(recordsProvider(widget.profileId).notifier).loadRecords();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
+    final recordsState = ref.watch(recordsProvider(widget.profileId));
+    final personalBests = recordsState.records?.toPersonalBestsFormat();
 
     return Card(
       elevation: 0,
@@ -1316,45 +1306,51 @@ class _PersonalBestsExpandableCardState
               child: Column(
                 children: [
                   const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 32.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Ironman
-                        if (_safeGetPersonalBestsData(widget.personalBests['ironman']) != null) ...[
-                          _PersonalBestsCard(
-                            title: 'Ironman',
-                            data: _safeGetPersonalBestsData(widget.personalBests['ironman'])!,
-                            profileId: widget.profileId,
-                            results: widget.results,
-                          ),
-                          if (_safeGetPersonalBestsData(widget.personalBests['ironman_70_3']) != null ||
-                              _safeGetPersonalBestsData(widget.personalBests['5150']) != null)
-                            const SizedBox(height: 12),
+                  if (recordsState.isLoading && personalBests == null)
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (personalBests != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 32.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Ironman
+                          if (_safeGetPersonalBestsData(personalBests['ironman']) != null) ...[
+                            _PersonalBestsCard(
+                              title: 'Ironman',
+                              data: _safeGetPersonalBestsData(personalBests['ironman'])!,
+                              profileId: widget.profileId,
+                              results: widget.results,
+                            ),
+                            if (_safeGetPersonalBestsData(personalBests['ironman_70_3']) != null ||
+                                _safeGetPersonalBestsData(personalBests['5150']) != null)
+                              const SizedBox(height: 12),
+                          ],
+                          // Ironman 70.3
+                          if (_safeGetPersonalBestsData(personalBests['ironman_70_3']) != null) ...[
+                            _PersonalBestsCard(
+                              title: 'Ironman 70.3',
+                              data: _safeGetPersonalBestsData(personalBests['ironman_70_3'])!,
+                              profileId: widget.profileId,
+                              results: widget.results,
+                            ),
+                            if (_safeGetPersonalBestsData(personalBests['5150']) != null)
+                              const SizedBox(height: 12),
+                          ],
+                          // 5150
+                          if (_safeGetPersonalBestsData(personalBests['5150']) != null)
+                            _PersonalBestsCard(
+                              title: '5150',
+                              data: _safeGetPersonalBestsData(personalBests['5150'])!,
+                              profileId: widget.profileId,
+                              results: widget.results,
+                            ),
                         ],
-                        // Ironman 70.3
-                        if (_safeGetPersonalBestsData(widget.personalBests['ironman_70_3']) != null) ...[
-                          _PersonalBestsCard(
-                            title: 'Ironman 70.3',
-                            data: _safeGetPersonalBestsData(widget.personalBests['ironman_70_3'])!,
-                            profileId: widget.profileId,
-                            results: widget.results,
-                          ),
-                          if (_safeGetPersonalBestsData(widget.personalBests['5150']) != null)
-                            const SizedBox(height: 12),
-                        ],
-                        // 5150
-                        if (_safeGetPersonalBestsData(widget.personalBests['5150']) != null)
-                          _PersonalBestsCard(
-                            title: '5150',
-                            data: _safeGetPersonalBestsData(widget.personalBests['5150'])!,
-                            profileId: widget.profileId,
-                            results: widget.results,
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -1390,14 +1386,22 @@ class _PersonalBestsCard extends StatelessWidget {
     }
   }
 
+  Map<String, dynamic>? _getDisciplineData(String discipline) {
+    final value = data[discipline];
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
   String? _getTime(String discipline) {
-    final disciplineData = data[discipline] as Map<String, dynamic>?;
-    return disciplineData?['time'] as String?;
+    return _getDisciplineData(discipline)?['time'] as String?;
   }
 
   Map<String, dynamic>? _getRace(String discipline) {
-    final disciplineData = data[discipline] as Map<String, dynamic>?;
-    return disciplineData?['race'] as Map<String, dynamic>?;
+    final race = _getDisciplineData(discipline)?['race'];
+    if (race is Map<String, dynamic>) return race;
+    if (race is Map) return Map<String, dynamic>.from(race);
+    return null;
   }
 
   String _formatDate(String? isoDate) {

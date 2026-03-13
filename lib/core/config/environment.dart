@@ -28,7 +28,7 @@ class DevelopmentConfig extends EnvironmentConfig {
   @override
   String get baseUrl => const String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://172.16.23.67:8000/api/v1',
+    defaultValue: 'https://api.ironman.az/api/v1',
   );
 
   @override

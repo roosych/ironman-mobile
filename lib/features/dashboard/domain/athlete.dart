@@ -23,14 +23,24 @@ class Athlete {
   });
 
   factory Athlete.fromJson(Map<String, dynamic> json) {
+    // Support both flat format (list endpoint) and nested race_counts (detail endpoint)
+    final RaceCounts raceCounts;
+    if (json['race_counts'] != null) {
+      raceCounts = RaceCounts.fromJson(json['race_counts'] as Map<String, dynamic>);
+    } else {
+      raceCounts = RaceCounts(
+        ironman: json['ironman_count'] as int? ?? 0,
+        ironman703: json['ironman_70_3_count'] as int? ?? 0,
+        race5150: json['sprint_5150_count'] as int? ?? 0,
+      );
+    }
+
     return Athlete(
       id: json['id'] as int,
       name: json['name'] as String,
       avatar: json['avatar'] as String?,
       countryIso: json['country_iso'] as String?,
-      raceCounts: RaceCounts.fromJson(
-        json['race_counts'] as Map<String, dynamic>,
-      ),
+      raceCounts: raceCounts,
       ironmanNumber: json['ironman_number'] as int?,
       bio: json['bio'] as String?,
       socialLinks: json['social_links'] != null

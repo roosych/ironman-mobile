@@ -545,6 +545,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Reset password with OTP
+  Future<String> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    state = state.copyWith(clearError: true);
+    try {
+      final message = await _repository.resetPassword(
+        email: email,
+        otp: otp,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+      _lastNetworkErrorTime = null;
+      return message;
+    } on AuthApiException catch (e) {
+      state = state.copyWith(error: e.firstError);
+      rethrow;
+    } catch (e) {
+      state = state.copyWith(error: 'error_unexpected');
+      rethrow;
+    }
+  }
+
   /// Resend email verification without setting global loading state
   /// This prevents AuthRouter from showing loading screen
   Future<String> resendEmailVerification() async {

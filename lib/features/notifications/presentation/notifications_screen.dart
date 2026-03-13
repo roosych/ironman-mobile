@@ -27,6 +27,7 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     with WidgetsBindingObserver {
   final _dateFormat = DateFormat('dd.MM.yyyy HH:mm');
+  final _scrollController = ScrollController();
   String? _openedItemKey;
   final NotificationPermissionService _permissionService =
       NotificationPermissionService();
@@ -39,13 +40,23 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkNotificationPermission();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(notificationsProvider.notifier).load();
     });
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      ref.read(notificationsProvider.notifier).loadMore();
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -303,11 +314,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
             }
 
             final bannerCount = (!_isCheckingPermission && _isNotificationDenied ? 1 : 0);
-            final totalItemCount = bannerCount + state.notifications.length;
+            final loaderCount = state.isLoadingMore ? 1 : 0;
+            final totalItemCount = bannerCount + state.notifications.length + loaderCount;
 
             return RefreshIndicator(
               onRefresh: _refresh,
               child: ListView.builder(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -328,11 +341,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                     );
                   }
                   
-                  // Корректируем индекс для списка уведомлений
+                  // Индикатор загрузки в конце списка
                   final notificationIndex = (!_isCheckingPermission &&
                           _isNotificationDenied
                       ? index - 1
                       : index);
+                  if (notificationIndex >= state.notifications.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
                   final n = state.notifications[notificationIndex];
                   final itemKey = 'notification_${n.id}_${n.readAt}';
                   return Padding(

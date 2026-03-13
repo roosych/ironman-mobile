@@ -93,7 +93,7 @@ class RaceResultsApi {
         queryParams['is_approved'] = 1;
       }
       final response = await _client.get<Map<String, dynamic>>(
-        '/profiles/$profileId/race-results',
+        '/race-results/by-profile/$profileId',
         queryParameters: queryParams.isEmpty ? null : queryParams,
       );
 

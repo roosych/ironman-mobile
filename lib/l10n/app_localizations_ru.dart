@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get app_title => 'IRONSTATS';
+  String get app_title => 'TriRank';
 
   @override
   String get login_title => 'Войдите в свой аккаунт';
@@ -377,6 +377,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get photo_avatar_updated => 'Аватар успешно обновлён';
+
+  @override
+  String get photo_avatar_set_error => 'Не удалось установить аватар';
 
   @override
   String get photo_add_button => 'Добавить';
@@ -1028,13 +1031,25 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введите email, и мы отправим ссылку для сброса пароля.';
 
   @override
-  String get reset_password_send_button => 'ОТПРАВИТЬ ПИСЬМО';
+  String get reset_password_send_button => 'ОТПРАВИТЬ';
 
   @override
   String get reset_password_remember => 'Вспомнили пароль?';
 
   @override
   String get reset_password_sign_in => 'Войти';
+
+  @override
+  String get reset_password_otp => 'OTP-код';
+
+  @override
+  String get reset_password_otp_required => 'Введите OTP-код из письма';
+
+  @override
+  String get reset_password_confirm_button => 'СБРОСИТЬ ПАРОЛЬ';
+
+  @override
+  String get reset_password_resend_button => 'Отправить повторно';
 
   @override
   String get dashboard_notification_card_title => 'Оставайтесь в курсе!';
