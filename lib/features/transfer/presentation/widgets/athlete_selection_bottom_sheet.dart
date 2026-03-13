@@ -72,31 +72,24 @@ class _AthleteSelectionBottomSheetState
       if (!mounted) return;
 
       if (success) {
-        // Сразу закрываем BottomSheet
+        // Закрываем BottomSheet и показываем диалог успеха
         navigator.pop();
-
-        // Показываем успешное уведомление
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(localizations.transfer_request_created),
-            backgroundColor: Colors.green.shade600,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-
+        if (mounted) {
+          await _showResultDialog(
+            isSuccess: true,
+            localizations: localizations,
+          );
+        }
         // Обновляем результаты пользователя
         _refreshUserResults();
       } else {
-        // Показываем ошибку
+        // Показываем диалог ошибки (BottomSheet остаётся открытым)
         final error = ref.read(transferStatusProvider).error ??
             localizations.transfer_request_error;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red.shade600,
-            behavior: SnackBarBehavior.floating,
-          ),
+        await _showResultDialog(
+          isSuccess: false,
+          localizations: localizations,
+          errorMessage: error,
         );
       }
     } finally {
@@ -201,6 +194,57 @@ class _AthleteSelectionBottomSheetState
           ),
         ) ??
         false;
+  }
+
+  /// Показывает диалог результата (успех или ошибка)
+  Future<void> _showResultDialog({
+    required bool isSuccess,
+    required AppLocalizations localizations,
+    String? errorMessage,
+  }) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSuccess ? Icons.check_circle_outline : Icons.error_outline,
+              color: isSuccess ? Colors.green.shade600 : Colors.red.shade600,
+              size: 56,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              isSuccess
+                  ? localizations.transfer_request_created
+                  : (errorMessage ?? localizations.transfer_request_error),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  isSuccess ? Colors.green.shade600 : Colors.red.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            ),
+            child: Text(localizations.common_ok),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Обновляет результаты пользователя после успешной заявки

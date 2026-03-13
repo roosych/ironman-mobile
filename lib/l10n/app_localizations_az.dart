@@ -90,6 +90,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get common_confirm => 'Təsdiq et';
 
   @override
+  String get common_ok => 'OK';
+
+  @override
   String get common_undo => 'Geri al';
 
   @override

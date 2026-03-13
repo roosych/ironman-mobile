@@ -90,6 +90,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_confirm => 'Confirm';
 
   @override
+  String get common_ok => 'OK';
+
+  @override
   String get common_undo => 'Undo';
 
   @override

@@ -90,6 +90,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_confirm => 'Подтвердить';
 
   @override
+  String get common_ok => 'ОК';
+
+  @override
   String get common_undo => 'Отменить';
 
   @override

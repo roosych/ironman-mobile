@@ -108,6 +108,10 @@
   "@common_confirm": {
     "description": "Confirm button text"
   },
+  "common_ok": "OK",
+  "@common_ok": {
+    "description": "OK button text"
+  },
   "common_undo": "Undo",
   "@common_undo": {
     "description": "Undo button text"

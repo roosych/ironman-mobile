@@ -27,6 +27,7 @@
   "common_retry": "Повторить",
   "common_cancel": "Отмена",
   "common_confirm": "Подтвердить",
+  "common_ok": "ОК",
   "common_undo": "Отменить",
   "common_all": "Все",
   "common_loading_error": "Ошибка загрузки",

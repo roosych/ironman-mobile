@@ -265,6 +265,10 @@ abstract class AppLocalizations {
   /// Undo button text
   ///
   /// In en, this message translates to:
+  /// **'OK'**
+  String get common_ok;
+
+  /// In en, this message translates to:
   /// **'Undo'**
   String get common_undo;
 
