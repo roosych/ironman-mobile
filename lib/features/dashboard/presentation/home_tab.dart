@@ -1231,10 +1231,11 @@ class _PersonalBestsExpandableCardState
   @override
   Widget build(BuildContext context) {
     if (widget.profileId == null) return const SizedBox.shrink();
+    final profileId = widget.profileId!;
 
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
-    final recordsState = ref.watch(recordsProvider(widget.profileId!));
+    final recordsState = ref.watch(recordsProvider(profileId));
     final personalBests = recordsState.records?.toPersonalBestsFormat();
 
     return Card(
@@ -1314,7 +1315,7 @@ class _PersonalBestsExpandableCardState
                             _PersonalBestsCard(
                               title: 'Ironman',
                               data: _safeGetPersonalBestsData(personalBests['ironman'])!,
-                              profileId: widget.profileId,
+                              profileId: profileId,
                               results: widget.results,
                             ),
                             if (_safeGetPersonalBestsData(personalBests['ironman_70_3']) != null ||
@@ -1326,7 +1327,7 @@ class _PersonalBestsExpandableCardState
                             _PersonalBestsCard(
                               title: 'Ironman 70.3',
                               data: _safeGetPersonalBestsData(personalBests['ironman_70_3'])!,
-                              profileId: widget.profileId,
+                              profileId: profileId,
                               results: widget.results,
                             ),
                             if (_safeGetPersonalBestsData(personalBests['5150']) != null)
@@ -1337,7 +1338,7 @@ class _PersonalBestsExpandableCardState
                             _PersonalBestsCard(
                               title: '5150',
                               data: _safeGetPersonalBestsData(personalBests['5150'])!,
-                              profileId: widget.profileId,
+                              profileId: profileId,
                               results: widget.results,
                             ),
                         ],
