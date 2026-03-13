@@ -79,10 +79,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     void backToHome() => _onTabSelected(0);
 
     final screens = [
-      const HomeTab(),
-      ResultsScreen(onBack: backToHome),
-      RatingsScreen(onBack: backToHome, isActive: _currentIndex == 2),
-      AthletesScreen(onBack: backToHome),
+      const HomeTab(key: ValueKey('home')),
+      ResultsScreen(key: const ValueKey('results'), onBack: backToHome),
+      RatingsScreen(key: const ValueKey('ratings'), onBack: backToHome, isActive: _currentIndex == 2),
+      AthletesScreen(key: const ValueKey('athletes'), onBack: backToHome),
     ];
 
     return Scaffold(
