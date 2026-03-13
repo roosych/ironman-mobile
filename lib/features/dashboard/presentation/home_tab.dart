@@ -109,13 +109,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   void initState() {
     super.initState();
-    // Принудительно загружаем данные пользователя для получения актуальной статистики
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        debugPrint('HomeTab: initState - Refreshing user data');
-        ref.read(authProvider.notifier).refreshUser();
-      }
-    });
   }
 
   // Загрузка результатов не нужна на главном экране - данные из profile.stats

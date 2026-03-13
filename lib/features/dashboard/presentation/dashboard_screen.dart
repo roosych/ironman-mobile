@@ -19,6 +19,16 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(authProvider.notifier).refreshUser();
+      }
+    });
+  }
+
   void _onTabSelected(int index) {
     // Загружаем данные только если переключаемся на другой таб
     // (не при первом показе, так как начальный index = 0 уже установлен)
