@@ -260,33 +260,31 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     // resultsState используется только для отображения списка результатов в карточке
 
     return Scaffold(
+      backgroundColor: AppColors.ironmanBlack,
       body: Stack(
         children: [
           // Background image with gradient overlay
-          Transform.rotate(
-            angle: 3.14159, // 180 градусов (π радиан)
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/bg.png'),
-                  fit: BoxFit.cover,
-                ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg.png'),
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.3),
-                      Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
-                      Theme.of(context).scaffoldBackgroundColor,
-                    ],
-                    stops: const [0.0, 0.3, 0.7, 1.0],
-                  ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.ironmanBlack.withValues(alpha: 0.2),
+                    AppColors.ironmanBlack.withValues(alpha: 0.6),
+                    AppColors.ironmanBlack,
+                  ],
+                  stops: const [0.0, 0.6, 1.0],
                 ),
               ),
             ),

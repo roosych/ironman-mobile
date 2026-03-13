@@ -86,6 +86,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0E0F10),
       body: IndexedStack(
         index: _currentIndex,
         children: screens,
