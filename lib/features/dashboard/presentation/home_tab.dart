@@ -385,16 +385,15 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               const SizedBox(height: 12),
 
               // Personal Bests Expandable Section
-              if (profileId != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _PersonalBestsExpandableCard(
-                    profileId: profileId,
-                    results: resultsState.results
-                        .where((r) => r.isApproved)
-                        .toList(),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _PersonalBestsExpandableCard(
+                  profileId: profileId,
+                  results: profileId != null
+                      ? resultsState.results.where((r) => r.isApproved).toList()
+                      : const [],
                 ),
+              ),
 
               const SizedBox(height: 12),
 
@@ -1202,7 +1201,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
 }
 
 class _PersonalBestsExpandableCard extends ConsumerStatefulWidget {
-  final int profileId;
+  final int? profileId;
   final List<RaceResult> results;
 
   const _PersonalBestsExpandableCard({
@@ -1223,17 +1222,19 @@ class _PersonalBestsExpandableCardState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(recordsProvider(widget.profileId).notifier).loadRecords();
+      if (mounted && widget.profileId != null) {
+        ref.read(recordsProvider(widget.profileId!).notifier).loadRecords();
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.profileId == null) return const SizedBox.shrink();
+
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
-    final recordsState = ref.watch(recordsProvider(widget.profileId));
+    final recordsState = ref.watch(recordsProvider(widget.profileId!));
     final personalBests = recordsState.records?.toPersonalBestsFormat();
 
     return Card(
