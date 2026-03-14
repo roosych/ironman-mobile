@@ -132,67 +132,40 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
     // Listen for state changes
     ref.listen(changePasswordProvider, (previous, next) {
-      debugPrint('=== ChangePassword State Listener ===');
-      debugPrint('Mounted: $mounted, Context mounted: ${context.mounted}');
-      debugPrint('Previous error: ${previous?.error}');
-      debugPrint('Next error: ${next.error}');
-      debugPrint('Next success: ${next.successMessage}');
-
-      if (!mounted || !context.mounted) {
-        debugPrint('Widget not mounted, skipping state handling');
-        return;
-      }
-
-      try {
-        // Handle success message
-        if (next.successMessage != null &&
-            previous?.successMessage != next.successMessage) {
-          debugPrint('Handling success: ${next.successMessage}');
-
-          // Clear success first to prevent re-triggering
-          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
-
+      // Handle success message
+      if (next.successMessage != null &&
+          previous?.successMessage != next.successMessage) {
+        ref.read(changePasswordProvider.notifier).clearSuccessMessage();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
           AlertHelper.showSuccess(context, next.successMessage!).catchError((error) {
             debugPrint('Error showing success alert: $error');
           });
-
           // Clear form and navigate back after a short delay
           Future.delayed(const Duration(milliseconds: 1500), () {
             if (mounted && context.mounted) {
-              try {
-                _currentPasswordController.clear();
-                _newPasswordController.clear();
-                _confirmPasswordController.clear();
-                Navigator.of(context).pop();
-              } catch (e) {
-                debugPrint('Error during success cleanup: $e');
-              }
+              _currentPasswordController.clear();
+              _newPasswordController.clear();
+              _confirmPasswordController.clear();
+              Navigator.of(context).pop();
             }
           });
+        });
+      }
+
+      // Handle error message
+      if (next.error != null && previous?.error != next.error) {
+        String errorMessage = next.error!;
+        if (errorMessage.toLowerCase().contains('current') ||
+            errorMessage.toLowerCase().contains('incorrect') ||
+            errorMessage.toLowerCase().contains('wrong') ||
+            (errorMessage.toLowerCase().contains('password') &&
+             errorMessage.toLowerCase().contains('invalid'))) {
+          errorMessage = localizations.change_password_current_incorrect;
         }
-
-        // Handle error message
-        if (next.error != null && previous?.error != next.error) {
-          debugPrint('Handling error: ${next.error}');
-
-          String errorMessage = next.error!;
-
-          // Use more specific error message for current password errors
-          if (errorMessage.toLowerCase().contains('current') ||
-              errorMessage.toLowerCase().contains('incorrect') ||
-              errorMessage.toLowerCase().contains('wrong') ||
-              (errorMessage.toLowerCase().contains('password') &&
-               errorMessage.toLowerCase().contains('invalid'))) {
-            debugPrint('Using specific error message for current password');
-            errorMessage = localizations.change_password_current_incorrect;
-          }
-
-          debugPrint('Showing error alert with message: $errorMessage');
-
-          // Clear error first to prevent re-triggering
-          ref.read(changePasswordProvider.notifier).clearError();
-
-          // Show alert after clearing error
+        ref.read(changePasswordProvider.notifier).clearError();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
           AlertHelper.showError(
             context,
             errorMessage,
@@ -200,18 +173,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           ).catchError((error) {
             debugPrint('Error showing error alert: $error');
           });
-        }
-      } catch (e, stackTrace) {
-        debugPrint('Critical error in changePasswordProvider listener: $e');
-        debugPrint('Stack trace: $stackTrace');
-
-        // Emergency cleanup
-        try {
-          ref.read(changePasswordProvider.notifier).clearError();
-          ref.read(changePasswordProvider.notifier).clearSuccessMessage();
-        } catch (cleanupError) {
-          debugPrint('Error during emergency cleanup: $cleanupError');
-        }
+        });
       }
     });
 
@@ -423,7 +385,6 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                     vertical: 16,
                                   ),
                                   textStyle: const TextStyle(
-                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1,
                                     color: Colors.white,

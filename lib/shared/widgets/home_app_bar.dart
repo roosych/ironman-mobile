@@ -31,13 +31,6 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     // Для залогиненного пользователя не показываем стрелку «назад» — только аватар
     final showBackButton = canPop && !authState.isAuthenticated;
 
-    // Ensure we have unread_count early for the badge
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authState.isAuthenticated) {
-        ref.read(notificationsProvider.notifier).load();
-      }
-    });
-
     return AppBar(
       toolbarHeight: _appBarHeight,
       leadingWidth: 72,

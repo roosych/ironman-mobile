@@ -27,6 +27,7 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/results/application/race_results_notifier.dart';
 import 'package:ironman_mobile/features/notifications/application/notifications_notifier.dart';
 import 'package:ironman_mobile/core/config/app_config.dart';
+import 'package:ironman_mobile/firebase_options.dart';
 
 /// Global navigator key for navigation without BuildContext
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -70,7 +71,9 @@ void main() async {
 
   // Initialize Firebase
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     debugPrint('✅ Firebase initialized successfully');
 
     // ВАЖНО: Не инициализируем FCM здесь, так как это требует валидную сессию

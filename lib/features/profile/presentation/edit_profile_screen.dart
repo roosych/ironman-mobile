@@ -91,33 +91,29 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     ref.listen(editProfileProvider, (previous, next) {
       // Update text controllers when data is loaded from API
       if (previous?.isLoading == true && next.isLoading == false && next.error == null) {
-        FocusScope.of(context).unfocus();
         _nameController.text = next.name;
         _bioController.text = next.athleteProfile.bio ?? '';
         _stravaController.text = next.athleteProfile.socialLinks.strava ?? '';
         _instagramController.text = next.athleteProfile.socialLinks.instagram ?? '';
         _facebookController.text = next.athleteProfile.socialLinks.facebook ?? '';
 
-        // Update selected country from fresh API data
-        if (next.countryIso != null) {
-          if (mounted) {
-            setState(() {
-              _selectedCountry = Countries.all.where((country) =>
-                  country.isoCode.toLowerCase() == next.countryIso!.toLowerCase()).firstOrNull;
-            });
-          }
-        } else {
-          if (mounted) {
-            setState(() {
-              _selectedCountry = null;
-            });
-          }
-        }
+        // Update selected country and unfocus after the frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          FocusScope.of(context).unfocus();
+          setState(() {
+            _selectedCountry = next.countryIso != null
+                ? Countries.all.where((country) =>
+                    country.isoCode.toLowerCase() == next.countryIso!.toLowerCase()).firstOrNull
+                : null;
+          });
+        });
       }
       // Show success message (already localized from API)
       if (next.successMessage != null &&
           previous?.successMessage != next.successMessage) {
-        if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
           FocusScope.of(context).unfocus();
           AlertHelper.showSuccess(context, next.successMessage!);
           try {
@@ -125,18 +121,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           } catch (e) {
             debugPrint('🔴 Ошибка при очистке сообщения успеха: $e');
           }
-        }
+        });
       }
       // Show error message
       if (next.error != null && previous?.error != next.error) {
-        if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
           ErrorHandler.showError(context, next.error ?? localizations.edit_profile_save_error);
           try {
             ref.read(editProfileProvider.notifier).clearError();
           } catch (e) {
             debugPrint('🔴 Ошибка при очистке ошибки: $e');
           }
-        }
+        });
       }
     });
 

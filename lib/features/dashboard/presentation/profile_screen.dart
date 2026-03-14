@@ -57,12 +57,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Listen for avatar upload errors
     ref.listen(profileAvatarProvider, (previous, next) {
       if (next.error != null && previous?.error != next.error) {
-        AlertHelper.showError(
-          context,
-          next.error!,
-          buttonText: localizations.error_ok,
-        );
-        ref.read(profileAvatarProvider.notifier).clearError();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AlertHelper.showError(
+            context,
+            next.error!,
+            buttonText: localizations.error_ok,
+          );
+          ref.read(profileAvatarProvider.notifier).clearError();
+        });
       }
     });
 

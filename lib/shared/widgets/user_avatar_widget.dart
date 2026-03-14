@@ -21,9 +21,11 @@ class UserAvatarWidget extends StatelessWidget {
       return _placeholder(context);
     }
 
+    final imageUrl = ImageUrlHelper.getFullImageUrl(url);
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: ImageUrlHelper.getFullImageUrl(url),
+        key: ValueKey(imageUrl),
+        imageUrl: imageUrl,
         width: radius * 2,
         height: radius * 2,
         fit: BoxFit.cover,

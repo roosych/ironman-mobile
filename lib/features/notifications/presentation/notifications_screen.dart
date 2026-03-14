@@ -39,9 +39,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _checkNotificationPermission();
     _scrollController.addListener(_onScroll);
+    // _checkNotificationPermission вызывает setState синхронно — только через postFrame
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _checkNotificationPermission();
       ref.read(notificationsProvider.notifier).load();
     });
   }

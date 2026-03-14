@@ -26,41 +26,24 @@ class RatingsScreen extends ConsumerStatefulWidget {
 
 class _RatingsScreenState extends ConsumerState<RatingsScreen>
     with SingleTickerProviderStateMixin {
+
   late TabController _mainTabController;
   bool _showHintAlert = true;
-  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _mainTabController = TabController(length: 2, vsync: this, initialIndex: 0);
-
-    if (widget.isActive) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _activate();
-      });
-    }
-  }
-
-  @override
-  void didUpdateWidget(RatingsScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isActive && !oldWidget.isActive) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _activate();
-      });
-    }
-  }
-
-  void _activate() {
-    if (!_isInitialized) {
-      _isInitialized = true;
-      _mainTabController.addListener(_onMainTabChanged);
-    }
-    final currentState = ref.read(rankingsProvider);
-    if (currentState.rankings.isEmpty && !currentState.isLoading && !currentState.hasError) {
-      ref.read(rankingsProvider.notifier).loadRankings(raceType: 'ironman', discipline: 'total');
-    }
+    _mainTabController.addListener(_onMainTabChanged);
+    // С PageView экран монтируется только при первом посещении —
+    // initState безопасное место для начальной загрузки данных.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final currentState = ref.read(rankingsProvider);
+      if (currentState.rankings.isEmpty && !currentState.isLoading && !currentState.hasError) {
+        ref.read(rankingsProvider.notifier).loadRankings(raceType: 'ironman', discipline: 'total');
+      }
+    });
   }
 
   @override
@@ -71,27 +54,23 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
   }
 
   void _onMainTabChanged() {
-    // Не обрабатываем изменения, если экран ещё не был показан или не активен
-    if (!_isInitialized || !widget.isActive) return;
-
     if (!_mainTabController.indexIsChanging) {
-      // Очищаем данные для показа анимации загрузки
-      ref.read(rankingsProvider.notifier).clearRankings();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref.read(rankingsProvider.notifier).clearRankings();
 
-      // Небольшая задержка для плавной анимации перед загрузкой новых данных
-      Future.delayed(const Duration(milliseconds: 150), () {
-        if (mounted && _isInitialized) {
-          final raceType = _mainTabController.index == 0
-              ? 'ironman'
-              : 'ironman_70_3';
-          ref
-              .read(rankingsProvider.notifier)
-              .loadRankings(
-                raceType: raceType,
-                discipline: 'total',
-                forceLoading: true,
-              );
-        }
+        Future.delayed(const Duration(milliseconds: 150), () {
+          if (mounted) {
+            final raceType = _mainTabController.index == 0
+                ? 'ironman'
+                : 'ironman_70_3';
+            ref.read(rankingsProvider.notifier).loadRankings(
+              raceType: raceType,
+              discipline: 'total',
+              forceLoading: true,
+            );
+          }
+        });
       });
     }
   }
@@ -114,11 +93,7 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
-    // Используем watch только если экран активен, иначе используем read чтобы не создавать подписку
-    final state = widget.isActive
-        ? ref.watch(rankingsProvider)
-        : ref.read(rankingsProvider);
+    final state = ref.watch(rankingsProvider);
 
     return Scaffold(
       body: Stack(
@@ -224,32 +199,26 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                 children: [
                   // Таб Ironman
                   _RaceTypeTab(
-                    isActive: widget.isActive && _mainTabController.index == 0,
                     raceType: 'ironman',
                     disciplines: _getDisciplines(localizations),
                     onDisciplineSelected: (discipline) {
-                      ref
-                          .read(rankingsProvider.notifier)
-                          .loadRankings(
-                            raceType: 'ironman',
-                            discipline: discipline,
-                            forceLoading: true,
-                          );
+                      ref.read(rankingsProvider.notifier).loadRankings(
+                        raceType: 'ironman',
+                        discipline: discipline,
+                        forceLoading: true,
+                      );
                     },
                   ),
                   // Таб Ironman 70.3
                   _RaceTypeTab(
-                    isActive: widget.isActive && _mainTabController.index == 1,
                     raceType: 'ironman_70_3',
                     disciplines: _getDisciplines(localizations),
                     onDisciplineSelected: (discipline) {
-                      ref
-                          .read(rankingsProvider.notifier)
-                          .loadRankings(
-                            raceType: 'ironman_70_3',
-                            discipline: discipline,
-                            forceLoading: true,
-                          );
+                      ref.read(rankingsProvider.notifier).loadRankings(
+                        raceType: 'ironman_70_3',
+                        discipline: discipline,
+                        forceLoading: true,
+                      );
                     },
                   ),
                 ],
@@ -305,13 +274,11 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
 
 // Таб с типами гонок и подтабами дисциплин
 class _RaceTypeTab extends ConsumerStatefulWidget {
-  final bool isActive;
   final String raceType;
   final List<Map<String, String>> disciplines;
   final Function(String) onDisciplineSelected;
 
   const _RaceTypeTab({
-    required this.isActive,
     required this.raceType,
     required this.disciplines,
     required this.onDisciplineSelected,
@@ -362,14 +329,13 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   @override
   void didUpdateWidget(covariant _RaceTypeTab oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Когда таб становится активным первый раз — запускаем initial load (total).
-    // Но не загружаем, если уже есть ошибка (чтобы избежать бесконечных запросов).
-    if (widget.isActive && !_didInitialLoad) {
+    // Загружаем данные при первом показе таба дисциплин (например, при свайпе на 70.3).
+    // didUpdateWidget вызывается когда TabBarView перестраивает дочерний виджет.
+    if (!_didInitialLoad) {
       _didInitialLoad = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final currentState = ref.read(rankingsProvider);
-        // Загружаем только если нет ошибки
         if (!currentState.hasError) {
           widget.onDisciplineSelected('total');
         }
@@ -386,18 +352,24 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   }
 
   void _onSubTabChanged() {
-    if (!widget.isActive) return;
     if (!_subTabController.indexIsChanging) {
-      // Очищаем данные и выбор для показа анимации загрузки
       ref.read(rankingsProvider.notifier).clearRankings();
-      // Сбрасываем режим сравнения
-      setState(() {
-        _showComparison = false;
+
+      // ПРАВИЛО: setState нельзя вызывать напрямую в listener TabController —
+      // listener может сработать во время фазы layout/build (пока TabBarView
+      // анимирует переключение), что вызывает "_elements.contains(element)"
+      // assertion на iOS. addPostFrameCallback гарантирует вызов после кадра.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _showComparison = false;
+        });
       });
 
-      // Небольшая задержка для плавной анимации перед загрузкой новых данных
+      // Небольшая задержка для плавной анимации перед загрузкой новых данных.
+      // mounted проверяется внутри замыкания — виджет может быть удалён за 150 мс.
       Future.delayed(const Duration(milliseconds: 150), () {
-        if (mounted && widget.isActive) {
+        if (mounted) {
           final selectedDiscipline =
               widget.disciplines[_subTabController.index]['value']!;
           widget.onDisciplineSelected(selectedDiscipline);
@@ -408,9 +380,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
 
   @override
   Widget build(BuildContext context) {
-    final state = widget.isActive
-        ? ref.watch(rankingsProvider)
-        : ref.read(rankingsProvider);
+    final state = ref.watch(rankingsProvider);
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
 

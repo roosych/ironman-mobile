@@ -18,88 +18,71 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
+  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
+    _screens = [
+      HomeTab(key: const ValueKey('home')),
+      ResultsScreen(key: const ValueKey('results'), onBack: _backToHome),
+      RatingsScreen(key: const ValueKey('ratings'), onBack: _backToHome),
+      AthletesScreen(key: const ValueKey('athletes'), onBack: _backToHome),
+    ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(authProvider.notifier).refreshUser();
-      }
+      if (!mounted) return;
+      ref.read(authProvider.notifier).refreshUser();
     });
   }
 
+  void _backToHome() => _onTabSelected(0);
+
   void _onTabSelected(int index) {
-    // Загружаем данные только если переключаемся на другой таб
-    // (не при первом показе, так как начальный index = 0 уже установлен)
     final wasDifferentTab = _currentIndex != index;
-    
+    if (wasDifferentTab) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     setState(() {
       _currentIndex = index;
     });
-
-    // Загружаем данные только когда соответствующий экран становится видимым
-    // и только если переключаемся на другой таб
     if (wasDifferentTab) {
-      // Используем addPostFrameCallback чтобы избежать модификации провайдера во время setState
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-
         if (index == 1) {
-          // Results tab - загружаем результаты только если они еще не загружены
           final resultsState = ref.read(raceResultsProvider);
           final user = ref.read(authProvider).user;
-          int? profileId;
-          if (user?.profile is Map<String, dynamic>) {
-            final profile = user!.profile as Map<String, dynamic>;
-            profileId = profile['id'] as int?;
-          }
-          
-          // Не загружаем "Мои результаты" если:
-          // 1. Уже идет загрузка ИЛИ
-          // 2. Результаты уже есть и они от текущего пользователя
-          final shouldSkipMyResults = resultsState.isLoading || 
-                                     (resultsState.results.isNotEmpty && 
-                                      profileId != null && 
-                                      resultsState.results.first.userProfileId == profileId);
-          
+          final profileId = user?.profile?.id;
+          final shouldSkipMyResults = resultsState.isLoading ||
+              (resultsState.results.isNotEmpty &&
+                  profileId != null &&
+                  resultsState.results.first.userProfileId == profileId);
           if (profileId != null && !shouldSkipMyResults) {
             ref.read(raceResultsProvider.notifier).loadResults(profileId);
           }
-          
-          // Also load all results when Results tab is selected (only if not loaded and not loading)
           final allResultsState = ref.read(allRaceResultsProvider);
           if (!allResultsState.isLoading && allResultsState.results.isEmpty) {
             ref.read(allRaceResultsProvider.notifier).loadAllResults();
           }
-        }
-        // Ratings tab (index 2) - загрузка рейтингов происходит в самом RatingsScreen
-        // когда экран становится активным
-        else if (index == 3) {
-          // Athletes tab - загружаем атлетов
+        } else if (index == 3) {
           ref.read(athletesProvider.notifier).loadAthletes();
         }
-        // Home tab (index 0) - данные уже загружаются в самом HomeTab
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    void backToHome() => _onTabSelected(0);
-
-    final screens = [
-      const HomeTab(key: ValueKey('home')),
-      ResultsScreen(key: const ValueKey('results'), onBack: backToHome),
-      RatingsScreen(key: const ValueKey('ratings'), onBack: backToHome, isActive: _currentIndex == 2),
-      AthletesScreen(key: const ValueKey('athletes'), onBack: backToHome),
-    ];
-
     return Scaffold(
       backgroundColor: const Color(0xFF0E0F10),
       body: IndexedStack(
         index: _currentIndex,
-        children: screens,
+        children: List.generate(
+          _screens.length,
+          (i) => ExcludeFocus(
+            excluding: i != _currentIndex,
+            child: _screens[i],
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,

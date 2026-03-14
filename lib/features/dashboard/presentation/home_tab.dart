@@ -109,6 +109,16 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   @override
   void initState() {
     super.initState();
+    // Загружаем уведомления один раз при монтировании.
+    // НЕ делаем это в build() или build()-методах дочерних виджетов —
+    // вызов провайдера из build() создаёт цикл: rebuild → load → rebuild.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final authState = ref.read(authProvider);
+      if (authState.isAuthenticated) {
+        ref.read(notificationsProvider.notifier).load();
+      }
+    });
   }
 
   // Загрузка результатов не нужна на главном экране - данные из profile.stats
@@ -126,63 +136,33 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   //   }
   // }
 
-  int? _getTotalRaces() {
-    final user = ref.watch(authProvider).user;
+  // ВАЖНО: эти методы принимают уже прочитанные значения из build() — они НЕ
+  // вызывают ref.watch сами по себе. Повторный вызов ref.watch для одного
+  // провайдера в одном build()-цикле регистрирует лишние Riverpod-подписки и
+  // вызывает дублирующий markNeedsBuild() на iOS → _InactiveElements assertion.
+
+  int? _getTotalRaces(dynamic user, RaceResultsState resultsState) {
     final profile = user?.profile;
     final stats = profile?.stats;
     final totalRaces = stats?.summary?.totalRaces;
 
-    debugPrint('=== HomeTab: _getTotalRaces ULTRA DETAILED DEBUG ===');
-    debugPrint('User: ${user != null ? "EXISTS" : "NULL"}');
-    debugPrint('User ID: ${user?.id}');
-    debugPrint('User name: ${user?.name}');
-    debugPrint('User verified: ${user?.verified}');
-    debugPrint('User email: ${user?.email}');
-    debugPrint('User toJson: ${user?.toJson()}');
-    debugPrint('Profile: ${profile != null ? "EXISTS" : "NULL"}');
-    debugPrint('Profile ID: ${profile?.id}');
-    debugPrint('Profile role: ${profile?.role}');
-    debugPrint('Profile toJson: ${profile?.toJson()}');
-    debugPrint('Stats: ${stats != null ? "EXISTS" : "NULL"}');
-    debugPrint('Stats summary: ${stats?.summary != null ? "EXISTS" : "NULL"}');
-    debugPrint('Stats summary totalRaces: $totalRaces');
-    debugPrint('Stats summary totalDistances: ${stats?.summary?.totalDistances}');
-    debugPrint('Stats bestTotalTime: ${stats?.bestTotalTime}');
-    debugPrint('Stats toJson: ${stats?.toJson()}');
-    debugPrint('Raw Stats object: $stats');
-
-    // Fallback 1: получаем количество из результатов гонок (через resultsState)
-    final resultsState = ref.watch(raceResultsProvider);
+    // Fallback 1: из подтверждённых результатов в state
     final approvedResultsCount = resultsState.results.where((r) => r.isApproved).length;
-    debugPrint('Fallback 1 - Approved results count from state: $approvedResultsCount');
 
-    // Fallback 2: получаем количество из race_results в профиле
+    // Fallback 2: из race_results в профиле
     final profileRaceResults = profile?.raceResults?.length ?? 0;
-    debugPrint('Fallback 2 - Profile race results count: $profileRaceResults');
 
-    // Fallback 3: используем ironman_races_count из профиля
+    // Fallback 3: ironman_races_count из профиля
     final ironmanRacesCount = profile?.ironmanRacesCount ?? 0;
-    debugPrint('Fallback 3 - Profile ironman_races_count: $ironmanRacesCount');
 
-    debugPrint('======================================');
-
-    // Возвращаем статистику или лучший доступный fallback
-    if (totalRaces != null) {
-      return totalRaces;
-    } else if (profileRaceResults > 0) {
-      return profileRaceResults;
-    } else if (ironmanRacesCount > 0) {
-      return ironmanRacesCount;
-    } else if (approvedResultsCount > 0) {
-      return approvedResultsCount;
-    }
+    if (totalRaces != null) return totalRaces;
+    if (profileRaceResults > 0) return profileRaceResults;
+    if (ironmanRacesCount > 0) return ironmanRacesCount;
+    if (approvedResultsCount > 0) return approvedResultsCount;
     return null;
   }
 
-  int? _getProfileId() {
-    final user = ref.watch(authProvider).user;
-    return user?.profile?.id;
-  }
+  int? _getProfileId(dynamic user) => user?.profile?.id as int?;
 
   Future<void> _refreshAllData() async {
     try {
@@ -201,7 +181,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
       ];
 
       // Добавляем обновление результатов и рекордов, если есть profileId
-      final profileId = _getProfileId();
+      final profileId = ref.read(authProvider).user?.profile?.id;
       if (profileId != null) {
         futures.add(_refreshResults(profileId));
         futures.add(ref.read(recordsProvider(profileId).notifier).loadRecords());
@@ -245,9 +225,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.user;
-    final totalRaces = _getTotalRaces();
     final resultsState = ref.watch(raceResultsProvider);
-    final profileId = _getProfileId();
+    final totalRaces = _getTotalRaces(user, resultsState);
+    final profileId = _getProfileId(user);
 
     // Данные о количестве гонок берутся из profile.stats, которые приходят при авторизации
     // resultsState используется только для отображения списка результатов в карточке
@@ -369,11 +349,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   ),
                 ),
 
-              // Notification permission card (manages its own spacing)
-              _NotificationPermissionCard(),
-
               // My Results expandable section
               Padding(
+                key: const ValueKey('my_results'),
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _MyResultsExpandableCard(
                   totalRaces: totalRaces,
@@ -382,10 +360,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(key: ValueKey('spacer1'), height: 12),
 
               // Personal Bests Expandable Section
               Padding(
+                key: const ValueKey('personal_bests'),
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _PersonalBestsExpandableCard(
                   profileId: profileId,
@@ -395,10 +374,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(key: ValueKey('spacer2'), height: 12),
 
               // Pace Calculator card
               Padding(
+                key: const ValueKey('pace_calc'),
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _PaceCalculatorCard(),
               ),
@@ -407,11 +387,14 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
               // Upcoming Races Section
               Padding(
+                key: const ValueKey('upcoming_races'),
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: _UpcomingRacesSection(),
               ),
 
               const SizedBox(height: 12),
+              // _NotificationPermissionCard убрана — требует Firebase,
+              // который не инициализирован, и вызывает assertion на iOS.
                   ],
                 ),
               ),
@@ -424,7 +407,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 }
 
 class _NotificationPermissionCard extends ConsumerStatefulWidget {
-  const _NotificationPermissionCard();
+  const _NotificationPermissionCard({super.key});
 
   @override
   ConsumerState<_NotificationPermissionCard> createState() =>
@@ -443,7 +426,15 @@ class _NotificationPermissionCardState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _checkNotificationPermission();
+    // ПРАВИЛО: нельзя вызывать функцию, которая делает setState, напрямую из initState.
+    // _checkNotificationPermission синхронно вызывает setState(...) ДО первого await —
+    // это setState до первого кадра, когда элемент ещё не вставлен в дерево →
+    // "Tried to build dirty widget in the wrong build scope" на iOS.
+    // addPostFrameCallback гарантирует, что setState вызывается только после
+    // того, как элемент полностью вставлен и первый build завершён.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _checkNotificationPermission();
+    });
   }
 
   @override
@@ -462,10 +453,10 @@ class _NotificationPermissionCardState
   }
 
   Future<void> _checkNotificationPermission() async {
-    setState(() {
-      _isCheckingPermission = true;
-    });
-
+    // Не вызываем setState здесь — _isCheckingPermission уже true по умолчанию.
+    // Синхронный setState в начале async-метода, вызванного из initState (даже через
+    // addPostFrameCallback), может попасть в середину build-прохода дочерних виджетов
+    // в IndexedStack → _elements.contains(element) assertion на iOS.
     try {
       final isAuthorized = await _permissionService.isAuthorized;
 
@@ -695,19 +686,10 @@ class _MyResultsExpandableCardState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final resultsState = ref.watch(raceResultsProvider);
-
-    // Загружаем данные при изменении profileId или если данные еще не загружены
-    if (widget.profileId != null &&
-        resultsState.results.isEmpty &&
-        !resultsState.isLoading &&
-        !_hasLoaded) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _loadResultsIfNeeded();
-        }
-      });
-    }
+    // Используем resultsState переданный от родителя — не делаем ref.watch здесь,
+    // так как родительский виджет уже подписан на raceResultsProvider.
+    // Дублирование ref.watch вызывает лишние markNeedsBuild() → iOS assertion.
+    final resultsState = widget.resultsState;
 
     return Card(
       elevation: 0,
@@ -1126,7 +1108,10 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
       if (next.hasError &&
           next.error != null &&
           previous?.error != next.error) {
-        ErrorHandler.showError(context, next.error!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ErrorHandler.showError(context, next.error!);
+        });
       }
     });
 
@@ -1710,15 +1695,7 @@ class _NotificationButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
     final unreadCount = ref.watch(notificationsProvider.select((s) => s.unreadCount));
-
-    // Ensure we have unread_count for the badge
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authState.isAuthenticated) {
-        ref.read(notificationsProvider.notifier).load();
-      }
-    });
 
     return IconButton(
       onPressed: onTap,

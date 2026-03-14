@@ -26,21 +26,17 @@ class ResultsScreen extends ConsumerStatefulWidget {
 }
 
 class _ResultsScreenState extends ConsumerState<ResultsScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
-  TabController? _tabController;
+    with WidgetsBindingObserver, TickerProviderStateMixin {
+  late final TabController _tabController;
   String _searchQuery = '';
   late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    // Проверяем авторизацию для определения количества табов
-    final isAuthenticated = _isUserAuthenticated();
-    final tabCount = isAuthenticated ? 2 : 0; // 0 табов для неавторизованных
-    if (tabCount > 0) {
-      _tabController = TabController(length: tabCount, vsync: this, initialIndex: 0);
-      _tabController!.addListener(_onTabChanged);
-    }
+    // Always create with length 2 — used only in authenticated branch
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _tabController.addListener(_onTabChanged);
 
     // Загружаем все результаты для всех пользователей (авторизованных и неавторизованных)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -59,10 +55,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   void _onTabChanged() {
-    if (_isUserAuthenticated() && _tabController != null && !_tabController!.indexIsChanging) {
+    if (_isUserAuthenticated() && !_tabController.indexIsChanging) {
       // Load my results when switching to "My Results" tab (index 1)
       // Only for authenticated users
-      if (_tabController!.index == 1) {
+      if (_tabController.index == 1) {
         // Используем addPostFrameCallback чтобы избежать модификации провайдера во время построения
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
@@ -104,10 +100,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   @override
   void dispose() {
-    if (_tabController != null) {
-      _tabController!.removeListener(_onTabChanged);
-      _tabController!.dispose();
-    }
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
     _searchController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -118,9 +112,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     if (state == AppLifecycleState.resumed) {
       // Используем addPostFrameCallback чтобы избежать модификации провайдера во время жизненного цикла
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _isUserAuthenticated() && _tabController != null) {
+        if (mounted && _isUserAuthenticated()) {
           _loadAllResults();
-          if (_tabController!.index == 1) {
+          if (_tabController.index == 1) {
             _loadResults();
           }
         }
@@ -260,27 +254,19 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     final myResultsState = ref.watch(raceResultsProvider);
     final allResultsState = ref.watch(allRaceResultsProvider);
 
-    // Listen for auth status changes to recreate tabs if needed
+    // Listen for auth status changes to trigger rebuild.
+    // ВАЖНО: setState нельзя вызывать напрямую внутри ref.listen во время
+    // фазы build — это вызывает _elements.contains(element) assertion на iOS.
+    // Используем addPostFrameCallback для безопасного вызова setState.
     ref.listen(authProvider, (previous, next) {
-      if (mounted && previous?.status != next.status) {
-        final wasAuthenticated = previous?.status == AuthStatus.authenticated;
-        final isAuthenticated = _isUserAuthenticated();
-
-        if (wasAuthenticated && _tabController != null) {
-          // User logged out - dispose existing controller
-          _tabController!.removeListener(_onTabChanged);
-          _tabController!.dispose();
-          _tabController = null;
-        }
-
-        if (isAuthenticated) {
-          // User logged in - create controller
-          final tabCount = 2;
-          _tabController = TabController(length: tabCount, vsync: this, initialIndex: 0);
-          _tabController!.addListener(_onTabChanged);
-        }
-
-        setState(() {}); // Rebuild to show new content
+      if (previous?.status != next.status) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          if (_tabController.index != 0) {
+            _tabController.animateTo(0);
+          }
+          setState(() {});
+        });
       }
     });
 
@@ -380,10 +366,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
-        floatingActionButton: _tabController != null ? AnimatedBuilder(
-          animation: _tabController!,
+        floatingActionButton: AnimatedBuilder(
+          animation: _tabController,
           builder: (context, child) {
-            return _tabController!.index == 1
+            return _tabController.index == 1
                 ? Container(
                     width: 56,
                     height: 56,
@@ -426,7 +412,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   )
                 : const SizedBox.shrink();
           },
-        ) : null,
+        ),
         body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -525,7 +511,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                           ),
                           padding: const EdgeInsets.all(4),
                           child: TabBar(
-                            controller: _tabController!,
+                            controller: _tabController,
                             labelColor: Colors.white,
                             labelStyle: const TextStyle(
                               fontSize: 15,
@@ -567,7 +553,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ];
         },
         body: TabBarView(
-          controller: _tabController!,
+          controller: _tabController,
           physics: const BouncingScrollPhysics(),
           children: _buildTabViews(allResultsState, myResultsState),
         ),

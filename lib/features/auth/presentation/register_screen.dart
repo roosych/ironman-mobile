@@ -144,13 +144,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final localizations = AppLocalizations.of(context)!;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
-      // ИСПРАВЛЕНО: Защита от дублирования ошибок
+      // Show error
       if (next.error != null &&
           next.error != previous?.error &&
           next.error != _lastShownError) {
-        debugPrint('🚨 Register: Showing auth error: ${next.error}');
-        _lastShownError = next.error; // Запоминаем показанную ошибку
-        ErrorHandler.showError(context, next.error!);
+        _lastShownError = next.error;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ErrorHandler.showError(context, next.error!);
+        });
       }
 
       // Сбрасываем запомненную ошибку при успешном состоянии
@@ -160,19 +162,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       // Show warning (informational message from server)
       if (next.warning != null && next.warning != previous?.warning) {
-        AlertHelper.showInfo(context, next.warning!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AlertHelper.showInfo(context, next.warning!);
+        });
       }
 
-
       // Check if registration was successful
-      // Проверяем успешную регистрацию по завершению загрузки без ошибки
-      // Пользователь не аутентифицируется после регистрации, поэтому проверяем только isLoading и error
       if (previous?.isLoading == true &&
           next.isLoading == false &&
           next.error == null &&
           !next.isAuthenticated) {
-        setState(() {
-          _registrationSuccess = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          setState(() {
+            _registrationSuccess = true;
+          });
         });
       }
     });

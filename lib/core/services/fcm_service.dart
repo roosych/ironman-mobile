@@ -19,7 +19,8 @@ class FcmService {
   factory FcmService() => _instance;
   FcmService._internal();
 
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  // Геттер вместо поля — см. комментарий в notification_permission_service.dart
+  FirebaseMessaging get _messaging => FirebaseMessaging.instance;
   final ApiClient _apiClient = ApiClient();
   final SecureStorage _storage = SecureStorage();
   final FlutterLocalNotificationsPlugin _localNotifications =

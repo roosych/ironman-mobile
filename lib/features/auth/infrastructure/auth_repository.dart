@@ -28,8 +28,17 @@ class AuthRepository {
   Future<User> _enrichWithAvatar(User user) async {
     try {
       final avatarUrl = await _profileApi.getCurrentAvatarUrl();
-      if (avatarUrl == null || avatarUrl.isEmpty) return user;
-      return user.copyWith(avatarUrl: avatarUrl);
+      if (avatarUrl != null && avatarUrl.isNotEmpty) {
+        return user.copyWith(avatarUrl: avatarUrl);
+      }
+      // API вернул null — сохраняем уже имеющийся avatarUrl из storage,
+      // чтобы не затереть его при race condition или задержке сервера
+      final storedJson = await _storage.getUser();
+      final storedAvatarUrl = storedJson?['avatarUrl'] as String?;
+      if (storedAvatarUrl != null && storedAvatarUrl.isNotEmpty) {
+        return user.copyWith(avatarUrl: storedAvatarUrl);
+      }
+      return user;
     } catch (_) {
       return user;
     }

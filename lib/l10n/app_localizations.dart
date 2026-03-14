@@ -262,12 +262,14 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get common_confirm;
 
-  /// Undo button text
+  /// OK button text
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get common_ok;
 
+  /// Undo button text
+  ///
   /// In en, this message translates to:
   /// **'Undo'**
   String get common_undo;

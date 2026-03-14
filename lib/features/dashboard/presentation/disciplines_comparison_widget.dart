@@ -35,6 +35,38 @@ class _DisciplinesComparisonWidgetState
     extends ConsumerState<DisciplinesComparisonWidget> {
   bool _isExpanded = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadRecordsIfNeeded();
+    });
+  }
+
+  @override
+  void didUpdateWidget(DisciplinesComparisonWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.athlete1Id != widget.athlete1Id ||
+        oldWidget.athlete2Id != widget.athlete2Id) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _loadRecordsIfNeeded();
+      });
+    }
+  }
+
+  void _loadRecordsIfNeeded() {
+    final records1State = ref.read(recordsProvider(widget.athlete1Id));
+    if (!records1State.isLoading && records1State.records == null) {
+      ref.read(recordsProvider(widget.athlete1Id).notifier).loadRecords();
+    }
+    final records2State = ref.read(recordsProvider(widget.athlete2Id));
+    if (!records2State.isLoading && records2State.records == null) {
+      ref.read(recordsProvider(widget.athlete2Id).notifier).loadRecords();
+    }
+  }
+
   PersonalRecord? _getRecordsForRaceType(Records? records) {
     if (records == null) return null;
     switch (widget.raceType) {
@@ -71,18 +103,6 @@ class _DisciplinesComparisonWidgetState
   Widget build(BuildContext context) {
     final records1State = ref.watch(recordsProvider(widget.athlete1Id));
     final records2State = ref.watch(recordsProvider(widget.athlete2Id));
-
-    // Загружаем рекорды при первом открытии
-    if (!records1State.isLoading && records1State.records == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(recordsProvider(widget.athlete1Id).notifier).loadRecords();
-      });
-    }
-    if (!records2State.isLoading && records2State.records == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(recordsProvider(widget.athlete2Id).notifier).loadRecords();
-      });
-    }
 
     final records1 = _getRecordsForRaceType(records1State.records);
     final records2 = _getRecordsForRaceType(records2State.records);

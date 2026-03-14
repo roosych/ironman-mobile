@@ -67,7 +67,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen<AuthState>(authProvider, (previous, next) {
       // Show error
       if (next.error != null && next.error != previous?.error) {
-        ErrorHandler.showError(context, next.error!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ErrorHandler.showError(context, next.error!);
+        });
       }
 
       // ВАЖНО: Навигация после успешного логина

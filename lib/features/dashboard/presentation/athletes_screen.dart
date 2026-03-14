@@ -31,8 +31,12 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
     super.initState();
     _searchController = TextEditingController();
 
-    // Загружаем данные если экран используется как standalone (не через DashboardScreen)
+    // ПРАВИЛО: загрузка данных через Riverpod только через addPostFrameCallback,
+    // чтобы не вызвать модификацию провайдера до завершения первого build-прохода.
+    // ПРАВИЛО: всегда проверять mounted до ref.read — виджет мог быть удалён
+    // раньше, чем кадр отрисовался (IndexedStack монтирует все табы сразу).
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final athletesState = ref.read(athletesProvider);
       if (athletesState.athletes.isEmpty && !athletesState.isLoading && !athletesState.hasError) {
         ref.read(athletesProvider.notifier).loadAthletes();
@@ -46,11 +50,14 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
     super.dispose();
   }
 
-  List<Athlete> get _filteredAthletes {
-    final athletesState = ref.watch(athletesProvider);
-    var filtered = athletesState.athletes;
+  // ПРАВИЛО: ref.watch вызывается ровно один раз на провайдер в build(),
+  // результат передаётся в helper-методы параметром.
+  // Повторный вызов ref.watch для того же провайдера в одном build-цикле
+  // (например, из геттера) регистрирует дублирующую подписку и вызывает
+  // лишний markNeedsBuild → _InactiveElements assertion на iOS.
+  List<Athlete> _filteredAthletes(AthletesState state) {
+    var filtered = state.athletes;
 
-    // Применяем поиск
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       filtered = filtered.where((a) {
@@ -337,9 +344,9 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
       },
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        itemCount: _filteredAthletes.length,
+        itemCount: _filteredAthletes(state).length,
         itemBuilder: (context, index) {
-          return _buildAthleteCard(context, _filteredAthletes[index]);
+          return _buildAthleteCard(context, _filteredAthletes(state)[index]);
         },
       ),
     );

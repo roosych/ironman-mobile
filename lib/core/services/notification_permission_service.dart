@@ -23,7 +23,10 @@ class NotificationPermissionService {
   factory NotificationPermissionService() => _instance;
   NotificationPermissionService._internal();
 
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  // Геттер вместо поля — FirebaseMessaging.instance бросает исключение если Firebase
+  // не инициализирован. Поле в конструкторе крашит ДО try/catch в методах.
+  // Геттер вызывается лениво внутри try/catch → ошибка перехватывается корректно.
+  FirebaseMessaging get _messaging => FirebaseMessaging.instance;
 
   /// Получить текущий статус разрешений уведомлений
   Future<NotificationPermissionState> getPermissionStatus() async {

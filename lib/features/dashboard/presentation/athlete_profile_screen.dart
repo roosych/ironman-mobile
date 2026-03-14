@@ -45,6 +45,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
 
     // Загружаем все данные при инициализации
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _loadAllData();
     });
   }
@@ -466,11 +467,14 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       next,
     ) {
       if (next.hasError && previous?.error != next.error && mounted) {
-        AlertHelper.showError(
-          context,
-          next.error ?? localizations.common_loading_error,
-          buttonText: localizations.error_ok,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AlertHelper.showError(
+            context,
+            next.error ?? localizations.common_loading_error,
+            buttonText: localizations.error_ok,
+          );
+        });
       }
     });
 
@@ -694,7 +698,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     // Слушаем ошибки
     ref.listen<RaceResultsState>(athleteRaceResultsProvider(widget.athlete.id), (previous, next) {
       if (next.hasError && previous?.error != next.error && mounted) {
-        ErrorHandler.showError(context, next.error ?? localizations.common_loading_error);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ErrorHandler.showError(context, next.error ?? localizations.common_loading_error);
+        });
       }
     });
 
@@ -849,11 +856,14 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       next,
     ) {
       if (next.hasError && previous?.error != next.error && mounted) {
-        AlertHelper.showError(
-          context,
-          next.error ?? localizations.common_loading_error,
-          buttonText: localizations.error_ok,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AlertHelper.showError(
+            context,
+            next.error ?? localizations.common_loading_error,
+            buttonText: localizations.error_ok,
+          );
+        });
       }
     });
 
@@ -983,11 +993,14 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     // Слушаем ошибки
     ref.listen<UpcomingRacesState>(athleteUpcomingRacesProvider(widget.athlete.id), (previous, next) {
       if (next.hasError && previous?.error != next.error && mounted) {
-        AlertHelper.showError(
-          context,
-          next.error ?? localizations.common_loading_error,
-          buttonText: localizations.error_ok,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AlertHelper.showError(
+            context,
+            next.error ?? localizations.common_loading_error,
+            buttonText: localizations.error_ok,
+          );
+        });
       }
     });
 

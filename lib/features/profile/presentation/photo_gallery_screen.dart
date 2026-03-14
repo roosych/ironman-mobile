@@ -207,14 +207,17 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     // Listen for errors
     ref.listen(userPhotosProvider, (previous, next) {
       if (next.error != null && previous?.error != next.error) {
-        final loc = AppLocalizations.of(context);
-        final errorMessage = _localizeError(next.error!, loc);
-        AlertHelper.showError(
-          context,
-          errorMessage,
-          buttonText: loc?.error_ok,
-        );
-        ref.read(userPhotosProvider.notifier).clearError();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          final loc = AppLocalizations.of(context);
+          final errorMessage = _localizeError(next.error!, loc);
+          AlertHelper.showError(
+            context,
+            errorMessage,
+            buttonText: loc?.error_ok,
+          );
+          ref.read(userPhotosProvider.notifier).clearError();
+        });
       }
     });
 
@@ -396,6 +399,7 @@ class _PhotoCard extends StatelessWidget {
         children: [
           // Photo image with caching
           CachedNetworkImage(
+            key: ValueKey(photo.url),
             imageUrl: ImageUrlHelper.getFullImageUrl(photo.url),
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(

@@ -60,8 +60,12 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
         athleteProfile: athleteProfile,
       );
 
-      // Update auth state with fresh data
-      _ref.read(authProvider.notifier).setUser(user);
+      // Update auth state with fresh data, preserving avatar if API didn't return it
+      final currentAvatarUrl = _ref.read(authProvider).user?.avatarUrl;
+      final userToSet = (user.avatarUrl == null && currentAvatarUrl != null)
+          ? user.copyWith(avatarUrl: currentAvatarUrl)
+          : user;
+      _ref.read(authProvider.notifier).setUser(userToSet);
     } on ProfileApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
