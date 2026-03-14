@@ -476,7 +476,7 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get register_confirm_email =>
-      'Zəhmət olmasa, gələn qutunuzu yoxlayın və hesabınızı aktivləşdirmək üçün e-poçt ünvanınızı təsdiqləyin.';
+      'Hesabınızı aktivləşdirmək üçün email-inizi yoxlayın';
 
   @override
   String get register_success_sign_in => 'DAXİL OL';
