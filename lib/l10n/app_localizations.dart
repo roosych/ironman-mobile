@@ -994,6 +994,12 @@ abstract class AppLocalizations {
   /// **'Registration successful.\nPlease verify your account by clicking the link in the email we sent you.\nYou can then sign in to your account.'**
   String get register_success_message;
 
+  /// Email confirmation hint on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your inbox and confirm your email address to activate your account.'**
+  String get register_confirm_email;
+
   /// Sign in button on success screen
   ///
   /// In en, this message translates to:

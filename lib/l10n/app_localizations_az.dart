@@ -475,6 +475,10 @@ class AppLocalizationsAz extends AppLocalizations {
       'Qeydiyyat uğurla tamamlandı.\nZəhmət olmasa, sizə göndərdiyimiz e-poçtdakı linkə klikləməklə hesabınızı təsdiqləyin.\nBundan sonra hesabınıza daxil ola bilərsiniz.';
 
   @override
+  String get register_confirm_email =>
+      'Zəhmət olmasa, gələn qutunuzu yoxlayın və hesabınızı aktivləşdirmək üçün e-poçt ünvanınızı təsdiqləyin.';
+
+  @override
   String get register_success_sign_in => 'DAXİL OL';
 
   @override

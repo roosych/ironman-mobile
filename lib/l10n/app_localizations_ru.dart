@@ -475,6 +475,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Регистрация успешна.\nПожалуйста, подтвердите свой аккаунт, перейдя по ссылке в письме, которое мы отправили вам на почту.\nПосле этого вы сможете войти в свой аккаунт.';
 
   @override
+  String get register_confirm_email =>
+      'Пожалуйста, проверьте почту и подтвердите email-адрес для активации аккаунта.';
+
+  @override
   String get register_success_sign_in => 'ВОЙТИ';
 
   @override

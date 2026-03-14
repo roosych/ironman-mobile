@@ -226,6 +226,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 2),
+                          child: Icon(Icons.mark_email_unread_outlined, color: Colors.amber, size: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            localizations.register_confirm_email,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 48),
                   FilledButton(
                     onPressed: _goToLogin,

@@ -474,6 +474,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Registration successful.\nPlease verify your account by clicking the link in the email we sent you.\nYou can then sign in to your account.';
 
   @override
+  String get register_confirm_email =>
+      'Please check your inbox and confirm your email address to activate your account.';
+
+  @override
   String get register_success_sign_in => 'SIGN IN';
 
   @override
