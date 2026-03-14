@@ -589,6 +589,10 @@
   "@register_success_message": {
     "description": "Registration success message"
   },
+  "register_confirm_email": "Please check your inbox and confirm your email address to activate your account.",
+  "@register_confirm_email": {
+    "description": "Email confirmation hint on success screen"
+  },
   "register_success_sign_in": "SIGN IN",
   "@register_success_sign_in": {
     "description": "Sign in button on success screen"

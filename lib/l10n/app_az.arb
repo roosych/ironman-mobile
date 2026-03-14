@@ -149,6 +149,7 @@
   "retry": "Təkrar cəhd edin",
   "register_thank_you": "Təşəkkürlər!",
   "register_success_message": "Qeydiyyat uğurla tamamlandı.\nZəhmət olmasa, sizə göndərdiyimiz e-poçtdakı linkə klikləməklə hesabınızı təsdiqləyin.\nBundan sonra hesabınıza daxil ola bilərsiniz.",
+  "register_confirm_email": "Hesabınızı aktivləşdirmək üçün email-inizi yoxlayın",
   "register_success_sign_in": "DAXİL OL",
   "register_select_country": "Ölkəni seçin",
   "register_search_countries": "Axtar",
