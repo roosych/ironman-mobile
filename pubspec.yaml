@@ -90,6 +90,9 @@ dependencies:
   # HTML rendering for policies
   flutter_html: ^3.0.0-beta.2
 
+  # Adaptive UI scaling
+  flutter_screenutil: ^5.9.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

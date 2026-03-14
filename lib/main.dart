@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -111,7 +112,12 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
 
-    return MaterialApp(
+    return ScreenUtilInit(
+      // Базовый дизайн: iPhone 13 (390x844)
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: false,
+      builder: (context, child) => MaterialApp(
       navigatorKey: navigatorKey,
       title: 'TriRank',
       debugShowCheckedModeBanner: false,
@@ -244,6 +250,7 @@ class MyApp extends ConsumerWidget {
         '/ratings': (context) => const RatingsScreen(),
         '/athletes': (context) => const AthletesScreen(),
       },
+      ),
     );
   }
 }
