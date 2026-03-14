@@ -36,11 +36,16 @@ class EligibleAthleteModel {
 
   /// Создает модель из JSON данных
   factory EligibleAthleteModel.fromJson(Map<String, dynamic> json) {
+    final ironman = json['ironman_count'] as int? ?? 0;
+    final ironman703 = json['ironman_70_3_count'] as int? ?? 0;
+    final sprint = json['sprint_5150_count'] as int? ?? 0;
+    final total = json['total_races'] as int? ?? (ironman + ironman703 + sprint);
+
     return EligibleAthleteModel(
       id: _parseId(json['id']),
       name: json['name'] as String,
       avatar: json['avatar'] as String?,
-      totalRaces: json['total_races'] as int? ?? 0,
+      totalRaces: total,
       lastRaceLocation: json['last_race_location'] as String?,
       lastRaceDate: json['last_race_date'] != null
           ? DateTime.parse(json['last_race_date'] as String)
