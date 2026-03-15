@@ -164,7 +164,7 @@ class _RaceSelectionBottomSheetState
                       SizedBox(width: 12.w),
                       Expanded(
                         child: Text(
-                          '${race.typeLabel.toUpperCase()}, ${race.location}, ${race.formattedDate}',
+                          '${_shortRaceType(race.type)}, ${race.location}, ${race.formattedDate}',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -374,6 +374,13 @@ class _RaceSelectionBottomSheetState
     );
   }
 
+  String _shortRaceType(String type) {
+    final t = type.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
+    if (t.contains('703') || t.contains('70.3')) return 'IRONMAN 70.3';
+    if (t.contains('5150')) return '5150';
+    return 'IRONMAN';
+  }
+
   /// Карточка гонки
   Widget _buildRaceCard(RaceModel race, bool isSelected, ThemeData theme) {
     return InkWell(
@@ -392,48 +399,74 @@ class _RaceSelectionBottomSheetState
         ),
         child: Padding(
           padding: EdgeInsets.all(16.r),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Флаг страны с закругленными краями
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4.r),
-                child: CountryFlag.fromCountryCode(
-                  race.countryIso,
-                  height: 20.h,
-                  width: 30.w,
-                ),
+              // Race type title
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _shortRaceType(race.type),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (isSelected)
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedCheckmarkCircle02,
+                      color: AppColors.ironmanRed,
+                      size: 24.r,
+                    ),
+                ],
               ),
-              SizedBox(width: 12.w),
-
-              // Информация о гонке
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${race.typeLabel.toUpperCase()}, ${race.location}',
+              SizedBox(height: 8.h),
+              // Flag and location
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4.r),
+                    child: CountryFlag.fromCountryCode(
+                      race.countryIso,
+                      height: 16.h,
+                      width: 24.w,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      race.location,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      race.formattedDate,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.ironmanTextSecondary,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              // Индикатор выбора
-              if (isSelected)
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedCheckmarkCircle02,
-                  color: AppColors.ironmanRed,
-                  size: 24.r,
-                ),
+              SizedBox(height: 8.h),
+              // Date
+              Row(
+                children: [
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedCalendar03,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    size: 16.r,
+                  ),
+                  SizedBox(width: 6.w),
+                  Text(
+                    race.formattedDate,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

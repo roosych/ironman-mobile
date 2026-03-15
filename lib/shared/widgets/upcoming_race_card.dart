@@ -146,7 +146,9 @@ class UpcomingRaceCard extends StatelessWidget {
                       SizedBox(width: 6.w),
                       Text(
                         _formatDate(race.raceDate, context),
-                        style: theme.textTheme.bodyMedium,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 14.sp,
+                        ),
                       ),
                     ],
                   ),
@@ -158,6 +160,7 @@ class UpcomingRaceCard extends StatelessWidget {
                       : localizations.common_days(daysUntil).toUpperCase(),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
                     color: isPast
                         ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
                         : daysUntil <= 14

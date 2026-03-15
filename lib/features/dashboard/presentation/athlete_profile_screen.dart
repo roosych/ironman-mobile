@@ -1726,7 +1726,6 @@ class _DisciplineRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: AppColors.resultsBorder, width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -1754,6 +1753,7 @@ class _DisciplineRow extends StatelessWidget {
                             time,
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize: 24.sp,
                               color: Colors.white,
                             ),
                           ),
@@ -1780,31 +1780,55 @@ class _DisciplineRow extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Нижняя строка: дата слева, локация справа
+                  // Нижняя строка: локация слева, дата справа
                   if (date != null || location != null) ...[
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 8.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (date != null)
-                          Text(
-                            formatDate(date),
-                            style: Theme.of(context).textTheme.bodySmall,
+                        if (location != null)
+                          Expanded(
+                            child: Row(
+                              children: [
+                                HugeIcon(
+                                  icon: HugeIcons.strokeRoundedLocation01,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                  size: 13.r,
+                                ),
+                                SizedBox(width: 4.w),
+                                Flexible(
+                                  child: Text(
+                                    location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: 13.sp,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           )
                         else
                           const SizedBox.shrink(),
-                        if (location != null)
-                          Expanded(
-                            child: Text(
-                              location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontSize: 13.sp,
+                        if (date != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedCalendar03,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                size: 13.r,
                               ),
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                formatDate(date),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ],
                           )
                         else
                           const SizedBox.shrink(),

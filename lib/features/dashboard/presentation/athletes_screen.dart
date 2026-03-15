@@ -252,14 +252,16 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                             text: 'IRONMAN',
                             style: TextStyle(
                               color: AppColors.ironmanWhite,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14.sp,
                             ),
                           ),
                           TextSpan(
                             text: ' x${athlete.raceCounts.ironman}',
                             style: TextStyle(
                               color: AppColors.ironmanRed,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14.sp,
                             ),
                           ),
                         ],

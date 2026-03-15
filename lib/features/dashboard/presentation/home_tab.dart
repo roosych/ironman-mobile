@@ -1423,7 +1423,7 @@ class _PersonalBestsCard extends StatelessWidget {
               child: Text(
                 _getRaceTypeText(title),
                 style: TextStyle(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w500,
                   fontSize: 17.sp,
                 ),
               ),
@@ -1648,23 +1648,49 @@ class _DisciplineRow extends StatelessWidget {
                       children: [
                         // Date
                         if (date != null)
-                          Text(
-                            formatDate(date),
-                            style: Theme.of(context).textTheme.bodySmall,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedCalendar03,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                size: 13.r,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                formatDate(date),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ],
                           )
                         else
                           const SizedBox.shrink(),
                         // Location
                         if (location != null)
                           Expanded(
-                            child: Text(
-                              location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontSize: 13.sp,
-                              ),
-                              textAlign: TextAlign.right,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                HugeIcon(
+                                  icon: HugeIcons.strokeRoundedLocation01,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                  size: 13.r,
+                                ),
+                                SizedBox(width: 4.w),
+                                Flexible(
+                                  child: Text(
+                                    location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: 13.sp,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
                           )
                         else

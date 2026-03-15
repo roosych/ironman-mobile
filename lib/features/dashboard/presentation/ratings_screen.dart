@@ -247,9 +247,15 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     vertical: 10.h,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.ironmanRed,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryGradientStart,
+                        AppColors.primaryGradientEnd,
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.ironmanRed, width: 1.5),
                   ),
                   child: Center(
                     child: Text(
@@ -606,46 +612,51 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             right: 16.w,
             bottom: 16.h,
             child: SafeArea(
-              child: ElevatedButton(
-                onPressed: state.canCompare
+              child: GestureDetector(
+                onTap: state.canCompare
                     ? () {
                         setState(() {
                           _showComparison = true;
                         });
                       }
                     : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: state.canCompare
-                      ? AppColors.ironmanRed
-                      : AppColors.ironmanGray,
-                  foregroundColor: AppColors.ironmanWhite,
+                child: Container(
+                  width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(
+                  decoration: BoxDecoration(
+                    gradient: state.canCompare
+                        ? const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primaryGradientStart,
+                              AppColors.primaryGradientEnd,
+                            ],
+                          )
+                        : null,
+                    color: state.canCompare ? null : AppColors.ironmanGray,
                     borderRadius: BorderRadius.circular(12.r),
-                    side: BorderSide(
+                    boxShadow: state.canCompare
+                        ? [
+                            BoxShadow(
+                              color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    '${localizations.ratings_compare} (${state.selectedAthleteIds.length})',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
                       color: state.canCompare
-                          ? AppColors.ironmanRed
-                          : AppColors.ironmanLightGray,
-                      width: state.canCompare ? 2 : 1,
+                          ? AppColors.ironmanWhite
+                          : AppColors.ironmanTextSecondary,
                     ),
                   ),
-                  elevation: state.canCompare ? 4 : 0,
-                  disabledBackgroundColor: AppColors.ironmanGray,
-                  disabledForegroundColor: AppColors.ironmanTextSecondary,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${localizations.ratings_compare} (${state.selectedAthleteIds.length})',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: state.canCompare
-                            ? AppColors.ironmanWhite
-                            : AppColors.ironmanTextSecondary,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),

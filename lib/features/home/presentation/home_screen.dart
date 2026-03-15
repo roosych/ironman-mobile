@@ -123,7 +123,7 @@ class _HomeBottomNav extends StatelessWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+          padding: EdgeInsets.only(top: 8.h, left: 8.w, right: 8.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

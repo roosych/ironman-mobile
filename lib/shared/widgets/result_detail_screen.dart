@@ -332,10 +332,6 @@ class _DisciplineCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: AppColors.ironmanGray,
-          width: 1,
-        ),
       ),
       child: Row(
         children: [

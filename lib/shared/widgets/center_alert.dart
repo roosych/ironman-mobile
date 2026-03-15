@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ironman_mobile/core/theme/app_colors.dart';
 
 /// Центральный алерт, отображаемый по центру экрана
 class CenterAlert extends StatelessWidget {
@@ -49,12 +51,41 @@ class CenterAlert extends StatelessWidget {
     }
   }
 
-  Color _getBackgroundColor(BuildContext context) {
+  Color _getIconColor(BuildContext context) {
     switch (type) {
       case AlertType.error:
         return Theme.of(context).colorScheme.error;
       case AlertType.success:
-        return Colors.green;
+        return AppColors.primaryGradientStart;
+      case AlertType.info:
+        return Theme.of(context).colorScheme.primary;
+      case AlertType.warning:
+        return Colors.orange;
+    }
+  }
+
+  Gradient? _getButtonGradient() {
+    switch (type) {
+      case AlertType.success:
+        return const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryGradientStart,
+            AppColors.primaryGradientEnd,
+          ],
+        );
+      default:
+        return null;
+    }
+  }
+
+  Color _getButtonColor(BuildContext context) {
+    switch (type) {
+      case AlertType.error:
+        return Theme.of(context).colorScheme.error;
+      case AlertType.success:
+        return AppColors.primaryGradientStart;
       case AlertType.info:
         return Theme.of(context).colorScheme.primary;
       case AlertType.warning:
@@ -78,67 +109,95 @@ class CenterAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final backgroundColor = _getBackgroundColor(context);
+    final iconColor = _getIconColor(context);
     final icon = _getIcon();
+    final buttonGradient = _getButtonGradient();
+    final buttonColor = _getButtonColor(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
       ),
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
+        constraints: BoxConstraints(maxWidth: 320.w),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Иконка
             Padding(
-              padding: const EdgeInsets.only(top: 24, bottom: 8),
+              padding: EdgeInsets.only(top: 24.h, bottom: 8.h),
               child: Icon(
                 icon,
-                size: 48,
-                color: backgroundColor,
+                size: 48.r,
+                color: iconColor,
               ),
             ),
             // Сообщение
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.r),
               child: Text(
                 message,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   height: 1.4,
                 ),
               ),
             ),
             // Кнопка
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onPressed ?? () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: backgroundColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    buttonText ?? 'OK',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                child: buttonGradient != null
+                    ? Container(
+                        decoration: BoxDecoration(
+                          gradient: buttonGradient,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: onPressed ?? () => Navigator.of(context).pop(),
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 14.h),
+                              child: Text(
+                                buttonText ?? 'OK',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : ElevatedButton(
+                        onPressed: onPressed ?? () => Navigator.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                        child: Text(
+                          buttonText ?? 'OK',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
               ),
             ),
           ],
@@ -155,4 +214,3 @@ enum AlertType {
   info,
   warning,
 }
-
