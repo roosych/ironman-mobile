@@ -1639,13 +1639,39 @@ class _DisciplineRow extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Нижняя строка: дата слева, локация справа
+                  // Нижняя строка: локация слева, дата справа
                   if (date != null || location != null) ...[
                     SizedBox(height: 4.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Location
+                        if (location != null)
+                          Expanded(
+                            child: Row(
+                              children: [
+                                HugeIcon(
+                                  icon: HugeIcons.strokeRoundedLocation01,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                  size: 13.r,
+                                ),
+                                SizedBox(width: 4.w),
+                                Flexible(
+                                  child: Text(
+                                    location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: 13.sp,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
                         // Date
                         if (date != null)
                           Row(
@@ -1664,34 +1690,6 @@ class _DisciplineRow extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          )
-                        else
-                          const SizedBox.shrink(),
-                        // Location
-                        if (location != null)
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                HugeIcon(
-                                  icon: HugeIcons.strokeRoundedLocation01,
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                                  size: 13.r,
-                                ),
-                                SizedBox(width: 4.w),
-                                Flexible(
-                                  child: Text(
-                                    location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontSize: 13.sp,
-                                    ),
-                                    textAlign: TextAlign.right,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
                           )
                         else
                           const SizedBox.shrink(),
