@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/errors/api_exception.dart';
@@ -105,6 +106,7 @@ class AthletesApi {
             localizationKey: ApiErrorKeys.athleteObjectFormat,
           );
         }
+        debugPrint('🔍 athlete detail raw: $athleteData');
         return Athlete.fromJson(athleteData);
       }
 
