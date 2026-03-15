@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -187,27 +188,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(24.r),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Center(
                     child: Container(
-                      width: 120,
-                      height: 120,
+                      width: 120.r,
+                      height: 120.r,
                       decoration: BoxDecoration(
                         color: Colors.green.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const HugeIcon(
+                      child: HugeIcon(
                         icon: HugeIcons.strokeRoundedCheckmarkCircle02,
-                        size: 64,
+                        size: 64.r,
                         color: Colors.green,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   Text(
                     localizations.register_thank_you,
                     textAlign: TextAlign.center,
@@ -216,7 +217,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       letterSpacing: 1,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Text(
                     localizations.register_success_message,
                     textAlign: TextAlign.center,
@@ -226,22 +227,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     decoration: BoxDecoration(
                       color: Colors.amber.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 2),
-                          child: Icon(Icons.mark_email_unread_outlined, color: Colors.amber, size: 18),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.h),
+                          child: const Icon(Icons.mark_email_unread_outlined, color: Colors.amber, size: 18),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         Expanded(
                           child: Text(
                             localizations.register_confirm_email,
@@ -253,19 +254,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  SizedBox(height: 48.h),
                   FilledButton(
                     onPressed: _goToLogin,
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                     ),
                     child: Text(
                       localizations.register_success_sign_in,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,
                       ),
@@ -286,7 +287,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           Transform.rotate(
           angle: 3.14159, // 180 градусов (π радиан)
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+            height: 0.5.sh,
             width: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -318,16 +319,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: const HugeIcon(
+              icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowLeft01,
                 color: Colors.white,
-                size: 24,
+                size: 24.r,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
               Padding(
-                padding: const EdgeInsets.only(right: 16.0),
+                padding: EdgeInsets.only(right: 16.w),
                 child: const LanguageSelector(),
               ),
             ],
@@ -335,21 +336,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(24.r),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Center(
-                      //   child: Image.asset(
-                      //     'assets/images/logo.png',
-                      //     width: 160,
-                      //     fit: BoxFit.contain,
-                      //   ),
-                      // ),
-                      // const SizedBox(height: 12),
                       Text(
                         localizations.register_title,
                         textAlign: TextAlign.center,
@@ -359,15 +352,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32.h),
                       Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           side: BorderSide.none,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: EdgeInsets.all(24.r),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -383,7 +376,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
-                                    size: 20,
+                                    size: 20.r,
                                   ),
                                 ),
                                 validator: (value) {
@@ -393,7 +386,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               // Country selector
                               GestureDetector(
                                 onTap: authState.isLoading ? null : _showCountrySelector,
@@ -404,7 +397,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedLocation01,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      size: 20,
+                                      size: 20.r,
                                     ),
                                     suffixIcon: Icon(
                                       Icons.arrow_drop_down,
@@ -415,21 +408,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   isEmpty: _selectedCountry == null,
                                   child: _selectedCountry != null
                                       ? SizedBox(
-                                          height: 24, // Match TextFormField content height
+                                          height: 24.h,
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               ClipRRect(
-                                                borderRadius: BorderRadius.circular(2),
+                                                borderRadius: BorderRadius.circular(2.r),
                                                 child: CountryFlag.fromCountryCode(
                                                   _selectedCountry!.isoCode,
                                                   height: 16,
                                                   width: 24,
                                                 ),
                                               ),
-                                              const SizedBox(width: 8),
+                                              SizedBox(width: 8.w),
                                               Expanded(
                                                 child: Text(
                                                   _selectedCountry!.name,
@@ -440,10 +433,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                             ],
                                           ),
                                         )
-                                      : const SizedBox(height: 24), // Consistent height even when empty
+                                      : SizedBox(height: 24.h),
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               TextFormField(
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
@@ -455,7 +448,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
-                                    size: 20,
+                                    size: 20.r,
                                   ),
                                 ),
                                 validator: (value) {
@@ -468,7 +461,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
@@ -480,7 +473,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
-                                    size: 20,
+                                    size: 20.r,
                                   ),
                                   suffixIcon: IconButton(
                                     icon: HugeIcon(
@@ -490,7 +483,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.onSurfaceVariant,
-                                      size: 20,
+                                      size: 20.r,
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -511,7 +504,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               TextFormField(
                                 controller: _confirmPasswordController,
                                 obscureText: _obscureConfirmPassword,
@@ -524,7 +517,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
-                                    size: 20,
+                                    size: 20.r,
                                   ),
                                   suffixIcon: IconButton(
                                     icon: HugeIcon(
@@ -534,7 +527,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.onSurfaceVariant,
-                                      size: 20,
+                                      size: 20.r,
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -556,7 +549,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               // Privacy Policy Checkbox
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -571,7 +564,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     visualDensity: VisualDensity.compact,
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8.w),
                                   Expanded(
                                     child: RichText(
                                       text: TextSpan(
@@ -607,20 +600,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+                              SizedBox(height: 24.h),
                               SizedBox(
                                 width: double.infinity,
                                 child: authState.isLoading
                                     ? Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        padding: EdgeInsets.symmetric(vertical: 16.h),
                                         decoration: AppButtonStyles.primaryGradientDecoration(
-                                          borderRadius: 12,
+                                          borderRadius: 12.r,
                                         ),
-                                        child: const Center(
+                                        child: Center(
                                           child: SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
+                                            height: 20.r,
+                                            width: 20.r,
+                                            child: const CircularProgressIndicator(
                                               strokeWidth: 2,
                                               color: Colors.white,
                                             ),
@@ -630,10 +623,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     : AppButtonStyles.primaryGradientButton(
                                         text: localizations.register_button,
                                         onPressed: _register,
-                                        borderRadius: 12,
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
-                                        textStyle: const TextStyle(
-                                          fontSize: 16,
+                                        borderRadius: 12.r,
+                                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                                        textStyle: TextStyle(
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1,
                                         ),
@@ -643,9 +636,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      SizedBox(height: 16.h),
+                      Column(
                         children: [
                           Text(
                             localizations.register_already_have_account,
@@ -735,10 +727,10 @@ class _CountrySelectorState extends State<_CountrySelector> {
     final localizations = AppLocalizations.of(context)!;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: 0.8.sh,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         border: Border.all(
           color: AppColors.ironmanGray,
           width: 1,
@@ -748,17 +740,17 @@ class _CountrySelectorState extends State<_CountrySelector> {
         children: [
           // Handle bar
           Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
+            margin: EdgeInsets.only(top: 12.h),
+            width: 40.w,
+            height: 4.h,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(2.r),
             ),
           ),
           // Header
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -766,12 +758,13 @@ class _CountrySelectorState extends State<_CountrySelector> {
                   localizations.register_select_country,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
                   ),
                 ),
                 IconButton(
                   icon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCancel01,
-                    size: 20,
+                    size: 20.r,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () => Navigator.pop(context),
@@ -781,7 +774,7 @@ class _CountrySelectorState extends State<_CountrySelector> {
           ),
           // Search field
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: ValueListenableBuilder<TextEditingValue>(
               valueListenable: _searchController,
               builder: (context, value, child) {
@@ -789,16 +782,16 @@ class _CountrySelectorState extends State<_CountrySelector> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     labelText: localizations.register_search_countries,
-                    prefixIcon: const HugeIcon(
+                    prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
-                      size: 20,
+                      size: 20.r,
                       color: AppColors.ironmanTextSecondary,
                     ),
                     suffixIcon: value.text.isNotEmpty
                         ? IconButton(
                             icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
-                              size: 16,
+                              size: 16.r,
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () {
@@ -811,17 +804,17 @@ class _CountrySelectorState extends State<_CountrySelector> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // Countries list
           Expanded(
             child: ListView.builder(
               itemCount: _filteredCountries.length,
-              itemExtent: 72.0, // Fixed height for better performance
+              itemExtent: 72.h,
               itemBuilder: (context, index) {
                 final country = _filteredCountries[index];
                 return ListTile(
                   leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.r),
                     child: CountryFlag.fromCountryCode(
                       country.isoCode,
                       height: 24,

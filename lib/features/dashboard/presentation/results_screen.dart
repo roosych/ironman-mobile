@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -18,8 +19,9 @@ import 'package:ironman_mobile/shared/utils/error_handler.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
+  final bool showBottomNav;
 
-  const ResultsScreen({super.key, this.onBack});
+  const ResultsScreen({super.key, this.onBack, this.showBottomNav = true});
 
   @override
   ConsumerState<ResultsScreen> createState() => _ResultsScreenState();
@@ -62,25 +64,25 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         // Используем addPostFrameCallback чтобы избежать модификации провайдера во время построения
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          
+
           // Дополнительная проверка в UI для предотвращения лишних вызовов
           final resultsState = ref.read(raceResultsProvider);
           final profileId = _getProfileId();
-          
+
           // Не вызываем загрузку, если:
           // 1. Уже идет загрузка
           // 2. Результаты уже есть и они от текущего пользователя
           if (resultsState.isLoading) {
             return; // Уже идет загрузка
           }
-          
+
           if (resultsState.results.isNotEmpty && profileId != null) {
             final firstResult = resultsState.results.first;
             if (firstResult.userProfileId == profileId) {
               return; // Результаты уже загружены для этого пользователя
             }
           }
-          
+
           // Провайдер сам проверит еще раз, нужно ли загружать данные
           _loadResults();
 
@@ -282,9 +284,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           appBar: AppBar(
             title: Text(
               AppLocalizations.of(context)!.results_title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: 22.sp,
               ),
             ),
             backgroundColor: AppColors.ironmanBlack,
@@ -300,7 +302,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             children: [
               // Search bar
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.r),
                 child: TextField(
                   controller: _searchController,
                   onChanged: (value) {
@@ -316,14 +318,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                      size: 24,
+                      size: 24.r,
                     ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
                               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                              size: 24,
+                              size: 24.r,
                             ),
                             onPressed: () {
                               setState(() {
@@ -336,12 +338,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
                     ),
                   ),
                   style: Theme.of(context).textTheme.bodyLarge,
@@ -354,7 +356,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             ],
           ),
           // Add bottom navigation for unauthenticated users
-          bottomNavigationBar: const UnauthenticatedBottomNav(currentIndex: 0), // 0 = Results
+          bottomNavigationBar: widget.showBottomNav
+              ? const UnauthenticatedBottomNav(currentIndex: 0) // 0 = Results
+              : null,
         ),
       );
     }
@@ -371,8 +375,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           builder: (context, child) {
             return _tabController.index == 1
                 ? Container(
-                    width: 56,
-                    height: 56,
+                    width: 56.r,
+                    height: 56.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const LinearGradient(
@@ -401,11 +405,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             ),
                           );
                         },
-                        borderRadius: BorderRadius.circular(28),
-                        child: const Icon(
+                        borderRadius: BorderRadius.circular(28.r),
+                        child: Icon(
                           Icons.add,
                           color: Colors.white,
-                          size: 24,
+                          size: 24.r,
                         ),
                       ),
                     ),
@@ -421,16 +425,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,
                   color: Theme.of(context).colorScheme.onSurface,
-                  size: 24,
+                  size: 24.r,
                 ),
                 onPressed:
                     widget.onBack ?? () => Navigator.of(context).maybePop(),
               ),
               title: Text(
                 AppLocalizations.of(context)!.results_title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                 ),
               ),
               pinned: true,
@@ -438,124 +442,124 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               snap: false,
               forceElevated: false,
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight + 80),
+                preferredSize: Size.fromHeight(kToolbarHeight + 16.h),
                 child: Container(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Column(
-                    children: [
-                      // Поле поиска
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.athletes_search_hint,
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                            ),
-                            prefixIcon: HugeIcon(
-                              icon: HugeIcons.strokeRoundedSearch01,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                              size: 24,
-                            ),
-                            suffixIcon: _searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon: HugeIcon(
-                                      icon: HugeIcons.strokeRoundedCancel01,
-                                      color: Theme.of(context).colorScheme.onSurface.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                      size: 24,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _searchQuery = '';
-                                        _searchController.clear();
-                                      });
-                                    },
-                                  )
-                                : null,
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.surface,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                          style: Theme.of(context).textTheme.bodyLarge,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: AppColors.ironmanGray,
+                          width: 1,
                         ),
                       ),
-                      // TabBar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                      padding: EdgeInsets.all(4.r),
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.white,
+                        labelStyle: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.ironmanGray,
-                              width: 1,
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(4),
-                          child: TabBar(
-                            controller: _tabController,
-                            labelColor: Colors.white,
-                            labelStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            unselectedLabelColor: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.5),
-                            unselectedLabelStyle: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            indicator: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primaryGradientStart,
-                                  AppColors.primaryGradientEnd,
-                                ],
-                              ),
-                            ),
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            dividerColor: Colors.transparent,
-                            labelPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            indicatorPadding: EdgeInsets.zero,
-                            tabs: _buildTabs(context),
+                        unselectedLabelColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
+                        unselectedLabelStyle: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.r),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primaryGradientStart,
+                              AppColors.primaryGradientEnd,
+                            ],
                           ),
                         ),
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        labelPadding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                        ),
+                        indicatorPadding: EdgeInsets.zero,
+                        tabs: _buildTabs(context),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
-          physics: const BouncingScrollPhysics(),
-          children: _buildTabViews(allResultsState, myResultsState),
+        body: Column(
+          children: [
+            // Поле поиска
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.athletes_search_hint,
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  prefixIcon: HugeIcon(
+                    icon: HugeIcons.strokeRoundedSearch01,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    size: 24.r,
+                  ),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: HugeIcon(
+                            icon: HugeIcons.strokeRoundedCancel01,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            size: 24.r,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                              _searchController.clear();
+                            });
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
+                ),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            // Контент вкладок
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                physics: const BouncingScrollPhysics(),
+                children: _buildTabViews(allResultsState, myResultsState),
+              ),
+            ),
+          ],
         ),
       ),
       ),
@@ -576,7 +580,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     if (state.hasError && !state.isLoading) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -587,7 +591,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: _loadResults,
                 child: Text(AppLocalizations.of(context)!.common_retry),
@@ -636,7 +640,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
                 return SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.r),
                     child: TransferStatusCard(
                       state: transferState,
                       onTransferRequest: () => _showAthleteSelectionBottomSheet(context),
@@ -654,20 +658,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     ),
                   )
                 : SliverPadding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.r),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           // Показываем индикатор загрузки в конце списка
                           if (index == filteredResults.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Center(child: CircularProgressIndicator()),
+                            return Padding(
+                              padding: EdgeInsets.all(16.r),
+                              child: const Center(child: CircularProgressIndicator()),
                             );
                           }
 
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
+                            padding: EdgeInsets.only(bottom: 16.h),
                             child: ResultCard(
                               result: filteredResults[index],
                               isMyResults: true,
@@ -698,7 +702,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     if (state.hasError && !state.isLoading) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -709,7 +713,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: _loadAllResults,
                 child: Text(AppLocalizations.of(context)!.common_retry),
@@ -747,19 +751,19 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           return false;
         },
         child: ListView.builder(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           itemCount: filteredResults.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             // Показываем индикатор загрузки в конце списка
             if (index == filteredResults.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(child: CircularProgressIndicator()),
+              return Padding(
+                padding: EdgeInsets.all(16.r),
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
+              padding: EdgeInsets.only(bottom: 16.h),
               child: ResultCard(
                 result: filteredResults[index],
                 showBorder: false,

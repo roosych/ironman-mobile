@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/features/results/domain/race_result.dart';
@@ -44,7 +45,7 @@ class ResultCard extends ConsumerWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: showBorder
             ? BorderSide(
                 color: AppColors.resultsBorder,
@@ -62,7 +63,7 @@ class ResultCard extends ConsumerWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -76,10 +77,7 @@ class ResultCard extends ConsumerWidget {
                     result.athleteName!.toUpperCase(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize:
-                          (Theme.of(context).textTheme.titleMedium?.fontSize ??
-                              16) +
-                          3,
+                      fontSize: 19.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -87,33 +85,34 @@ class ResultCard extends ConsumerWidget {
               if (!isMyResults &&
                   result.athleteName != null &&
                   result.athleteName!.isNotEmpty)
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
               // Location with race type prefix
               Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     HugeIcon(
                       icon: HugeIcons.strokeRoundedLocation01,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      size: 16,
+                      size: 16.r,
                     ),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6.w),
                     Flexible(
                       child: Text(
-                        '${_getRaceTypePrefix(result.raceType)} ${result.location}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        '${_getRaceTypePrefix(result.raceType)} ${result.location.isEmpty ? '' : result.location[0].toUpperCase() + result.location.substring(1)}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w400,
                         ),
                         textAlign: TextAlign.center,
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               // Date (теперь под локацией)
               Center(
                 child: Row(
@@ -122,9 +121,9 @@ class ResultCard extends ConsumerWidget {
                     HugeIcon(
                       icon: HugeIcons.strokeRoundedCalendar03,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      size: 16,
+                      size: 16.r,
                     ),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6.w),
                     Text(
                       _formatDate(result.date, ref),
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -133,13 +132,13 @@ class ResultCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               // Total Time на всю ширину
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12.r),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Center(
                   child: Text(

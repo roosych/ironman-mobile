@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -17,8 +18,9 @@ import '../../../shared/utils/error_handler.dart';
 class RatingsScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
   final bool isActive;
+  final bool showBottomNav;
 
-  const RatingsScreen({super.key, this.onBack, this.isActive = true});
+  const RatingsScreen({super.key, this.onBack, this.isActive = true, this.showBottomNav = true});
 
   @override
   ConsumerState<RatingsScreen> createState() => _RatingsScreenState();
@@ -115,7 +117,7 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                       icon: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowLeft01,
                         color: theme.colorScheme.onSurface,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onPressed:
                           widget.onBack ??
@@ -123,9 +125,9 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     ),
                     title: Text(
                       localizations.ratings_title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 22,
+                        fontSize: 22.sp,
                       ),
                     ),
                     pinned: true,
@@ -133,39 +135,39 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     snap: false,
                     forceElevated: false,
                     bottom: PreferredSize(
-                      preferredSize: const Size.fromHeight(kToolbarHeight + 16),
+                      preferredSize: Size.fromHeight(kToolbarHeight + 16.h),
                       child: Container(
                         color: theme.scaffoldBackgroundColor,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 8.h,
                           ),
                           child: Container(
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surface,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                               border: Border.all(
                                 color: AppColors.ironmanGray,
                                 width: 1,
                               ),
                             ),
-                            padding: const EdgeInsets.all(4),
+                            padding: EdgeInsets.all(4.r),
                             child: TabBar(
                               controller: _mainTabController,
                               labelColor: Colors.white,
-                              labelStyle: const TextStyle(
-                                fontSize: 15,
+                              labelStyle: TextStyle(
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                               unselectedLabelColor: theme.colorScheme.onSurface
                                   .withValues(alpha: 0.5),
-                              unselectedLabelStyle: const TextStyle(
-                                fontSize: 15,
+                              unselectedLabelStyle: TextStyle(
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                               indicator: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12.r),
                                 gradient: const LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -177,8 +179,8 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                               ),
                               indicatorSize: TabBarIndicatorSize.tab,
                               dividerColor: Colors.transparent,
-                              labelPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
+                              labelPadding: EdgeInsets.symmetric(
+                                horizontal: 20.w,
                               ),
                               indicatorPadding: EdgeInsets.zero,
                               tabs: const [
@@ -235,18 +237,18 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
               !state.isLoading &&
               !state.hasError)
             Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
+              left: 16.w,
+              right: 16.w,
+              bottom: 16.h,
               child: SafeArea(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 10.h,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.ironmanRed,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(color: AppColors.ironmanRed, width: 1.5),
                   ),
                   child: Center(
@@ -265,7 +267,7 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
         ],
       ),
       // Add bottom navigation for unauthenticated users
-      bottomNavigationBar: _isUserAuthenticated()
+      bottomNavigationBar: (_isUserAuthenticated() || !widget.showBottomNav)
           ? null
           : const UnauthenticatedBottomNav(currentIndex: 1), // 1 = Ratings
     );
@@ -388,24 +390,24 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
       children: [
         // Подтабы с дисциплинами
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Center(
             child: TabBar(
               controller: _subTabController,
               labelColor: AppColors.ironmanRed,
-              labelStyle: const TextStyle(
-                fontSize: 14,
+              labelStyle: TextStyle(
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
               unselectedLabelColor: theme.colorScheme.onSurface.withValues(
                 alpha: 0.5,
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 14,
+              unselectedLabelStyle: TextStyle(
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
               indicator: UnderlineTabIndicator(
-                borderRadius: BorderRadius.circular(1.5),
+                borderRadius: BorderRadius.circular(1.5.r),
                 borderSide: BorderSide(
                   width: 3,
                   color: AppColors.ironmanRed,
@@ -413,9 +415,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
-              labelPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
+              labelPadding: EdgeInsets.symmetric(
+                horizontal: 12.w,
+                vertical: 8.h,
               ),
               indicatorPadding: EdgeInsets.zero,
               splashFactory: NoSplash.splashFactory,
@@ -428,8 +430,8 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     child: imagePath != null
                         ? Image.asset(
                             imagePath,
-                            width: 60,
-                            height: 24,
+                            width: 60.w,
+                            height: 24.h,
                             fit: BoxFit.contain,
                           )
                         : Text(discipline['label']!),
@@ -441,13 +443,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         ),
         // Поисковая строка
         Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
           child: TextField(
             controller: _searchController,
             onChanged: (value) {
               setState(() {
                 _searchQuery = value;
-                // Close comparison block when starting to type
                 if (_showComparison && value.isNotEmpty) {
                   _showComparison = false;
                   ref.read(rankingsProvider.notifier).clearSelection();
@@ -462,7 +463,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedSearch01,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                size: 24,
+                size: 24.r,
               ),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -471,7 +472,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.5,
                         ),
-                        size: 24,
+                        size: 24.r,
                       ),
                       onPressed: () {
                         setState(() {
@@ -484,12 +485,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               filled: true,
               fillColor: theme.colorScheme.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 12.h,
               ),
             ),
             style: theme.textTheme.bodyLarge,
@@ -514,7 +515,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
     if (state.hasError && !state.isLoading) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -525,7 +526,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () {
                   final selectedDiscipline =
@@ -585,11 +586,11 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             await ref.read(rankingsProvider.notifier).refreshRankings();
           },
           child: ListView.builder(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 16.0,
-              bottom: 80.0, // Отступ для плавающей кнопки
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: 16.h,
+              bottom: 80.h,
             ),
             itemCount: filteredRankings.length,
             itemBuilder: (context, index) {
@@ -601,14 +602,13 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         // Плавающая кнопка сравнения
         if (state.selectedAthleteIds.isNotEmpty)
           Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
+            left: 16.w,
+            right: 16.w,
+            bottom: 16.h,
             child: SafeArea(
               child: ElevatedButton(
                 onPressed: state.canCompare
                     ? () {
-                        // Переключаем на режим сравнения
                         setState(() {
                           _showComparison = true;
                         });
@@ -619,9 +619,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                       ? AppColors.ironmanRed
                       : AppColors.ironmanGray,
                   foregroundColor: AppColors.ironmanWhite,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     side: BorderSide(
                       color: state.canCompare
                           ? AppColors.ironmanRed
@@ -675,10 +675,10 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         }
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12.h),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected ? AppColors.ironmanRed : AppColors.ironmanGray,
             width: isSelected ? 2 : 1,
@@ -687,18 +687,18 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 48.0,
-                top: 16.0,
-                right: 16.0,
-                bottom: 16.0,
+              padding: EdgeInsets.only(
+                left: 48.w,
+                top: 16.h,
+                right: 16.w,
+                bottom: 16.h,
               ),
               child: Row(
                 children: [
-                  // Avatar (как на экране атлетов)
+                  // Avatar
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 56.r,
+                    height: 56.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
@@ -718,7 +718,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                           : _buildDefaultAvatar(theme),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   // Name and details
                   Expanded(
                     child: Column(
@@ -728,12 +728,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                           ranking.name.toUpperCase(),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize:
-                                (theme.textTheme.titleMedium?.fontSize ?? 16) +
-                                2,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4.h),
                         Text(
                           ranking.time,
                           style: theme.textTheme.bodyLarge?.copyWith(
@@ -741,41 +738,35 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4.h),
                         Row(
                           children: [
                             HugeIcon(
                               icon: HugeIcons.strokeRoundedCalendar03,
                               color: AppColors.ironmanTextSecondary,
-                              size: 14,
+                              size: 14.r,
                             ),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4.w),
                             Text(
                               _formatDate(ranking.raceDate),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: AppColors.ironmanTextSecondary,
-                                fontSize:
-                                    (theme.textTheme.bodySmall?.fontSize ??
-                                        12) +
-                                    1,
+                                fontSize: 13.sp,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             HugeIcon(
                               icon: HugeIcons.strokeRoundedLocation01,
                               color: AppColors.ironmanTextSecondary,
-                              size: 14,
+                              size: 14.r,
                             ),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4.w),
                             Expanded(
                               child: Text(
-                                ranking.location,
+                                ranking.location.isNotEmpty ? ranking.location[0].toUpperCase() + ranking.location.substring(1) : '',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: AppColors.ironmanTextSecondary,
-                                  fontSize:
-                                      (theme.textTheme.bodySmall?.fontSize ??
-                                          12) +
-                                      1,
+                                  fontSize: 13.sp,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -788,25 +779,25 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 ],
               ),
             ),
-            // Position badge в левом верхнем углу
+            // Position badge
             Positioned(
               top: 0,
               left: 0,
               child: Container(
-                width: 32,
-                height: 32,
+                width: 32.r,
+                height: 32.r,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(8),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.r),
+                    bottomRight: Radius.circular(8.r),
                   ),
                 ),
                 child: Center(
                   child: Text(
                     '${ranking.position}',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.ironmanWhite,
                     ),
@@ -836,7 +827,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         child: HugeIcon(
           icon: HugeIcons.strokeRoundedUser,
           color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          size: 28,
+          size: 28.r,
         ),
       ),
     );
@@ -878,7 +869,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         await ref.read(rankingsProvider.notifier).refreshRankings();
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -890,6 +881,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   localizations.ratings_compare,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 22.sp,
                   ),
                 ),
                 IconButton(
@@ -902,17 +894,17 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   icon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCancel01,
                     color: theme.colorScheme.onSurface,
-                    size: 24,
+                    size: 24.r,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Карточка сравнения
             Container(
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(color: AppColors.ironmanGray, width: 1),
               ),
               child: Column(
@@ -928,7 +920,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   Container(
                     height: 1,
                     color: AppColors.ironmanGray,
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    margin: EdgeInsets.symmetric(horizontal: 16.w),
                   ),
                   // Атлет 2
                   _buildComparisonAthleteCard(
@@ -939,13 +931,13 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   ),
                   // Разница
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.r),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surfaceContainerHighest
                           .withValues(alpha: 0.3),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(12),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(12.r),
+                        bottomRight: Radius.circular(12.r),
                       ),
                     ),
                     child: Row(
@@ -970,7 +962,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Выпадающий блок сравнения дисциплин
             _buildDisciplinesComparison(
               athlete1.athleteId,
@@ -1014,13 +1006,13 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
     required bool isFaster,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.r),
       child: Row(
         children: [
           // Avatar
           Container(
-            width: 64,
-            height: 64,
+            width: 64.r,
+            height: 64.r,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.ironmanLightGray, width: 1),
@@ -1037,7 +1029,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   : _buildDefaultAvatar(theme),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.w),
           // Информация
           Expanded(
             child: Column(
@@ -1047,10 +1039,9 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   athlete.name.toUpperCase(),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: (theme.textTheme.titleMedium?.fontSize ?? 16) + 2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   athlete.time,
                   style: theme.textTheme.bodyLarge?.copyWith(
@@ -1058,12 +1049,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
-                  '${_formatDate(athlete.raceDate)} • ${athlete.location}',
+                  '${_formatDate(athlete.raceDate)} • ${athlete.location.isNotEmpty ? athlete.location[0].toUpperCase() + athlete.location.substring(1) : ''}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.ironmanTextSecondary,
-                    fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) + 1,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],

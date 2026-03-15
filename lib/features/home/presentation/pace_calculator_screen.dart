@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
@@ -150,7 +151,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
         return Container(
           decoration: BoxDecoration(
             color: AppColors.ironmanDarkGray,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
           ),
           child: SafeArea(
             top: false,
@@ -159,12 +160,12 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         onPressed: () => Navigator.of(ctx).pop(),
                         child: Text(
                           loc.common_cancel,
@@ -179,7 +180,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                         ),
                       ),
                       CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         onPressed: () {
                           onConfirm(selected);
                           Navigator.of(ctx).pop();
@@ -196,7 +197,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 220,
+                  height: 220.h,
                   child: CupertinoTimerPicker(
                     mode: CupertinoTimerPickerMode.hms,
                     initialTimerDuration: clampedInitial,
@@ -269,10 +270,10 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
               automaticallyImplyLeading: false,
               leading: (ModalRoute.of(context)?.canPop ?? false)
                   ? IconButton(
-                      icon: const HugeIcon(
+                      icon: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowLeft01,
                         color: AppColors.ironmanWhite,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     )
@@ -281,140 +282,144 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                 loc.pace_calculator_appbar_title,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 22.sp,
                   color: AppColors.ironmanWhite,
                 ),
               ),
               centerTitle: true,
               actions: ref.watch(authProvider).isAuthenticated
                   ? null
-                  : const [
+                  : [
                       Padding(
-                        padding: EdgeInsets.only(right: 16),
-                        child: LanguageSelector(),
+                        padding: EdgeInsets.only(right: 16.w),
+                        child: const LanguageSelector(),
                       ),
                     ],
             ),
             body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DistanceTabs(
-              selectedTab: _selectedTab,
-              onTabSelected: _onTabSelected,
-              getTabLabel: (tab) => _tabLabel(tab, loc),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedDisciplineIndex = -1),
-                behavior: HitTestBehavior.opaque,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                    TotalTimeCard(totalTime: _totalTime, totalRaceTimeLabel: loc.pace_calculator_total_race_time, onReset: _clearAllTimes),
-                    const SizedBox(height: 20),
-                    DisciplineCard(
-                      icon: Icons.pool_outlined,
-                      iconAsset: 'assets/images/svg/swim.png',
-                      label:
-                          '${_swimKm.toStringAsFixed(_swimKm >= 1 ? 1 : 2)} ${loc.pace_calculator_km_unit}',
-                      duration: _swimTime,
-                      rightLabel: loc.pace_calculator_min_per_100m,
-                      rightValue: formatPacePer100m(_swimTime, _swimKm * 1000),
-                      isLocked: false,
-                      isSelected: _selectedDisciplineIndex == 0,
-                      onTap: () {
-                        setState(() => _selectedDisciplineIndex = 0);
-                        _pickTime(
-                          title: loc.pace_calculator_swim_time,
-                          initial: _swimTime,
-                          onConfirm: (d) => setState(() => _swimTime = d),
-                        );
-                      },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  DistanceTabs(
+                    selectedTab: _selectedTab,
+                    onTabSelected: _onTabSelected,
+                    getTabLabel: (tab) => _tabLabel(tab, loc),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedDisciplineIndex = -1),
+                      behavior: HitTestBehavior.opaque,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TotalTimeCard(
+                              totalTime: _totalTime,
+                              totalRaceTimeLabel: loc.pace_calculator_total_race_time,
+                              onReset: _clearAllTimes,
+                            ),
+                            SizedBox(height: 20.h),
+                            DisciplineCard(
+                              icon: Icons.pool_outlined,
+                              iconAsset: 'assets/images/svg/swim.png',
+                              label: '${_swimKm.toStringAsFixed(_swimKm >= 1 ? 1 : 2)} ${loc.pace_calculator_km_unit}',
+                              duration: _swimTime,
+                              rightLabel: loc.pace_calculator_min_per_100m,
+                              rightValue: formatPacePer100m(_swimTime, _swimKm * 1000),
+                              isLocked: false,
+                              isSelected: _selectedDisciplineIndex == 0,
+                              onTap: () {
+                                setState(() => _selectedDisciplineIndex = 0);
+                                _pickTime(
+                                  title: loc.pace_calculator_swim_time,
+                                  initial: _swimTime,
+                                  onConfirm: (d) => setState(() => _swimTime = d),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 6.h),
+                            DisciplineCard(
+                              icon: Icons.swap_horiz,
+                              label: 'T1',
+                              duration: _t1Time,
+                              rightLabel: null,
+                              rightValue: null,
+                              isLocked: false,
+                              isSelected: _selectedDisciplineIndex == 1,
+                              onTap: () {
+                                setState(() => _selectedDisciplineIndex = 1);
+                                _pickTime(
+                                  title: loc.pace_calculator_t1_time,
+                                  initial: _t1Time,
+                                  onConfirm: (d) => setState(() => _t1Time = d),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 6.h),
+                            DisciplineCard(
+                              icon: Icons.directions_bike_outlined,
+                              iconAsset: 'assets/images/svg/bike.png',
+                              label: '${_bikeKm % 1 == 0 ? _bikeKm.toInt() : _bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
+                              duration: _bikeTime,
+                              rightLabel: loc.pace_calculator_km_per_h,
+                              rightValue: formatSpeedKmh(_bikeKm, _bikeTime),
+                              isLocked: false,
+                              isSelected: _selectedDisciplineIndex == 2,
+                              onTap: () {
+                                setState(() => _selectedDisciplineIndex = 2);
+                                _pickTime(
+                                  title: loc.pace_calculator_bike_time,
+                                  initial: _bikeTime,
+                                  onConfirm: (d) => setState(() => _bikeTime = d),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 6.h),
+                            DisciplineCard(
+                              icon: Icons.swap_horiz,
+                              label: 'T2',
+                              duration: _t2Time,
+                              rightLabel: null,
+                              rightValue: null,
+                              isLocked: false,
+                              isSelected: _selectedDisciplineIndex == 3,
+                              onTap: () {
+                                setState(() => _selectedDisciplineIndex = 3);
+                                _pickTime(
+                                  title: loc.pace_calculator_t2_time,
+                                  initial: _t2Time,
+                                  onConfirm: (d) => setState(() => _t2Time = d),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 6.h),
+                            DisciplineCard(
+                              icon: Icons.directions_run_outlined,
+                              iconAsset: 'assets/images/svg/run.png',
+                              label: '${_runKm % 1 == 0 ? _runKm.toInt() : _runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
+                              duration: _runTime,
+                              rightLabel: loc.pace_calculator_min_per_km,
+                              rightValue: formatPacePerKm(_runTime, _runKm),
+                              isLocked: false,
+                              isSelected: _selectedDisciplineIndex == 4,
+                              onTap: () {
+                                setState(() => _selectedDisciplineIndex = 4);
+                                _pickTime(
+                                  title: loc.pace_calculator_run_time,
+                                  initial: _runTime,
+                                  onConfirm: (d) => setState(() => _runTime = d),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 24.h),
+                          ],
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 6),
-                    DisciplineCard(
-                      icon: Icons.swap_horiz,
-                      label: 'T1',
-                      duration: _t1Time,
-                      rightLabel: null,
-                      rightValue: null,
-                      isLocked: false,
-                      isSelected: _selectedDisciplineIndex == 1,
-                      onTap: () {
-                        setState(() => _selectedDisciplineIndex = 1);
-                        _pickTime(
-                          title: loc.pace_calculator_t1_time,
-                          initial: _t1Time,
-                          onConfirm: (d) => setState(() => _t1Time = d),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 6),
-                    DisciplineCard(
-                      icon: Icons.directions_bike_outlined,
-                      iconAsset: 'assets/images/svg/bike.png',
-                      label: '${_bikeKm % 1 == 0 ? _bikeKm.toInt() : _bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
-                      duration: _bikeTime,
-                      rightLabel: loc.pace_calculator_km_per_h,
-                      rightValue: formatSpeedKmh(_bikeKm, _bikeTime),
-                      isLocked: false,
-                      isSelected: _selectedDisciplineIndex == 2,
-                      onTap: () {
-                        setState(() => _selectedDisciplineIndex = 2);
-                        _pickTime(
-                          title: loc.pace_calculator_bike_time,
-                          initial: _bikeTime,
-                          onConfirm: (d) => setState(() => _bikeTime = d),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 6),
-                    DisciplineCard(
-                      icon: Icons.swap_horiz,
-                      label: 'T2',
-                      duration: _t2Time,
-                      rightLabel: null,
-                      rightValue: null,
-                      isLocked: false,
-                      isSelected: _selectedDisciplineIndex == 3,
-                      onTap: () {
-                        setState(() => _selectedDisciplineIndex = 3);
-                        _pickTime(
-                          title: loc.pace_calculator_t2_time,
-                          initial: _t2Time,
-                          onConfirm: (d) => setState(() => _t2Time = d),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 6),
-                    DisciplineCard(
-                      icon: Icons.directions_run_outlined,
-                      iconAsset: 'assets/images/svg/run.png',
-                      label: '${_runKm % 1 == 0 ? _runKm.toInt() : _runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
-                      duration: _runTime,
-                      rightLabel: loc.pace_calculator_min_per_km,
-                      rightValue: formatPacePerKm(_runTime, _runKm),
-                      isLocked: false,
-                      isSelected: _selectedDisciplineIndex == 4,
-                      onTap: () {
-                        setState(() => _selectedDisciplineIndex = 4);
-                        _pickTime(
-                          title: loc.pace_calculator_run_time,
-                          initial: _runTime,
-                          onConfirm: (d) => setState(() => _runTime = d),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
             ),
           ),
         ],
@@ -444,7 +449,7 @@ class DistanceTabs extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
       child: Row(
         // 5150 (olympic) tab hidden
         children: DistanceTab.values
@@ -453,11 +458,11 @@ class DistanceTabs extends StatelessWidget {
           final isSelected = tab == selectedTab;
           return Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
               child: Container(
                 decoration: isSelected
                     ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -468,22 +473,22 @@ class DistanceTabs extends StatelessWidget {
                         ),
                       )
                     : BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         color: AppColors.ironmanGray,
                       ),
                 child: Material(
                   color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   child: InkWell(
                     onTap: () => onTabSelected(tab),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       child: Center(
                         child: Text(
                           getTabLabel(tab),
                           style: theme.textTheme.labelMedium?.copyWith(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: isSelected
                                 ? AppColors.ironmanWhite
                                 : AppColors.ironmanTextSecondary,
@@ -534,19 +539,19 @@ class TotalTimeCard extends StatelessWidget {
             color: AppColors.ironmanTextSecondary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              width: 60,
+              width: 60.w,
               child: IconButton(
                 onPressed: onReset,
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedRefresh,
                   color: AppColors.ironmanWhite,
-                  size: 22,
+                  size: 22.r,
                 ),
                 padding: EdgeInsets.zero,
                 tooltip: 'Очистить все значения',
@@ -557,10 +562,10 @@ class TotalTimeCard extends StatelessWidget {
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.ironmanWhite,
-                fontSize: 32,
+                fontSize: 32.sp,
               ),
             ),
-            const SizedBox(width: 60),
+            SizedBox(width: 60.w),
           ],
         ),
       ],
@@ -638,7 +643,7 @@ class DisciplineCard extends StatelessWidget {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           side: BorderSide(
             color: isSelected
                 ? AppColors.ironmanRed
@@ -648,9 +653,9 @@ class DisciplineCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
             child: Row(
               children: [
                 _DisciplineIcon(
@@ -659,9 +664,9 @@ class DisciplineCard extends StatelessWidget {
                   color: isSelected
                       ? AppColors.ironmanRed
                       : AppColors.ironmanTextSecondary,
-                  size: 36,
+                  size: 36.r,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,21 +677,21 @@ class DisciplineCard extends StatelessWidget {
                             formatDurationHhMmSs(duration),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              fontSize: 20,
+                              fontSize: 20.sp,
                               color: AppColors.ironmanWhite,
                             ),
                           ),
                           if (isLocked) ...[
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             Icon(
                               Icons.lock_outline,
-                              size: 18,
+                              size: 18.r,
                               color: AppColors.ironmanTextSecondary,
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
@@ -705,11 +710,11 @@ class DisciplineCard extends StatelessWidget {
                         rightValue!,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           color: AppColors.ironmanWhite,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2.h),
                       Text(
                         rightLabel!,
                         style: theme.textTheme.labelSmall?.copyWith(

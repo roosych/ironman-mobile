@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_button_styles.dart';
@@ -55,7 +56,6 @@ class TransferStatusCard extends StatelessWidget {
     );
   }
 
-
   /// Карточка ошибки
   Widget _buildErrorCard(
     BuildContext context,
@@ -66,26 +66,26 @@ class TransferStatusCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
-      color: theme.colorScheme.errorContainer.withValues(alpha:0.3),
+      color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8.r),
               decoration: BoxDecoration(
-                color: theme.colorScheme.error.withValues(alpha:0.2),
+                color: theme.colorScheme.error.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: HugeIcon(
                 icon: HugeIcons.strokeRoundedAlertCircle,
                 color: theme.colorScheme.error,
-                size: 20,
+                size: 20.r,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Expanded(
               child: Text(
                 error,
@@ -109,36 +109,35 @@ class TransferStatusCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               localizations.transfer_no_request_description,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha:0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
-            // Показываем loading если загружается статус или создается заявка
+            SizedBox(height: 16.h),
             (state.isLoading || state.isSubmitting)
                 ? SizedBox(
-                    height: 48,
+                    height: 48.h,
                     child: Container(
                       decoration: AppButtonStyles.primaryGradientDecoration(
-                        borderRadius: 12,
+                        borderRadius: 12.r,
                         withShadow: false,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
+                          height: 20.r,
+                          width: 20.r,
+                          child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
@@ -149,12 +148,12 @@ class TransferStatusCard extends StatelessWidget {
                 : AppButtonStyles.primaryGradientButton(
                     text: localizations.transfer_attach_results,
                     onPressed: onTransferRequest,
-                    borderRadius: 10,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                    borderRadius: 10.r,
+                    padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
                     textStyle: theme.textTheme.labelLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                     ),
                   ),
           ],
@@ -202,32 +201,32 @@ class TransferStatusCard extends StatelessWidget {
     }
 
     return Card(
-      key: ValueKey(status), // Ключ для AnimatedSwitcher
+      key: ValueKey(status),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
-      color: statusColor.withValues(alpha:0.1),
+      color: statusColor.withValues(alpha: 0.1),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           children: [
             // Заголовок с иконкой
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha:0.2),
+                    color: statusColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: HugeIcon(
                     icon: statusIcon,
                     color: statusColor,
-                    size: 24,
+                    size: 24.r,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Text(
                     statusText,
@@ -240,7 +239,7 @@ class TransferStatusCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
 
             // Описание статуса
             Text(
@@ -253,20 +252,20 @@ class TransferStatusCard extends StatelessWidget {
 
             // Кнопка "Подать снова" для отклоненных заявок
             if (status == TransferStatus.rejected) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               state.isSubmitting
                   ? SizedBox(
-                      height: 48,
+                      height: 48.h,
                       child: Container(
                         decoration: AppButtonStyles.primaryGradientDecoration(
-                          borderRadius: 12,
+                          borderRadius: 12.r,
                           withShadow: false,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
+                            height: 20.r,
+                            width: 20.r,
+                            child: const CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
@@ -277,12 +276,12 @@ class TransferStatusCard extends StatelessWidget {
                   : AppButtonStyles.primaryGradientButton(
                       text: localizations.transfer_submit_again,
                       onPressed: onTransferRequest,
-                      borderRadius: 10,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                      borderRadius: 10.r,
+                      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
                       textStyle: theme.textTheme.labelLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
             ],

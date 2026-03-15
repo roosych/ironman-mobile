@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -115,7 +116,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
         return Container(
           decoration: BoxDecoration(
             color: AppColors.ironmanDarkGray,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
           ),
           child: SafeArea(
             top: false,
@@ -124,12 +125,12 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         onPressed: () => Navigator.of(ctx).pop(),
                         child: Text(
                           loc.common_cancel,
@@ -144,7 +145,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                         ),
                       ),
                       CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         onPressed: () {
                           onConfirm(selected);
                           Navigator.of(ctx).pop();
@@ -161,7 +162,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 220,
+                  height: 220.h,
                   child: CupertinoTimerPicker(
                     mode: CupertinoTimerPickerMode.hms,
                     initialTimerDuration: clampedInitial,
@@ -189,13 +190,13 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: theme.colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           localizations.add_result_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
       ),
       body: Form(
@@ -204,13 +205,13 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: SingleChildScrollView(
             controller: _scrollController,
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.r),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               children: [
-            
-            const SizedBox(height: 16),
-            
+
+            SizedBox(height: 16.h),
+
             // Location field with icon
             TextFormField(
               controller: _locationController,
@@ -225,17 +226,17 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedLocation01,
                   color: Colors.white,
-                  size: 20,
+                  size: 20.r,
                 ),
                 errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide(
                     color: theme.colorScheme.error,
                     width: 1,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide(
                     color: theme.colorScheme.error,
                     width: 1,
@@ -249,7 +250,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Date picker with improved styling
             InkWell(
@@ -264,19 +265,19 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCalendar03,
                     color: Colors.white,
-                    size: 20,
+                    size: 20.r,
                   ),
                   suffixIcon: const Icon(Icons.arrow_drop_down),
                   errorText: (_showDateValidation && _selectedDate == null) ? localizations.add_result_date_required : null,
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide(
                       color: theme.colorScheme.error,
                       width: 1,
                     ),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide(
                       color: theme.colorScheme.error,
                       width: 1,
@@ -295,7 +296,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Race type dropdown with icon
             DropdownButtonFormField<String>(
@@ -308,17 +309,17 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAward01,
                   color: Colors.white,
-                  size: 20,
+                  size: 20.r,
                 ),
                 errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide(
                     color: theme.colorScheme.error,
                     width: 1,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide(
                     color: theme.colorScheme.error,
                     width: 1,
@@ -347,7 +348,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
 
             // Total time
             DisciplineCard(
@@ -370,7 +371,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             ),
             if (_showTotalTimeValidation && _totalTime.inSeconds == 0)
               Padding(
-                padding: const EdgeInsets.only(left: 12, top: 4),
+                padding: EdgeInsets.only(left: 12.w, top: 4.h),
                 child: Text(
                   localizations.add_result_total_time_required,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -378,7 +379,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   ),
                 ),
               ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
 
             // Swim time
             DisciplineCard(
@@ -396,7 +397,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _swimTime = d),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
 
             // T1 time
             DisciplineCard(
@@ -413,7 +414,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _t1Time = d),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
 
             // Bike time
             DisciplineCard(
@@ -431,7 +432,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _bikeTime = d),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
 
             // T2 time
             DisciplineCard(
@@ -448,7 +449,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _t2Time = d),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
 
             // Run time
             DisciplineCard(
@@ -466,23 +467,23 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 onConfirm: (d) => setState(() => _runTime = d),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
 
             // Submit button - gradient style
             SizedBox(
               width: double.infinity,
               child: _isSaving
                   ? Container(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      padding: EdgeInsets.symmetric(vertical: 18.h),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         color: Colors.grey,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
+                          height: 20.r,
+                          width: 20.r,
+                          child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
@@ -495,22 +496,22 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                         setState(() {
                           _showDateValidation = true;
                           _showTotalTimeValidation = true;
-                        }); // Trigger rebuild to show validation errors
+                        });
                         if (_formKey.currentState!.validate() && _selectedDate != null && _totalTime.inSeconds > 0) {
                           _saveResult();
                         }
                       },
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      borderRadius: 12,
-                      textStyle: const TextStyle(
-                        fontSize: 16,
+                      padding: EdgeInsets.symmetric(vertical: 18.h),
+                      borderRadius: 12.r,
+                      textStyle: TextStyle(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,
                         color: Colors.white,
                       ),
                     ),
             ),
-                const SizedBox(height: 64),
+                SizedBox(height: 64.h),
               ],
             ),
           ),
@@ -649,7 +650,7 @@ class DisciplineCard extends StatelessWidget {
         elevation: 0,
         color: AppColors.ironmanDarkGray,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           side: BorderSide(
             color: isSelected
                 ? AppColors.ironmanRed
@@ -659,9 +660,9 @@ class DisciplineCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Row(
               children: [
                 // Иконка слева
@@ -671,9 +672,9 @@ class DisciplineCard extends StatelessWidget {
                   color: isSelected
                       ? AppColors.ironmanRed
                       : AppColors.ironmanTextSecondary,
-                  size: 36,
+                  size: 36.r,
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
 
                 // Название дисциплины в центре
                 Expanded(
@@ -683,15 +684,15 @@ class DisciplineCard extends StatelessWidget {
                         label,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                          fontSize: 18.sp,
                           color: AppColors.ironmanWhite,
                         ),
                       ),
                       if (isLocked) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Icon(
                           Icons.lock_outline,
-                          size: 18,
+                          size: 18.r,
                           color: AppColors.ironmanTextSecondary,
                         ),
                       ],
@@ -704,7 +705,7 @@ class DisciplineCard extends StatelessWidget {
                   formatDurationHhMmSs(duration),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     color: AppColors.ironmanWhite,
                   ),
                 ),

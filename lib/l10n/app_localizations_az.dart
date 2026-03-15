@@ -731,7 +731,7 @@ class AppLocalizationsAz extends AppLocalizations {
       'Gözlənilməz xəta baş verdi, zəhmət olmasa yenidən cəhd edin';
 
   @override
-  String get my_races_title => 'Gələcək yarışlar';
+  String get my_races_title => 'Mənim gələcək yarışlarım';
 
   @override
   String get my_races_no_races => 'Hələ gələcək yarışınız yoxdur';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
@@ -126,23 +127,24 @@ class ResultDetailScreen extends ConsumerWidget {
               : localizations.result_detail_title,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
+            fontSize: 22.sp,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Race header
             Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: EdgeInsets.symmetric(vertical: 8.h),
                 child: Column(
                   children: [
                     // Race type text
                     Container(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: EdgeInsets.only(bottom: 4.h),
                       decoration: const BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
@@ -153,13 +155,13 @@ class ResultDetailScreen extends ConsumerWidget {
                       ),
                       child: Text(
                         _getRaceTypeText(result.raceType, context),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20, // Уменьшенный размер шрифта
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20.sp,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     // Location
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -167,14 +169,15 @@ class ResultDetailScreen extends ConsumerWidget {
                         HugeIcon(
                           icon: HugeIcons.strokeRoundedLocation01,
                           color: theme.colorScheme.onSurfaceVariant,
-                          size: 20,
+                          size: 20.r,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Flexible(
                           child: Text(
-                            result.location,
-                            style: theme.textTheme.titleMedium?.copyWith( // Уменьшенный размер шрифта
+                            result.location.isEmpty ? '' : result.location[0].toUpperCase() + result.location.substring(1),
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
                             ),
                             textAlign: TextAlign.center,
                             maxLines: 3,
@@ -183,7 +186,7 @@ class ResultDetailScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     // Date
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -191,13 +194,14 @@ class ResultDetailScreen extends ConsumerWidget {
                         HugeIcon(
                           icon: HugeIcons.strokeRoundedCalendar03,
                           color: theme.colorScheme.onSurfaceVariant,
-                          size: 18,
+                          size: 18.r,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Text(
                           _formatDate(result.date),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 14.sp,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -207,50 +211,52 @@ class ResultDetailScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Total time
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide.none, // Remove border
+                borderRadius: BorderRadius.circular(12.r),
+                side: BorderSide.none,
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0), // Уменьшенные вертикальные отступы
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
                       'assets/images/svg/flag.png',
-                      width: 24,
-                      height: 24,
+                      width: 24.w,
+                      height: 24.h,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        return const SizedBox(width: 24, height: 24);
+                        return SizedBox(width: 24.w, height: 24.h);
                       },
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16.w),
                     Text(
                       result.totalTime,
-                      style: theme.textTheme.headlineSmall?.copyWith( // Уменьшенный размер шрифта
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 24.sp,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Disciplines section
             Text(
               localizations.result_disciplines,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
 
             // Swim
             _DisciplineCard(
@@ -260,14 +266,14 @@ class ResultDetailScreen extends ConsumerWidget {
               pace: _calculateSwimPace(result.swimTime, _getDistances(result.raceType)['swim']!),
               paceUnit: localizations.pace_calculator_min_per_100m,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
 
             // T1
             _TransitionCard(
               label: 'T1',
               time: result.t1Time,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
 
             // Bike
             _DisciplineCard(
@@ -277,14 +283,14 @@ class ResultDetailScreen extends ConsumerWidget {
               pace: _calculateBikePace(result.bikeTime, _getDistances(result.raceType)['bike']!),
               paceUnit: localizations.pace_calculator_km_per_h,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
 
             // T2
             _TransitionCard(
               label: 'T2',
               time: result.t2Time,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
 
             // Run
             _DisciplineCard(
@@ -295,7 +301,7 @@ class ResultDetailScreen extends ConsumerWidget {
               paceUnit: localizations.pace_calculator_min_per_km,
             ),
 
-            const SizedBox(height: 48),
+            SizedBox(height: 48.h),
           ],
         ),
       ),
@@ -322,10 +328,10 @@ class _DisciplineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: AppColors.ironmanGray,
           width: 1,
@@ -336,20 +342,21 @@ class _DisciplineCard extends StatelessWidget {
           // Icon
           Image.asset(
             imagePath,
-            width: 32,
-            height: 32,
+            width: 32.r,
+            height: 32.r,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) {
-              return const SizedBox(width: 32, height: 32);
+              return SizedBox(width: 32.r, height: 32.r);
             },
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.w),
           // Label
           Expanded(
             child: Text(
               label,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                fontSize: 16.sp,
               ),
             ),
           ),
@@ -361,15 +368,16 @@ class _DisciplineCard extends StatelessWidget {
                 time,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
                 ),
               ),
               if (pace != null && pace!.isNotEmpty && paceUnit != null) ...[
-                const SizedBox(height: 2),
+                SizedBox(height: 2.h),
                 Text(
                   '~$pace $paceUnit',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],
@@ -396,27 +404,28 @@ class _TransitionCard extends StatelessWidget {
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Уменьшенные вертикальные отступы
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8.r),
               decoration: BoxDecoration(
                 color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowLeftRight,
                 color: theme.colorScheme.onSurfaceVariant,
-                size: 20,
+                size: 20.r,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Expanded(
               child: Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
@@ -425,6 +434,7 @@ class _TransitionCard extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 16.sp,
               ),
             ),
           ],

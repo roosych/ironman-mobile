@@ -732,7 +732,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Произошла неожиданная ошибка, попробуйте снова';
 
   @override
-  String get my_races_title => 'Предстоящие гонки';
+  String get my_races_title => 'Мои предстоящие гонки';
 
   @override
   String get my_races_no_races => 'У вас пока нет предстоящих гонок';

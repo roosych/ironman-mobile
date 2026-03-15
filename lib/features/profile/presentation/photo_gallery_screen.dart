@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,10 +37,10 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -50,15 +51,16 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   Expanded(
                     child: Text(
                       localizations.photo_delete_title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   IconButton(
                     icon: HugeIcon(
                       icon: HugeIcons.strokeRoundedCancel01,
-                      size: 24,
+                      size: 24.r,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     onPressed: () => Navigator.of(context).pop(false),
@@ -67,7 +69,7 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Confirm button
               SizedBox(
                 width: double.infinity,
@@ -75,9 +77,9 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   text: localizations.photo_delete_button,
                   onPressed: () => Navigator.of(context).pop(true),
                   borderRadius: 12,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  textStyle: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                     color: Colors.white,
@@ -127,10 +129,10 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -141,15 +143,16 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   Expanded(
                     child: Text(
                       localizations.photo_set_avatar_title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   IconButton(
                     icon: HugeIcon(
                       icon: HugeIcons.strokeRoundedCancel01,
-                      size: 24,
+                      size: 24.r,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     onPressed: () => Navigator.of(context).pop(false),
@@ -158,7 +161,7 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Confirm button
               SizedBox(
                 width: double.infinity,
@@ -166,9 +169,9 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
                   text: localizations.photo_set_button,
                   onPressed: () => Navigator.of(context).pop(true),
                   borderRadius: 12,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  textStyle: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                     color: Colors.white,
@@ -227,25 +230,25 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           localizations.profile_photo_gallery,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         centerTitle: true,
         actions: [
           // Show subtle refresh indicator when refreshing
           if (photosState.isRefreshing)
-            const Padding(
-              padding: EdgeInsets.only(right: 16.0),
+            Padding(
+              padding: EdgeInsets.only(right: 16.w),
               child: Center(
                 child: SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  height: 20.r,
+                  width: 20.r,
+                  child: const CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
             ),
@@ -261,11 +264,11 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
       return RefreshIndicator(
         onRefresh: () => ref.read(userPhotosProvider.notifier).refreshPhotos(),
         child: GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          padding: EdgeInsets.all(8.r),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
+            crossAxisSpacing: 8.w,
+            mainAxisSpacing: 8.h,
             childAspectRatio: 1,
           ),
           itemCount: 1, // Only the "Add Photo" button
@@ -285,11 +288,11 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
       return RefreshIndicator(
         onRefresh: () => ref.read(userPhotosProvider.notifier).refreshPhotos(),
         child: GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          padding: EdgeInsets.all(8.r),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
+            crossAxisSpacing: 8.w,
+            mainAxisSpacing: 8.h,
             childAspectRatio: 1,
           ),
           itemCount: 1, // Only the "Add Photo" card
@@ -309,11 +312,11 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     return RefreshIndicator(
       onRefresh: () => ref.read(userPhotosProvider.notifier).refreshPhotos(),
       child: GridView.builder(
-        padding: const EdgeInsets.all(8),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        padding: EdgeInsets.all(8.r),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
+          crossAxisSpacing: 8.w,
+          mainAxisSpacing: 8.h,
           childAspectRatio: 1,
         ),
         itemCount: itemCount,
@@ -357,7 +360,7 @@ class _AddPhotoCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: isLoading
             ? const Center(
@@ -366,7 +369,7 @@ class _AddPhotoCard extends StatelessWidget {
             : Center(
                 child: HugeIcon(
                   icon: HugeIcons.strokeRoundedImageAdd02,
-                  size: 32,
+                  size: 32.r,
                   color: AppColors.ironmanWhite,
                 ),
               ),
@@ -393,7 +396,7 @@ class _PhotoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
         child: Stack(
         fit: StackFit.expand,
         children: [
@@ -413,7 +416,7 @@ class _PhotoCard extends StatelessWidget {
               child: HugeIcon(
                 icon: HugeIcons.strokeRoundedImageNotFound01,
                 color: Theme.of(context).colorScheme.outline,
-                size: 24,
+                size: 24.r,
               ),
             ),
           ),
@@ -424,20 +427,20 @@ class _PhotoCard extends StatelessWidget {
               top: 4,
               left: 4,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const HugeIcon(
+                    HugeIcon(
                       icon: HugeIcons.strokeRoundedStar,
-                      size: 12,
+                      size: 12.r,
                       color: Colors.white,
                     ),
-                    const SizedBox(width: 2),
+                    SizedBox(width: 2.w),
                     Text(
                       AppLocalizations.of(context)!.photo_avatar,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -466,7 +469,7 @@ class _PhotoCard extends StatelessWidget {
                   ],
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -512,12 +515,12 @@ class _ActionButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.r),
             child: HugeIcon(
               icon: icon,
-              size: 20,
+              size: 20.r,
               color: Colors.white,
             ),
           ),

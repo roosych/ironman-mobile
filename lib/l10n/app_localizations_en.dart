@@ -732,7 +732,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred, please try again';
 
   @override
-  String get my_races_title => 'Upcoming Races';
+  String get my_races_title => 'My Upcoming Races';
 
   @override
   String get my_races_no_races => 'You don\'t have any upcoming races yet';

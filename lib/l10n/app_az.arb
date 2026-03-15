@@ -244,7 +244,7 @@
   "@error_unexpected": {
     "description": "Gözlənilməz xəta mesajı"
   },
-  "my_races_title": "Gələcək yarışlar",
+  "my_races_title": "Mənim gələcək yarışlarım",
   "my_races_no_races": "Hələ gələcək yarışınız yoxdur",
   "my_races_delete": "Sil",
   "notifications_title": "Bildirişlər",

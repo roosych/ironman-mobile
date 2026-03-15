@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
@@ -75,7 +76,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: authState.isLoading
               ? null
@@ -83,18 +84,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         title: Text(
           localizations.profile_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.r),
             children: [
               // Profile Header Section
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: EdgeInsets.symmetric(vertical: 8.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -116,7 +117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             bottom: 0,
                             right: 0,
                             child: Container(
-                              padding: const EdgeInsets.all(6),
+                              padding: EdgeInsets.all(6.r),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary,
                                 shape: BoxShape.circle,
@@ -125,9 +126,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   width: 2,
                                 ),
                               ),
-                              child: const HugeIcon(
+                              child: HugeIcon(
                                 icon: HugeIcons.strokeRoundedCamera01,
-                                size: 16,
+                                size: 16.r,
                                 color: Colors.white,
                               ),
                             ),
@@ -135,24 +136,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Center(
                       child: Text(
                         displayName.toUpperCase(),
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold, fontSize: 22.sp),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               // Menu Sections
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   side: BorderSide.none,
                 ),
                 child: Column(
@@ -161,13 +162,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedUser,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        size: 24.r,
                       ),
                       title: Text(localizations.profile_information),
                       trailing: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowRight01,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onTap: authState.isLoading
                           ? null
@@ -187,13 +188,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedImage01,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        size: 24.r,
                       ),
                       title: Text(localizations.profile_photo_gallery),
                       trailing: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowRight01,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onTap: authState.isLoading
                           ? null
@@ -213,13 +214,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedCalendar03,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        size: 24.r,
                       ),
                       title: Text(localizations.my_races_title),
                       trailing: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowRight01,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onTap: authState.isLoading
                           ? null
@@ -239,13 +240,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedSettings01,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        size: 24.r,
                       ),
                       title: Text(localizations.settings_title),
                       trailing: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowRight01,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onTap: authState.isLoading
                           ? null
@@ -265,13 +266,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedLockPassword,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        size: 24.r,
                       ),
                       title: Text(localizations.profile_security),
                       trailing: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowRight01,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onTap: authState.isLoading
                           ? null
@@ -284,7 +285,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Logout Button
               OutlinedButton(
                 onPressed: authState.isLoading
@@ -293,10 +294,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ref.read(authProvider.notifier).logout();
                       },
                 child: authState.isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                    ? SizedBox(
+                        height: 20.r,
+                        width: 20.r,
+                        child: const CircularProgressIndicator(strokeWidth: 2),
                       )
                     : Text(
                         localizations.logout_button,

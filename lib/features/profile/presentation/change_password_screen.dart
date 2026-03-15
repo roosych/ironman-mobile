@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
@@ -53,9 +54,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -68,13 +69,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       localizations.delete_account_confirm_title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 22.sp,
                       ),
                     ),
                   ),
                   IconButton(
                     icon: HugeIcon(
                       icon: HugeIcons.strokeRoundedCancel01,
-                      size: 24,
+                      size: 24.r,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     onPressed: () => Navigator.of(context).pop(false),
@@ -83,13 +85,13 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               // Description
               Text(
                 localizations.delete_account_confirm_description,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Delete button
               SizedBox(
                 width: double.infinity,
@@ -98,15 +100,15 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   child: Text(
                     localizations.delete_account_confirm_button,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
@@ -185,29 +187,29 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
               color: Theme.of(context).colorScheme.onSurface,
-              size: 24,
+              size: 24.r,
             ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           title: Text(
             localizations.profile_security,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
           ),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             children: [
               // First Card - Change Password Section
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   side: BorderSide.none,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.r),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -219,10 +221,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 20.sp,
                               ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
 
                         // Current password field
                         TextFormField(
@@ -234,7 +236,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
                               color: AppColors.ironmanWhite,
-                              size: 20,
+                              size: 20.r,
                             ),
                             suffixIcon: IconButton(
                               icon: HugeIcon(
@@ -242,7 +244,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
                                 color: AppColors.ironmanWhite,
-                                size: 20,
+                                size: 20.r,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -262,7 +264,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
 
                         // New password field
                         TextFormField(
@@ -274,7 +276,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
                               color: AppColors.ironmanWhite,
-                              size: 20,
+                              size: 20.r,
                             ),
                             suffixIcon: IconButton(
                               icon: HugeIcon(
@@ -282,7 +284,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
                                 color: AppColors.ironmanWhite,
-                                size: 20,
+                                size: 20.r,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -308,7 +310,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
 
                         // Confirm password field
                         TextFormField(
@@ -320,7 +322,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
                               color: AppColors.ironmanWhite,
-                              size: 20,
+                              size: 20.r,
                             ),
                             suffixIcon: IconButton(
                               icon: HugeIcon(
@@ -328,7 +330,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
                                 color: AppColors.ironmanWhite,
-                                size: 20,
+                                size: 20.r,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -352,25 +354,23 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24.h),
 
                         // Change password button
                         SizedBox(
                           width: double.infinity,
                           child: state.isLoading
                               ? Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 16.h),
                                   decoration:
                                       AppButtonStyles.primaryGradientDecoration(
-                                        borderRadius: 12,
+                                        borderRadius: 12.r,
                                       ),
-                                  child: const Center(
+                                  child: Center(
                                     child: SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
+                                      height: 20.r,
+                                      width: 20.r,
+                                      child: const CircularProgressIndicator(
                                         strokeWidth: 2,
                                         color: Colors.white,
                                       ),
@@ -380,11 +380,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                               : AppButtonStyles.primaryGradientButton(
                                   text: localizations.change_password_button,
                                   onPressed: _changePassword,
-                                  borderRadius: 12,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  textStyle: const TextStyle(
+                                  borderRadius: 12.r,
+                                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                                  textStyle: TextStyle(
+                                    fontSize: 16.sp,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1,
                                     color: Colors.white,
@@ -396,17 +395,17 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
               // Second Card - Delete Account Section
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   side: BorderSide.none,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -419,7 +418,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           ).colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
 
                       // Delete account button
                       SizedBox(
@@ -429,14 +428,15 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
                           child: Text(
                             localizations.delete_account_button,
-                            style: const TextStyle(
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1,
                             ),

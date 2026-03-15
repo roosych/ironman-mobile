@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:country_flags/country_flags.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -108,10 +109,10 @@ class _RaceSelectionBottomSheetState
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -124,13 +125,14 @@ class _RaceSelectionBottomSheetState
                       localizations.race_selection_confirm_title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 22.sp,
                       ),
                     ),
                   ),
                   IconButton(
                     icon: HugeIcon(
                       icon: HugeIcons.strokeRoundedCancel01,
-                      size: 24,
+                      size: 24.r,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     onPressed: () => Navigator.of(context).pop(false),
@@ -139,7 +141,7 @@ class _RaceSelectionBottomSheetState
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Content
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,18 +150,18 @@ class _RaceSelectionBottomSheetState
                     '${localizations.race_selection_confirm_description}:',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4.r),
                         child: CountryFlag.fromCountryCode(
                           race.countryIso,
-                          height: 20,
-                          width: 30,
+                          height: 20.h,
+                          width: 30.w,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: Text(
                           '${race.typeLabel.toUpperCase()}, ${race.location}, ${race.formattedDate}',
@@ -172,17 +174,17 @@ class _RaceSelectionBottomSheetState
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               // Confirm button
               SizedBox(
                 width: double.infinity,
                 child: AppButtonStyles.primaryGradientButton(
                   text: localizations.common_confirm,
                   onPressed: () => Navigator.of(context).pop(true),
-                  borderRadius: 12,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
+                  borderRadius: 12.r,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  textStyle: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                     color: Colors.white,
@@ -224,9 +226,9 @@ class _RaceSelectionBottomSheetState
         return Container(
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.r),
+              topRight: Radius.circular(20.r),
             ),
             border: Border.all(color: AppColors.ironmanGray, width: 1),
           ),
@@ -234,18 +236,18 @@ class _RaceSelectionBottomSheetState
             children: [
               // Drag indicator
               Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                height: 4,
-                width: 40,
+                margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
+                height: 4.h,
+                width: 40.w,
                 decoration: BoxDecoration(
                   color: AppColors.ironmanLightGray,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
 
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -253,10 +255,11 @@ class _RaceSelectionBottomSheetState
                       localizations.race_selection_title,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 22.sp,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close, size: 24.r),
                       onPressed: () => Navigator.of(context).pop(),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -267,7 +270,7 @@ class _RaceSelectionBottomSheetState
 
               // Search field
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
                 child: TextField(
                   controller: _searchController,
                   onChanged: (value) {
@@ -281,14 +284,14 @@ class _RaceSelectionBottomSheetState
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                      size: 24,
+                      size: 24.r,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
                               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              size: 24,
+                              size: 24.r,
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -299,12 +302,12 @@ class _RaceSelectionBottomSheetState
                     filled: true,
                     fillColor: theme.colorScheme.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
                     ),
                   ),
                   style: theme.textTheme.bodyLarge,
@@ -322,7 +325,7 @@ class _RaceSelectionBottomSheetState
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 20),
+                    padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, bottomPadding + 20.h),
                     child: _buildSaveButton(state, localizations),
                   ),
                 ),
@@ -356,12 +359,12 @@ class _RaceSelectionBottomSheetState
     return ListView.separated(
       controller: scrollController,
       padding: EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        bottom: bottomPadding + 16.0 + (state.isRaceSelected ? 100.0 : 0.0), // Учитываем системные кнопки + место для кнопки "Сохранить"
+        left: 20.w,
+        right: 20.w,
+        bottom: bottomPadding + 16.h + (state.isRaceSelected ? 100.h : 0.0),
       ),
       itemCount: state.races.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      separatorBuilder: (context, index) => SizedBox(height: 8.h),
       itemBuilder: (context, index) {
         final race = state.races[index];
         final isSelected = state.selectedRace?.id == race.id;
@@ -377,30 +380,30 @@ class _RaceSelectionBottomSheetState
       onTap: () {
         ref.read(raceSelectionProvider.notifier).selectRace(race);
       },
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       child: Card(
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           side: BorderSide(
             color: isSelected ? AppColors.ironmanRed : Colors.transparent,
             width: 2,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           child: Row(
             children: [
               // Флаг страны с закругленными краями
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(4.r),
                 child: CountryFlag.fromCountryCode(
                   race.countryIso,
-                  height: 20,
-                  width: 30,
+                  height: 20.h,
+                  width: 30.w,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
 
               // Информация о гонке
               Expanded(
@@ -413,7 +416,7 @@ class _RaceSelectionBottomSheetState
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       race.formattedDate,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -426,10 +429,10 @@ class _RaceSelectionBottomSheetState
 
               // Индикатор выбора
               if (isSelected)
-                const HugeIcon(
+                HugeIcon(
                   icon: HugeIcons.strokeRoundedCheckmarkCircle02,
                   color: AppColors.ironmanRed,
-                  size: 24,
+                  size: 24.r,
                 ),
             ],
           ),
@@ -443,17 +446,17 @@ class _RaceSelectionBottomSheetState
     if (_isSaving) {
       return SizedBox(
         width: double.infinity,
-        height: 56,
+        height: 56.h,
         child: Container(
           decoration: BoxDecoration(
             gradient: AppButtonStyles.primaryGradient,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r),
           ),
-          child: const Center(
+          child: Center(
             child: SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
+              height: 20.r,
+              width: 20.r,
+              child: const CircularProgressIndicator(
                 strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
@@ -468,8 +471,8 @@ class _RaceSelectionBottomSheetState
       child: AppButtonStyles.gradientElevatedButton(
         text: localizations.race_selection_save,
         onPressed: () => _onRaceSelected(state.selectedRace!),
-        textStyle: const TextStyle(
-          fontSize: 16,
+        textStyle: TextStyle(
+          fontSize: 16.sp,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
@@ -481,22 +484,22 @@ class _RaceSelectionBottomSheetState
   Widget _buildErrorState(String error, AppLocalizations localizations, ThemeData theme) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             HugeIcon(
               icon: HugeIcons.strokeRoundedAlertCircle,
               color: theme.colorScheme.error,
-              size: 48,
+              size: 48.r,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               error,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             ElevatedButton(
               onPressed: () {
                 ref.read(raceSelectionProvider.notifier).retrySearch();
@@ -513,16 +516,16 @@ class _RaceSelectionBottomSheetState
   Widget _buildEmptyState(AppLocalizations localizations, ThemeData theme) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             HugeIcon(
               icon: HugeIcons.strokeRoundedSearch01,
               color: AppColors.ironmanTextSecondary,
-              size: 48,
+              size: 48.r,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               localizations.race_selection_no_races,
               textAlign: TextAlign.center,

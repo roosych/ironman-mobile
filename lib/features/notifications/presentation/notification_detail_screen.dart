@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../core/theme/app_button_styles.dart';
 import '../../settings/application/locale_notifier.dart';
 import '../domain/app_notification.dart';
 
@@ -20,6 +22,7 @@ class NotificationDetailScreen extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final localizedTitle = notification.getLocalizedTitle(locale.languageCode);
     final localizedBody = notification.getLocalizedBody(locale.languageCode);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor:
@@ -31,16 +34,13 @@ class NotificationDetailScreen extends ConsumerWidget {
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: theme.colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           AppLocalizations.of(context)!.notification_detail_title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -61,7 +61,7 @@ class NotificationDetailScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -69,62 +69,59 @@ class NotificationDetailScreen extends ConsumerWidget {
                 color: theme.cardColor,
                 margin: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         localizedTitle.isEmpty
-                            ? AppLocalizations.of(context)!
-                                .notification_detail_title
+                            ? AppLocalizations.of(context)!.notification_detail_title
                             : localizedTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          fontSize: 16.sp,
                         ),
                       ),
                       if (notification.createdAt != null) ...[
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8.h),
                         Text(
                           _dateFormat.format(notification.createdAt!.toLocal()),
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.6,
-                            ),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 12.sp,
                           ),
                         ),
                       ],
                       if (localizedBody.isNotEmpty) ...[
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Divider(
                           height: 1,
                           color: theme.colorScheme.outline.withValues(alpha: 0.2),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Text(
                           localizedBody,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             height: 1.5,
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.9,
-                            ),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+                            fontSize: 14.sp,
                           ),
                         ),
                       ] else ...[
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Divider(
                           height: 1,
                           color: theme.colorScheme.outline.withValues(alpha: 0.2),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Text(
                           '-',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.5,
-                            ),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                            fontSize: 14.sp,
                           ),
                         ),
                       ],
@@ -132,14 +129,16 @@ class NotificationDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              FilledButton(
+              SizedBox(height: 24.h),
+              AppButtonStyles.primaryGradientButton(
+                text: AppLocalizations.of(context)!.notification_detail_understood,
                 onPressed: () => Navigator.of(context).maybePop(),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.notification_detail_understood,
+                borderRadius: 12.r,
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                textStyle: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
                 ),
               ),
             ],
@@ -149,5 +148,3 @@ class NotificationDetailScreen extends ConsumerWidget {
     );
   }
 }
-
-

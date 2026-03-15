@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -15,8 +16,9 @@ import 'package:ironman_mobile/features/auth/application/auth_state.dart';
 
 class AthletesScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBack;
+  final bool showBottomNav;
 
-  const AthletesScreen({super.key, this.onBack});
+  const AthletesScreen({super.key, this.onBack, this.showBottomNav = true});
 
   @override
   ConsumerState<AthletesScreen> createState() => _AthletesScreenState();
@@ -31,10 +33,6 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
     super.initState();
     _searchController = TextEditingController();
 
-    // ПРАВИЛО: загрузка данных через Riverpod только через addPostFrameCallback,
-    // чтобы не вызвать модификацию провайдера до завершения первого build-прохода.
-    // ПРАВИЛО: всегда проверять mounted до ref.read — виджет мог быть удалён
-    // раньше, чем кадр отрисовался (IndexedStack монтирует все табы сразу).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final athletesState = ref.read(athletesProvider);
@@ -50,11 +48,6 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
     super.dispose();
   }
 
-  // ПРАВИЛО: ref.watch вызывается ровно один раз на провайдер в build(),
-  // результат передаётся в helper-методы параметром.
-  // Повторный вызов ref.watch для того же провайдера в одном build-цикле
-  // (например, из геттера) регистрирует дублирующую подписку и вызывает
-  // лишний markNeedsBuild → _InactiveElements assertion на iOS.
   List<Athlete> _filteredAthletes(AthletesState state) {
     var filtered = state.athletes;
 
@@ -82,7 +75,6 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
 
     return GestureDetector(
       onTap: () {
-        // Скрываем клавиатуру при тапе вне поля ввода
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.opaque,
@@ -92,13 +84,13 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
               color: AppColors.ironmanWhite,
-              size: 24,
+              size: 24.r,
             ),
             onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
           ),
           title: Text(
             localizations.athletes_list_title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
           ),
           centerTitle: true,
         ),
@@ -106,7 +98,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
           children: [
             // Поисковая строка
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               child: TextField(
                 controller: _searchController,
                 onChanged: (value) {
@@ -122,7 +114,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedSearch01,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                    size: 24,
+                    size: 24.r,
                   ),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -131,7 +123,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                             color: theme.colorScheme.onSurface.withValues(
                               alpha: 0.5,
                             ),
-                            size: 24,
+                            size: 24.r,
                           ),
                           onPressed: () {
                             setState(() {
@@ -144,12 +136,12 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                   filled: true,
                   fillColor: theme.colorScheme.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
                   ),
                 ),
                 style: theme.textTheme.bodyLarge,
@@ -160,10 +152,9 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             Expanded(child: _buildAthletesList(athletesState)),
           ],
         ),
-        // Add bottom navigation for unauthenticated users
-        bottomNavigationBar: _isUserAuthenticated()
+        bottomNavigationBar: (_isUserAuthenticated() || !widget.showBottomNav)
             ? null
-            : const UnauthenticatedBottomNav(currentIndex: 2), // 2 = Athletes
+            : const UnauthenticatedBottomNav(currentIndex: 2),
       ),
     );
   }
@@ -179,18 +170,18 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
         child: Row(
           children: [
             // Аватар с бейджем
             Stack(
               children: [
                 Container(
-                  width: 56,
-                  height: 56,
+                  width: 56.r,
+                  height: 56.r,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -216,8 +207,8 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                     bottom: 0,
                     right: 0,
                     child: Container(
-                      width: 24,
-                      height: 24,
+                      width: 24.r,
+                      height: 24.r,
                       decoration: const BoxDecoration(
                         color: AppColors.ironmanRed,
                         shape: BoxShape.circle,
@@ -225,9 +216,9 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                       child: Center(
                         child: Text(
                           '${athlete.ironmanNumber}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.ironmanWhite,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -236,7 +227,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                   ),
               ],
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             // Имя и IRONMAN
             Expanded(
               child: Column(
@@ -246,12 +237,11 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                     athlete.name.toUpperCase(),
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                     ),
                   ),
-                  // Показываем текст IRONMANx{количество} если race_counts.ironman > 0
                   if (athlete.raceCounts.ironman > 0) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     RichText(
                       text: TextSpan(
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -283,7 +273,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
             HugeIcon(
               icon: HugeIcons.strokeRoundedArrowRight01,
               color: AppColors.ironmanWhite,
-              size: 20,
+              size: 20.r,
             ),
           ],
         ),
@@ -298,23 +288,21 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
         child: HugeIcon(
           icon: HugeIcons.strokeRoundedUser,
           color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          size: 28,
+          size: 28.r,
         ),
       ),
     );
   }
 
   Widget _buildAthletesList(AthletesState state) {
-    // Показываем индикатор загрузки если данные загружаются или список пуст и нет ошибки
     if (state.isLoading || (state.athletes.isEmpty && !state.hasError)) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Показываем ошибку, если она есть и нет загрузки (включая случай pull-to-refresh)
     if (state.hasError && !state.isLoading) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -325,7 +313,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () {
                   ref.read(athletesProvider.notifier).loadAthletes();
@@ -343,7 +331,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
         await ref.read(athletesProvider.notifier).loadAthletes();
       },
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         itemCount: _filteredAthletes(state).length,
         itemBuilder: (context, index) {
           return _buildAthleteCard(context, _filteredAthletes(state)[index]);

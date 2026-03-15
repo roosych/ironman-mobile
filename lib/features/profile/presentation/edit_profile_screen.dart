@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:country_flags/country_flags.dart';
 import '../../../l10n/app_localizations.dart';
@@ -39,18 +40,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _facebookController =
         TextEditingController(text: state.athleteProfile.socialLinks.facebook ?? '');
 
-    // Initialize selected country from edit profile state
     if (state.countryIso != null) {
       _selectedCountry = Countries.all.where((country) =>
           country.isoCode.toLowerCase() == state.countryIso!.toLowerCase()).firstOrNull;
     }
 
-    // Load fresh profile data from API
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // ВАЖНО: Оборачиваем в try/catch чтобы предотвратить краш
       ref.read(editProfileProvider.notifier).loadProfile().catchError((error) {
         debugPrint('🔴 Ошибка загрузки профиля в initState: $error');
-        // Ошибка уже обработана в loadProfile, просто логируем
       });
     });
   }
@@ -75,7 +72,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           setState(() {
             _selectedCountry = country;
           });
-          // Save country in uppercase format to match API specification
           ref.read(editProfileProvider.notifier).updateCountry(country.isoCode.toUpperCase());
         },
       ),
@@ -87,9 +83,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final state = ref.watch(editProfileProvider);
     final localizations = AppLocalizations.of(context)!;
 
-    // Listen for state changes
     ref.listen(editProfileProvider, (previous, next) {
-      // Update text controllers when data is loaded from API
       if (previous?.isLoading == true && next.isLoading == false && next.error == null) {
         _nameController.text = next.name;
         _bioController.text = next.athleteProfile.bio ?? '';
@@ -97,7 +91,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _instagramController.text = next.athleteProfile.socialLinks.instagram ?? '';
         _facebookController.text = next.athleteProfile.socialLinks.facebook ?? '';
 
-        // Update selected country and unfocus after the frame
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           FocusScope.of(context).unfocus();
@@ -109,9 +102,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           });
         });
       }
-      // Show success message (already localized from API)
-      if (next.successMessage != null &&
-          previous?.successMessage != next.successMessage) {
+      if (next.successMessage != null && previous?.successMessage != next.successMessage) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!context.mounted) return;
           FocusScope.of(context).unfocus();
@@ -123,7 +114,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           }
         });
       }
-      // Show error message
       if (next.error != null && previous?.error != next.error) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!context.mounted) return;
@@ -141,253 +131,251 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-        leading: IconButton(
-          icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: Theme.of(context).colorScheme.onSurface,
-            size: 24,
+          leading: IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeft01,
+              color: Theme.of(context).colorScheme.onSurface,
+              size: 24.r,
+            ),
+            onPressed: () => Navigator.of(context).maybePop(),
           ),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: Text(
-          localizations.edit_profile_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        centerTitle: true,
-      ),
-      body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide.none,
+          title: Text(
+            localizations.edit_profile_title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-              // Name field
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: localizations.edit_profile_name,
-                  prefixIcon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedUser,
-                    color: Colors.white,
-                    size: 20,
+          centerTitle: true,
+        ),
+        body: state.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.r),
+                child: Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    side: BorderSide.none,
                   ),
-                  border: const OutlineInputBorder(),
-                ),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  ref.read(editProfileProvider.notifier).updateName(value);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Country selector
-              GestureDetector(
-                onTap: state.isLoading ? null : _showCountrySelector,
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: localizations.register_select_country,
-                    prefixIcon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedLocation01,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    suffixIcon: Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.white,
-                    ),
-                    border: const OutlineInputBorder(),
-                    enabled: !state.isLoading,
-                  ),
-                  isEmpty: _selectedCountry == null,
-                  child: _selectedCountry != null
-                      ? SizedBox(
-                          height: 24,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(2),
-                                child: CountryFlag.fromCountryCode(
-                                  _selectedCountry!.isoCode,
-                                  height: 16,
-                                  width: 24,
-                                ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.r),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Name field
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              labelText: localizations.edit_profile_name,
+                              prefixIcon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedUser,
+                                color: Colors.white,
+                                size: 20.r,
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _selectedCountry!.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                              border: const OutlineInputBorder(),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              ref.read(editProfileProvider.notifier).updateName(value);
+                            },
                           ),
-                        )
-                      : const SizedBox(height: 24),
-                ),
-              ),
-              const SizedBox(height: 16),
+                          SizedBox(height: 16.h),
 
-              // Bio field (multiline)
-              TextFormField(
-                controller: _bioController,
-                decoration: InputDecoration(
-                  labelText: localizations.edit_profile_bio,
-                  alignLabelWithHint: true,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(bottom: 60),
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedEdit01,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                maxLines: 4,
-                textInputAction: TextInputAction.newline,
-                onChanged: (value) {
-                  ref.read(editProfileProvider.notifier).updateBio(value);
-                },
-              ),
-              const SizedBox(height: 24),
-
-              // Social links section
-              Text(
-                localizations.edit_profile_social_links,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 16),
-
-              // Strava field
-              TextFormField(
-                controller: _stravaController,
-                decoration: InputDecoration(
-                  labelText: 'Strava',
-                  hintText: 'Strava ID',
-                  prefixIcon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedBicycle,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.url,
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  ref.read(editProfileProvider.notifier).updateStrava(value);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Instagram field
-              TextFormField(
-                controller: _instagramController,
-                decoration: InputDecoration(
-                  labelText: 'Instagram',
-                  hintText: '@username',
-                  prefixIcon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedInstagram,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  ref.read(editProfileProvider.notifier).updateInstagram(value);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Facebook field
-              TextFormField(
-                controller: _facebookController,
-                decoration: InputDecoration(
-                  labelText: 'Facebook',
-                  hintText: 'username',
-                  prefixIcon: HugeIcon(
-                    icon: HugeIcons.strokeRoundedFacebook01,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.url,
-                textInputAction: TextInputAction.done,
-                onChanged: (value) {
-                  ref.read(editProfileProvider.notifier).updateFacebook(value);
-                },
-              ),
-              const SizedBox(height: 32),
-
-
-              // Save button
-              SizedBox(
-                width: double.infinity,
-                child: state.isSaving
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: AppButtonStyles.primaryGradientDecoration(
-                          borderRadius: 12,
-                        ),
-                        child: const Center(
-                          child: SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                          // Country selector
+                          GestureDetector(
+                            onTap: state.isLoading ? null : _showCountrySelector,
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: localizations.register_select_country,
+                                prefixIcon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedLocation01,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                ),
+                                suffixIcon: const Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Colors.white,
+                                ),
+                                border: const OutlineInputBorder(),
+                                enabled: !state.isLoading,
+                              ),
+                              isEmpty: _selectedCountry == null,
+                              child: _selectedCountry != null
+                                  ? SizedBox(
+                                      height: 24.h,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(2.r),
+                                            child: CountryFlag.fromCountryCode(
+                                              _selectedCountry!.isoCode,
+                                              height: 16,
+                                              width: 24,
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          Expanded(
+                                            child: Text(
+                                              _selectedCountry!.name,
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox(height: 24.h),
                             ),
                           ),
-                        ),
-                      )
-                    : AppButtonStyles.primaryGradientButton(
-                        text: localizations.edit_profile_save_button,
-                        onPressed: () {
-                          // ВАЖНО: Оборачиваем в try/catch для предотвращения краша
-                          try {
-                            ref.read(editProfileProvider.notifier).saveProfile().catchError((error) {
-                              debugPrint('🔴 Ошибка при сохранении профиля: $error');
-                              // Ошибка уже обработана в saveProfile, просто логируем
-                            });
-                          } catch (e) {
-                            debugPrint('🔴 КРИТИЧЕСКАЯ ошибка при вызове saveProfile: $e');
-                          }
-                        },
-                        borderRadius: 12,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
-                          color: Colors.white,
-                        ),
+                          SizedBox(height: 16.h),
+
+                          // Bio field
+                          TextFormField(
+                            controller: _bioController,
+                            decoration: InputDecoration(
+                              labelText: localizations.edit_profile_bio,
+                              alignLabelWithHint: true,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(bottom: 60.h),
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedEdit01,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                ),
+                              ),
+                              border: const OutlineInputBorder(),
+                            ),
+                            maxLines: 4,
+                            textInputAction: TextInputAction.newline,
+                            onChanged: (value) {
+                              ref.read(editProfileProvider.notifier).updateBio(value);
+                            },
+                          ),
+                          SizedBox(height: 24.h),
+
+                          // Social links section
+                          Text(
+                            localizations.edit_profile_social_links,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+
+                          // Strava field
+                          TextFormField(
+                            controller: _stravaController,
+                            decoration: InputDecoration(
+                              labelText: 'Strava',
+                              hintText: 'Strava ID',
+                              prefixIcon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedBicycle,
+                                color: Colors.white,
+                                size: 20.r,
+                              ),
+                              border: const OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.url,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              ref.read(editProfileProvider.notifier).updateStrava(value);
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+
+                          // Instagram field
+                          TextFormField(
+                            controller: _instagramController,
+                            decoration: InputDecoration(
+                              labelText: 'Instagram',
+                              hintText: '@username',
+                              prefixIcon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedInstagram,
+                                color: Colors.white,
+                                size: 20.r,
+                              ),
+                              border: const OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              ref.read(editProfileProvider.notifier).updateInstagram(value);
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+
+                          // Facebook field
+                          TextFormField(
+                            controller: _facebookController,
+                            decoration: InputDecoration(
+                              labelText: 'Facebook',
+                              hintText: 'username',
+                              prefixIcon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedFacebook01,
+                                color: Colors.white,
+                                size: 20.r,
+                              ),
+                              border: const OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.url,
+                            textInputAction: TextInputAction.done,
+                            onChanged: (value) {
+                              ref.read(editProfileProvider.notifier).updateFacebook(value);
+                            },
+                          ),
+                          SizedBox(height: 32.h),
+
+                          // Save button
+                          SizedBox(
+                            width: double.infinity,
+                            child: state.isSaving
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                                    decoration: AppButtonStyles.primaryGradientDecoration(
+                                      borderRadius: 12.r,
+                                    ),
+                                    child: Center(
+                                      child: SizedBox(
+                                        height: 20.r,
+                                        width: 20.r,
+                                        child: const CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : AppButtonStyles.primaryGradientButton(
+                                    text: localizations.edit_profile_save_button,
+                                    onPressed: () {
+                                      try {
+                                        ref.read(editProfileProvider.notifier).saveProfile().catchError((error) {
+                                          debugPrint('🔴 Ошибка при сохранении профиля: $error');
+                                        });
+                                      } catch (e) {
+                                        debugPrint('🔴 КРИТИЧЕСКАЯ ошибка при вызове saveProfile: $e');
+                                      }
+                                    },
+                                    borderRadius: 12.r,
+                                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                                    textStyle: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                ),
               ),
-            ],
-              ),
-            ),
-          ),
-        ),
-      ),
       ),
     );
   }
@@ -438,10 +426,10 @@ class _CountrySelectorState extends State<_CountrySelector> {
     final localizations = AppLocalizations.of(context)!;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: 0.8.sh,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         border: Border.all(
           color: AppColors.ironmanGray,
           width: 1,
@@ -451,17 +439,17 @@ class _CountrySelectorState extends State<_CountrySelector> {
         children: [
           // Handle bar
           Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
+            margin: EdgeInsets.only(top: 12.h),
+            width: 40.w,
+            height: 4.h,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(2.r),
             ),
           ),
           // Header
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -469,12 +457,13 @@ class _CountrySelectorState extends State<_CountrySelector> {
                   localizations.register_select_country,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: 24.sp,
                   ),
                 ),
                 IconButton(
                   icon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCancel01,
-                    size: 20,
+                    size: 20.r,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () => Navigator.pop(context),
@@ -484,7 +473,7 @@ class _CountrySelectorState extends State<_CountrySelector> {
           ),
           // Search field
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: ValueListenableBuilder<TextEditingValue>(
               valueListenable: _searchController,
               builder: (context, value, child) {
@@ -492,16 +481,16 @@ class _CountrySelectorState extends State<_CountrySelector> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     labelText: localizations.register_search_countries,
-                    prefixIcon: const HugeIcon(
+                    prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
-                      size: 20,
+                      size: 20.r,
                       color: AppColors.ironmanTextSecondary,
                     ),
                     suffixIcon: value.text.isNotEmpty
                         ? IconButton(
                             icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
-                              size: 16,
+                              size: 16.r,
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () {
@@ -514,17 +503,17 @@ class _CountrySelectorState extends State<_CountrySelector> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // Countries list
           Expanded(
             child: ListView.builder(
               itemCount: _filteredCountries.length,
-              itemExtent: 72.0, // Fixed height for better performance
+              itemExtent: 72.h,
               itemBuilder: (context, index) {
                 final country = _filteredCountries[index];
                 return ListTile(
                   leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.r),
                     child: CountryFlag.fromCountryCode(
                       country.isoCode,
                       height: 24,

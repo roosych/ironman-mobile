@@ -918,7 +918,7 @@
   "@error_unexpected": {
     "description": "Unexpected error message"
   },
-  "my_races_title": "Upcoming Races",
+  "my_races_title": "My Upcoming Races",
   "@my_races_title": {
     "description": "My races screen title"
   },

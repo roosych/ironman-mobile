@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
@@ -106,16 +107,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   Widget _buildSendButton(AppLocalizations localizations) {
     if (_remainingSeconds > 0) {
       return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: 16.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           color: Colors.grey.withValues(alpha: 0.3),
         ),
         child: Center(
           child: Text(
             '$_remainingSeconds',
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
               color: Colors.white,
@@ -127,10 +128,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return AppButtonStyles.primaryGradientButton(
       text: localizations.reset_password_send_button,
       onPressed: _sendEmail,
-      borderRadius: 12,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      textStyle: const TextStyle(
-        fontSize: 16,
+      borderRadius: 12.r,
+      padding: EdgeInsets.symmetric(vertical: 16.h),
+      textStyle: TextStyle(
+        fontSize: 16.sp,
         fontWeight: FontWeight.bold,
         letterSpacing: 1,
         color: Colors.white,
@@ -154,7 +155,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedMail01,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-                size: 20,
+                size: 20.r,
               ),
             ),
             validator: (value) {
@@ -163,7 +164,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           SizedBox(width: double.infinity, child: _buildSendButton(localizations)),
         ],
       ),
@@ -190,7 +191,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedShieldKey,
                 color: theme.colorScheme.onSurfaceVariant,
-                size: 20,
+                size: 20.r,
               ),
             ),
             validator: (value) {
@@ -198,7 +199,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // New password
           TextFormField(
             controller: _passwordController,
@@ -208,7 +209,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedLockPassword,
                 color: theme.colorScheme.onSurfaceVariant,
-                size: 20,
+                size: 20.r,
               ),
               suffixIcon: IconButton(
                 icon: HugeIcon(
@@ -216,7 +217,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       ? HugeIcons.strokeRoundedView
                       : HugeIcons.strokeRoundedViewOff,
                   color: theme.colorScheme.onSurfaceVariant,
-                  size: 20,
+                  size: 20.r,
                 ),
                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
               ),
@@ -227,7 +228,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // Confirm password
           TextFormField(
             controller: _passwordConfirmController,
@@ -237,7 +238,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedLockPassword,
                 color: theme.colorScheme.onSurfaceVariant,
-                size: 20,
+                size: 20.r,
               ),
               suffixIcon: IconButton(
                 icon: HugeIcon(
@@ -245,7 +246,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       ? HugeIcons.strokeRoundedView
                       : HugeIcons.strokeRoundedViewOff,
                   color: theme.colorScheme.onSurfaceVariant,
-                  size: 20,
+                  size: 20.r,
                 ),
                 onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
               ),
@@ -256,28 +257,28 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           SizedBox(
             width: double.infinity,
             child: _isLoading
                 ? Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: AppButtonStyles.primaryGradientDecoration(borderRadius: 12),
-                    child: const Center(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    decoration: AppButtonStyles.primaryGradientDecoration(borderRadius: 12.r),
+                    child: Center(
                       child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        height: 20.r,
+                        width: 20.r,
+                        child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       ),
                     ),
                   )
                 : AppButtonStyles.primaryGradientButton(
                     text: localizations.reset_password_confirm_button,
                     onPressed: _resetPassword,
-                    borderRadius: 12,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
+                    borderRadius: 12.r,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    textStyle: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                       color: Colors.white,
@@ -288,7 +289,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           if (_remainingSeconds > 0)
             Center(
               child: Padding(
-                padding: const EdgeInsets.only(top: 12),
+                padding: EdgeInsets.only(top: 12.h),
                 child: Text(
                   '$_remainingSeconds',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -318,7 +319,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           Transform.rotate(
             angle: 3.14159, // 180 градусов (π радиан)
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
+              height: 0.5.sh,
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -350,16 +351,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               leading: IconButton(
-                icon: const HugeIcon(
+                icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,
                   color: Colors.white,
-                  size: 24,
+                  size: 24.r,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: EdgeInsets.only(right: 16.w),
                   child: const LanguageSelector(),
                 ),
               ],
@@ -367,52 +368,51 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             body: GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
               child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        localizations.reset_password_description,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide.none,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: _step2 ? _buildStep2(localizations) : _buildStep1(localizations),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.reset_password_remember,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(24.r),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          localizations.reset_password_description,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(localizations.reset_password_sign_in),
+                        ),
+                        SizedBox(height: 32.h),
+                        Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            side: BorderSide.none,
                           ),
-                        ],
-                      ),
-                    ],
+                          child: Padding(
+                            padding: EdgeInsets.all(24.r),
+                            child: _step2 ? _buildStep2(localizations) : _buildStep1(localizations),
+                          ),
+                        ),
+                        SizedBox(height: 24.h),
+                        Column(
+                          children: [
+                            Text(
+                              localizations.reset_password_remember,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(localizations.reset_password_sign_in),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
@@ -163,7 +164,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
         ),
         title: Text(
           localizations.my_races_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
       ),
       floatingActionButton: Container(

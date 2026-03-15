@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
@@ -89,18 +90,17 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     debugPrint('🔄 EmailNotVerified: Building button, remainingSeconds: $_remainingSeconds');
     if (_remainingSeconds > 0) {
       debugPrint('⏰ EmailNotVerified: Showing timer button with $_remainingSeconds seconds');
-      // Показываем таймер прямо в градиентной кнопке (неактивной)
       return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: 16.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           color: Colors.grey.withValues(alpha: 0.3),
         ),
         child: Center(
           child: Text(
             '$_remainingSeconds',
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
               color: Colors.white,
@@ -115,18 +115,18 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     return AppButtonStyles.gradientElevatedButton(
       text: localizations.email_not_verified_resend,
       onPressed: _resendEmail,
-      borderRadius: 12,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      textStyle: const TextStyle(
-        fontSize: 16,
+      borderRadius: 12.r,
+      padding: EdgeInsets.symmetric(vertical: 16.h),
+      textStyle: TextStyle(
+        fontSize: 16.sp,
         fontWeight: FontWeight.bold,
         letterSpacing: 1,
         color: Colors.white,
       ),
-      icon: const HugeIcon(
+      icon: HugeIcon(
         icon: HugeIcons.strokeRoundedRefresh,
         color: Colors.white,
-        size: 20,
+        size: 20.r,
       ),
     );
   }
@@ -139,14 +139,13 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
 
     debugPrint('🏗️ EmailNotVerified: Building screen, _isLoggingOut: $_isLoggingOut, authState.isLoading: ${authState.isLoading}');
 
-
     return Stack(
       children: [
         Scaffold(
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(24.r),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -157,10 +156,11 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w900,
+                            fontSize: 20.sp,
                             letterSpacing: 1,
                           ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       userEmail.isNotEmpty
                           ? '${localizations.email_not_verified_message}\n($userEmail)'
@@ -173,33 +173,32 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
                                 .withValues(alpha: 0.6),
                           ),
                     ),
-                    const SizedBox(height: 48),
+                    SizedBox(height: 48.h),
                     Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         side: BorderSide.none,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: EdgeInsets.all(24.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
                               localizations.email_not_verified_no_email,
                               textAlign: TextAlign.center,
-                              style:
-                                  Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16.h),
                             _buildResendButton(localizations),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     OutlinedButton(
                       onPressed: _isLoggingOut
                           ? null
@@ -215,10 +214,10 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
                               }
                             },
                       child: _isLoggingOut
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                          ? SizedBox(
+                              height: 20.r,
+                              width: 20.r,
+                              child: const CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Text(
                               localizations.email_not_verified_back_to_login,

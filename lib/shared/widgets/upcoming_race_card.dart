@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:country_flags/country_flags.dart';
@@ -24,7 +25,7 @@ class UpcomingRaceCard extends StatelessWidget {
         child: HugeIcon(
           icon: HugeIcons.strokeRoundedUser,
           color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          size: 20,
+          size: 20.r,
         ),
       ),
     );
@@ -82,12 +83,12 @@ class UpcomingRaceCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,25 +97,25 @@ class UpcomingRaceCard extends StatelessWidget {
               race.raceTypeLabel.toUpperCase(),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 18.sp,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             // Flag and location
             Row(
               children: [
                 if (race.countryIso != null) ...[
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.r),
                     child: CountryFlag.fromCountryCode(
                       race.countryIso!,
-                      height: 16,
-                      width: 24,
+                      height: 16.h,
+                      width: 24.w,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                 ],
                 Expanded(
                   child: Text(
@@ -128,7 +129,7 @@ class UpcomingRaceCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Date and countdown section
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -140,9 +141,9 @@ class UpcomingRaceCard extends StatelessWidget {
                       HugeIcon(
                         icon: HugeIcons.strokeRoundedCalendar03,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                        size: 16,
+                        size: 16.r,
                       ),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6.w),
                       Text(
                         _formatDate(race.raceDate, context),
                         style: theme.textTheme.bodyMedium,
@@ -168,15 +169,15 @@ class UpcomingRaceCard extends StatelessWidget {
             ),
             // Athlete section (if available and showAthleteName is true)
             if (showAthleteName && race.createdBy != null) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               const Divider(),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Row(
                 children: [
                   // Avatar before name
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 36.r,
+                    height: 36.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
@@ -196,13 +197,13 @@ class UpcomingRaceCard extends StatelessWidget {
                           : _buildDefaultAvatar(theme),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
                       race.createdBy!.name.toUpperCase(),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

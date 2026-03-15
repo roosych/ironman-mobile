@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -86,7 +87,6 @@ class _DisciplinesComparisonWidgetState
     if (parts.length >= 2) {
       return parts[1]; // Возвращаем второе слово (имя)
     }
-    // Если только одно слово, возвращаем его
     return fullName;
   }
 
@@ -112,7 +112,7 @@ class _DisciplinesComparisonWidgetState
     return Container(
       decoration: BoxDecoration(
         color: widget.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: AppColors.ironmanGray, width: 1),
       ),
       child: Column(
@@ -124,9 +124,9 @@ class _DisciplinesComparisonWidgetState
                 _isExpanded = !_isExpanded;
               });
             },
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -135,7 +135,7 @@ class _DisciplinesComparisonWidgetState
                       widget.localizations.ratings_compare_records,
                       style: widget.theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: (widget.theme.textTheme.titleMedium?.fontSize ?? 16) + 2,
+                        fontSize: 18.sp,
                       ),
                     ),
                   ),
@@ -144,7 +144,7 @@ class _DisciplinesComparisonWidgetState
                         ? HugeIcons.strokeRoundedArrowUp01
                         : HugeIcons.strokeRoundedArrowDown01,
                     color: widget.theme.colorScheme.onSurface,
-                    size: 24,
+                    size: 24.r,
                   ),
                 ],
               ),
@@ -153,12 +153,12 @@ class _DisciplinesComparisonWidgetState
           // Содержимое таблицы
           if (_isExpanded)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               child: isLoading
-                  ? const Center(
+                  ? Center(
                       child: Padding(
-                        padding: EdgeInsets.all(24.0),
-                        child: CircularProgressIndicator(),
+                        padding: EdgeInsets.all(24.r),
+                        child: const CircularProgressIndicator(),
                       ),
                     )
                   : _buildComparisonTable(records1, records2),
@@ -182,8 +182,8 @@ class _DisciplinesComparisonWidgetState
 
     return Table(
       columnWidths: {
-        0: const FixedColumnWidth(60), // Фиксированная ширина для иконок
-        1: const FlexColumnWidth(1), // Остальное пространство равномерно
+        0: FixedColumnWidth(60.w),
+        1: const FlexColumnWidth(1),
         2: const FlexColumnWidth(1),
         3: const FlexColumnWidth(1),
       },
@@ -202,26 +202,10 @@ class _DisciplinesComparisonWidgetState
                 .withValues(alpha: 0.3),
           ),
           children: [
-            _buildTableCell(
-              '',
-              isHeader: true,
-              alignment: Alignment.centerLeft,
-            ),
-            _buildTableCell(
-              _getFirstName(widget.athlete1Name),
-              isHeader: true,
-              alignment: Alignment.center,
-            ),
-            _buildTableCell(
-              _getFirstName(widget.athlete2Name),
-              isHeader: true,
-              alignment: Alignment.center,
-            ),
-            _buildTableCell(
-              '',
-              isHeader: true,
-              alignment: Alignment.center,
-            ),
+            _buildTableCell('', isHeader: true, alignment: Alignment.centerLeft),
+            _buildTableCell(_getFirstName(widget.athlete1Name), isHeader: true, alignment: Alignment.center),
+            _buildTableCell(_getFirstName(widget.athlete2Name), isHeader: true, alignment: Alignment.center),
+            _buildTableCell('', isHeader: true, alignment: Alignment.center),
           ],
         ),
         // Строки дисциплин
@@ -271,30 +255,18 @@ class _DisciplinesComparisonWidgetState
 
           return TableRow(
             children: [
-              _buildTableCell(
-                label ?? '',
-                imagePath: imagePath,
-                alignment: Alignment.centerLeft,
-              ),
+              _buildTableCell(label ?? '', imagePath: imagePath, alignment: Alignment.centerLeft),
               _buildTableCell(
                 hasRecord1 ? record1.time : '-',
                 alignment: Alignment.center,
-                color: hasRecord1 && hasBoth && record1.seconds < record2.seconds
-                    ? Colors.green
-                    : null,
+                color: hasRecord1 && hasBoth && record1.seconds < record2.seconds ? Colors.green : null,
               ),
               _buildTableCell(
                 hasRecord2 ? record2.time : '-',
                 alignment: Alignment.center,
-                color: hasRecord2 && hasBoth && record2.seconds < record1.seconds
-                    ? Colors.green
-                    : null,
+                color: hasRecord2 && hasBoth && record2.seconds < record1.seconds ? Colors.green : null,
               ),
-              _buildTableCell(
-                difference,
-                alignment: Alignment.center,
-                color: differenceColor,
-              ),
+              _buildTableCell(difference, alignment: Alignment.center, color: differenceColor),
             ],
           );
         }),
@@ -311,9 +283,9 @@ class _DisciplinesComparisonWidgetState
     Color? color,
   }) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 60),
+      constraints: BoxConstraints(minWidth: 60.w),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
         child: Align(
           alignment: alignment,
           child: Row(
@@ -325,17 +297,17 @@ class _DisciplinesComparisonWidgetState
               if (imagePath != null)
                 Image.asset(
                   imagePath,
-                  width: 32,
-                  height: 32,
+                  width: 32.r,
+                  height: 32.r,
                   fit: BoxFit.contain,
                 )
               else if (icon != null) ...[
                 HugeIcon(
                   icon: icon,
                   color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  size: 16,
+                  size: 16.r,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
               ],
               if (text.isNotEmpty)
                 Flexible(
@@ -344,10 +316,12 @@ class _DisciplinesComparisonWidgetState
                     style: isHeader
                         ? widget.theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
+                            fontSize: 14.sp,
                           )
                         : widget.theme.textTheme.bodyMedium?.copyWith(
                             color: color,
                             fontWeight: color != null ? FontWeight.w600 : null,
+                            fontSize: 14.sp,
                           ),
                     textAlign: alignment == Alignment.centerLeft
                         ? TextAlign.left
@@ -363,4 +337,3 @@ class _DisciplinesComparisonWidgetState
     );
   }
 }
-

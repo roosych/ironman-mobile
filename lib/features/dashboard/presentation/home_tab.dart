@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
@@ -238,7 +239,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         children: [
           // Background image with gradient overlay
           Container(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: 0.5.sh,
             width: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -275,7 +276,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   children: [
               // Top section with avatar and notifications
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -288,7 +289,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                       },
                       child: UserAvatarWidget(
                         url: user?.avatarUrl,
-                        radius: 32,
+                        radius: 32.r,
                       ),
                     ),
                     // User Profile and Notifications
@@ -305,10 +306,10 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                           icon: HugeIcon(
                             icon: HugeIcons.strokeRoundedUser,
                             color: Theme.of(context).colorScheme.onSurface,
-                            size: 28,
+                            size: 28.r,
                           ),
                         ),
-                        const SizedBox(width: 8), // Отступ между иконками
+                        SizedBox(width: 8.w), // Отступ между иконками
                         // Notifications
                         _NotificationButton(
                           onTap: () {
@@ -326,7 +327,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               // Greeting section
               if (user != null)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+                  padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -334,7 +335,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         AppLocalizations.of(context)!.home_greeting_welcome,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                       ),
@@ -342,7 +343,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         user.name.toUpperCase(),
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                         ),
                       ),
                     ],
@@ -352,7 +353,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               // My Results expandable section
               Padding(
                 key: const ValueKey('my_results'),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: _MyResultsExpandableCard(
                   totalRaces: totalRaces,
                   resultsState: resultsState,
@@ -360,12 +361,12 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 ),
               ),
 
-              const SizedBox(key: ValueKey('spacer1'), height: 12),
+              SizedBox(key: const ValueKey('spacer1'), height: 12.h),
 
               // Personal Bests Expandable Section
               Padding(
                 key: const ValueKey('personal_bests'),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: _PersonalBestsExpandableCard(
                   profileId: profileId,
                   results: profileId != null
@@ -374,25 +375,25 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 ),
               ),
 
-              const SizedBox(key: ValueKey('spacer2'), height: 12),
+              SizedBox(key: const ValueKey('spacer2'), height: 12.h),
 
               // Pace Calculator card
               Padding(
                 key: const ValueKey('pace_calc'),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: _PaceCalculatorCard(),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
 
               // Upcoming Races Section
               Padding(
                 key: const ValueKey('upcoming_races'),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: _UpcomingRacesSection(),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               // _NotificationPermissionCard убрана — требует Firebase,
               // который не инициализирован, и вызывает assertion на iOS.
                   ],
@@ -498,18 +499,18 @@ class _NotificationPermissionCardState
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
       child: Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
       color: theme.colorScheme.surfaceContainerHighest,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -520,7 +521,7 @@ class _NotificationPermissionCardState
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -529,9 +530,9 @@ class _NotificationPermissionCardState
                   HugeIcon(
                     icon: HugeIcons.strokeRoundedNotification02,
                     color: AppColors.primaryGradientEnd,
-                    size: 24,
+                    size: 24.r,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
                       localizations.dashboard_notification_card_title,
@@ -543,40 +544,40 @@ class _NotificationPermissionCardState
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 localizations.dashboard_notification_card_message,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Row(
                 children: [
                   Expanded(
                     child: AppButtonStyles.primaryGradientButton(
                       text: localizations.dashboard_notification_card_enable,
                       onPressed: _enableNotifications,
-                      borderRadius: 10,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      borderRadius: 10.r,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       textStyle: theme.textTheme.labelLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: OutlinedButton(
                       onPressed: _dismissCard,
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
                         side: BorderSide(
                           color: AppColors.primaryGradientEnd.withValues(alpha: 0.3),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
                       ),
                       child: Text(
@@ -584,7 +585,7 @@ class _NotificationPermissionCardState
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: AppColors.primaryGradientEnd,
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ),
@@ -694,7 +695,7 @@ class _MyResultsExpandableCardState
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
@@ -713,17 +714,17 @@ class _MyResultsExpandableCardState
               }
             },
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               child: Row(
                 children: [
                   // Icon - PNG картинка флага
                   Image.asset(
                     'assets/images/svg/flag.png',
-                    width: 32,
-                    height: 32,
+                    width: 32.w,
+                    height: 32.h,
                     fit: BoxFit.contain,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   // Count and title - по горизонтали, выровнено по нижней линии
                   Expanded(
                     child: Row(
@@ -739,8 +740,8 @@ class _MyResultsExpandableCardState
                           )
                         else
                           SizedBox(
-                            width: 22,
-                            height: 22,
+                            width: 22.w,
+                            height: 22.h,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: theme.colorScheme.onSurface.withValues(
@@ -748,7 +749,7 @@ class _MyResultsExpandableCardState
                               ),
                             ),
                           ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
                             AppLocalizations.of(context)!.home_finishes,
@@ -756,7 +757,7 @@ class _MyResultsExpandableCardState
                               color: theme.colorScheme.onSurface.withValues(
                                 alpha: 0.7,
                               ),
-                              fontSize: 18,
+                              fontSize: 18.sp,
                             ),
                           ),
                         ),
@@ -772,7 +773,7 @@ class _MyResultsExpandableCardState
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
                       color: theme.colorScheme.onSurface,
-                      size: 24,
+                      size: 24.r,
                     ),
                   ),
                 ],
@@ -787,14 +788,14 @@ class _MyResultsExpandableCardState
                 children: [
                   const Divider(height: 1),
                   if (resultsState.isLoading && resultsState.results.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: CircularProgressIndicator(),
+                    Padding(
+                      padding: EdgeInsets.all(24.r),
+                      child: const CircularProgressIndicator(),
                     )
                   else if (resultsState.hasError &&
                       resultsState.results.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(24.r),
                       child: Column(
                         children: [
                           Text(
@@ -822,7 +823,7 @@ class _MyResultsExpandableCardState
                     )
                   else if (resultsState.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(24.r),
                       child: Text(
                         AppLocalizations.of(context)!.results_no_results,
                         style: theme.textTheme.bodyMedium,
@@ -858,17 +859,16 @@ class _MyResultsExpandableCardState
 
                             return ConstrainedBox(
                               constraints: BoxConstraints(
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.6,
+                                maxHeight: 0.6.sh,
                               ),
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 physics: const AlwaysScrollableScrollPhysics(),
-                                padding: const EdgeInsets.fromLTRB(
-                                  16.0,
-                                  16.0,
-                                  16.0,
-                                  48.0,
+                                padding: EdgeInsets.fromLTRB(
+                                  16.w,
+                                  16.h,
+                                  16.w,
+                                  48.h,
                                 ),
                                 itemCount:
                                     approvedResults.length +
@@ -876,17 +876,17 @@ class _MyResultsExpandableCardState
                                 itemBuilder: (context, index) {
                                   // Показываем индикатор загрузки в конце списка
                                   if (index == approvedResults.length) {
-                                    return const Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Center(
+                                    return Padding(
+                                      padding: EdgeInsets.all(16.r),
+                                      child: const Center(
                                         child: CircularProgressIndicator(),
                                       ),
                                     );
                                   }
 
                                   return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 16.0,
+                                    padding: EdgeInsets.only(
+                                      bottom: 16.h,
                                     ),
                                     child: ResultCard(
                                       result: approvedResults[index],
@@ -921,7 +921,7 @@ class _PaceCalculatorCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
@@ -931,7 +931,7 @@ class _PaceCalculatorCard extends StatelessWidget {
           Navigator.of(context).pushNamed('/pace-calculator');
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           child: Row(
             children: [
               Expanded(
@@ -943,34 +943,39 @@ class _PaceCalculatorCard extends StatelessWidget {
                       loc.home_pace_calculator_title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 17,
+                        fontSize: 17.sp,
                         color: Colors.black87,
+                        height: 1.2,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2.h),
                     Text(
                       loc.home_pace_calculator_subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.black87,
-                        fontSize: 13,
+                        fontSize: 12.sp,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               // Кнопка справа — градиентный стиль
               AppButtonStyles.primaryGradientButton(
                 text: loc.home_pace_calculator_button,
                 onPressed: () {
                   Navigator.of(context).pushNamed('/pace-calculator');
                 },
-                borderRadius: 10,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                borderRadius: 10.r,
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
                 textStyle: theme.textTheme.labelLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -1127,7 +1132,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
     //     padding: const EdgeInsets.all(16.0),
     //     child: Column(
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.r),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1140,41 +1145,41 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
                   localizations.home_upcoming_races,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 20.sp,
                   ),
                 ),
                 InkWell(
                   onTap: () => _navigateToUpcomingRacesScreen(context),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
                     ),
                     child: HugeIcon(
                       icon: HugeIcons.strokeRoundedArrowRight01,
                       color: Colors.white,
-                      size: 20,
+                      size: 20.r,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Upcoming races content (только активные)
             _buildActiveRacesTab(context, state, localizations),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Кнопка добавления новой гонки
             Center(
               child: AppButtonStyles.gradientElevatedButton(
                 text: localizations.home_add_race,
                 onPressed: () => _addUpcomingRace(context),
-                icon: const Icon(Icons.add, size: 20, color: Colors.white),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+                icon: Icon(Icons.add, size: 20.r, color: Colors.white),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24.w,
+                  vertical: 12.h,
                 ),
               ),
             ),
@@ -1226,7 +1231,7 @@ class _PersonalBestsExpandableCardState
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
@@ -1240,23 +1245,23 @@ class _PersonalBestsExpandableCardState
               });
             },
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               child: Row(
                 children: [
                   // Icon - иконка награды
                   HugeIcon(
                     icon: HugeIcons.strokeRoundedAward01,
                     color: const Color(0xFF4CAF50),
-                    size: 32,
+                    size: 32.r,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   // Title
                   Expanded(
                     child: Text(
                       localizations.home_personal_bests,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.onSurface,
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1270,7 +1275,7 @@ class _PersonalBestsExpandableCardState
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
                       color: theme.colorScheme.onSurface,
-                      size: 24,
+                      size: 24.r,
                     ),
                   ),
                 ],
@@ -1285,13 +1290,13 @@ class _PersonalBestsExpandableCardState
                 children: [
                   const Divider(height: 1),
                   if (recordsState.isLoading && personalBests == null)
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
+                    Padding(
+                      padding: EdgeInsets.all(16.r),
+                      child: const Center(child: CircularProgressIndicator()),
                     )
                   else if (personalBests != null)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 32.0),
+                      padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 32.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -1305,7 +1310,7 @@ class _PersonalBestsExpandableCardState
                             ),
                             if (_safeGetPersonalBestsData(personalBests['ironman_70_3']) != null ||
                                 _safeGetPersonalBestsData(personalBests['5150']) != null)
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12.h),
                           ],
                           // Ironman 70.3
                           if (_safeGetPersonalBestsData(personalBests['ironman_70_3']) != null) ...[
@@ -1316,7 +1321,7 @@ class _PersonalBestsExpandableCardState
                               results: widget.results,
                             ),
                             if (_safeGetPersonalBestsData(personalBests['5150']) != null)
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12.h),
                           ],
                           // 5150
                           if (_safeGetPersonalBestsData(personalBests['5150']) != null)
@@ -1402,14 +1407,14 @@ class _PersonalBestsCard extends StatelessWidget {
     final runRace = _getRace('run');
 
     return Padding(
-      padding: const EdgeInsets.all(6.0),
+      padding: EdgeInsets.all(6.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Centered race type text
           Center(
             child: Container(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: EdgeInsets.only(bottom: 4.h),
               decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(color: AppColors.ironmanRed, width: 2),
@@ -1417,14 +1422,14 @@ class _PersonalBestsCard extends StatelessWidget {
               ),
               child: Text(
                 _getRaceTypeText(title),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 17,
+                  fontSize: 17.sp,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // Swim
           if (swimTime != null)
             _DisciplineRow(
@@ -1438,7 +1443,7 @@ class _PersonalBestsCard extends StatelessWidget {
               results: results,
             ),
           if (swimTime != null && (bikeTime != null || runTime != null))
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
           // Bike
           if (bikeTime != null)
             _DisciplineRow(
@@ -1451,7 +1456,7 @@ class _PersonalBestsCard extends StatelessWidget {
               profileId: profileId,
               results: results,
             ),
-          if (bikeTime != null && runTime != null) const SizedBox(height: 8),
+          if (bikeTime != null && runTime != null) SizedBox(height: 8.h),
           // Run
           if (runTime != null)
             _DisciplineRow(
@@ -1566,17 +1571,17 @@ class _DisciplineRow extends StatelessWidget {
               );
             }
           : null,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       splashColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
       highlightColor: Theme.of(
         context,
       ).colorScheme.primary.withValues(alpha: 0.15),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+        margin: EdgeInsets.symmetric(vertical: 2.h),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: AppColors.resultsBorder, width: 1),
         ),
         child: Row(
@@ -1595,8 +1600,8 @@ class _DisciplineRow extends StatelessWidget {
                       // Icon
                       Image.asset(
                         imagePath,
-                        width: 40,
-                        height: 40,
+                        width: 40.w,
+                        height: 40.h,
                         fit: BoxFit.contain,
                       ),
                       // Time and pace
@@ -1617,12 +1622,12 @@ class _DisciplineRow extends StatelessWidget {
                               final paceUnit = _getPaceUnit(context);
                               if (pace.isNotEmpty && paceUnit.isNotEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 2.0),
+                                  padding: EdgeInsets.only(top: 2.h),
                                   child: Text(
                                     '~$pace $paceUnit',
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      fontSize: 11,
+                                      fontSize: 11.sp,
                                     ),
                                   ),
                                 );
@@ -1636,7 +1641,7 @@ class _DisciplineRow extends StatelessWidget {
                   ),
                   // Нижняя строка: дата слева, локация справа
                   if (date != null || location != null) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1653,9 +1658,9 @@ class _DisciplineRow extends StatelessWidget {
                         if (location != null)
                           Expanded(
                             child: Text(
-                              location!,
+                              location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontSize: 13,
+                                fontSize: 13.sp,
                               ),
                               textAlign: TextAlign.right,
                               maxLines: 1,
@@ -1672,13 +1677,13 @@ class _DisciplineRow extends StatelessWidget {
             ),
             // Шеврон справа, по центру по вертикали
             if (result != null) ...[
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowRight01,
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.5),
-                size: 20,
+                size: 20.r,
               ),
             ],
           ],
@@ -1705,15 +1710,15 @@ class _NotificationButton extends ConsumerWidget {
           HugeIcon(
             icon: HugeIcons.strokeRoundedNotification02,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 28, // Увеличенный размер
+            size: 28.r,
           ),
           if (unreadCount > 0)
             Positioned(
               right: -1,
               top: -1,
               child: Container(
-                width: 12,
-                height: 12,
+                width: 12.r,
+                height: 12.r,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -111,10 +112,10 @@ class _AthleteSelectionBottomSheetState
           context: context,
           builder: (context) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.r),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24.r),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -125,16 +126,17 @@ class _AthleteSelectionBottomSheetState
                       Expanded(
                         child: Text(
                           localizations.transfer_confirm_title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       IconButton(
                         icon: HugeIcon(
                           icon: HugeIcons.strokeRoundedCancel01,
                           color: Theme.of(context).colorScheme.onSurface,
-                          size: 24,
+                          size: 24.r,
                         ),
                         onPressed: () => Navigator.of(context).pop(false),
                         padding: EdgeInsets.zero,
@@ -143,18 +145,18 @@ class _AthleteSelectionBottomSheetState
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
 
                   // Описание действия
                   Text(
                     localizations.transfer_confirm_description(athlete.name.toUpperCase()),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
 
                   // Кнопки
                   Row(
@@ -163,24 +165,24 @@ class _AthleteSelectionBottomSheetState
                         child: OutlinedButton(
                           onPressed: () => Navigator.of(context).pop(false),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
                           child: Text(localizations.common_cancel),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () => Navigator.of(context).pop(true),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade600,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
                           child: Text(localizations.transfer_confirm_button),
@@ -207,16 +209,16 @@ class _AthleteSelectionBottomSheetState
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isSuccess ? Icons.check_circle_outline : Icons.error_outline,
               color: isSuccess ? Colors.green.shade600 : Colors.red.shade600,
-              size: 56,
+              size: 56.r,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               isSuccess
                   ? localizations.transfer_request_created
@@ -235,10 +237,9 @@ class _AthleteSelectionBottomSheetState
                   isSuccess ? Colors.green.shade600 : Colors.red.shade600,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
             ),
             child: Text(localizations.common_ok),
           ),
@@ -271,9 +272,9 @@ class _AthleteSelectionBottomSheetState
         return Container(
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.r),
+              topRight: Radius.circular(20.r),
             ),
             border: Border.all(
               color: AppColors.ironmanGray,
@@ -284,18 +285,18 @@ class _AthleteSelectionBottomSheetState
             children: [
               // Drag indicator
               Container(
-                margin: const EdgeInsets.only(top: 8),
-                width: 32,
-                height: 4,
+                margin: EdgeInsets.only(top: 8.h),
+                width: 32.w,
+                height: 4.h,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
 
               // Header
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.r),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -309,7 +310,7 @@ class _AthleteSelectionBottomSheetState
                       icon: HugeIcon(
                         icon: HugeIcons.strokeRoundedCancel01,
                         color: Theme.of(context).colorScheme.onSurface,
-                        size: 24,
+                        size: 24.r,
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       padding: EdgeInsets.zero,
@@ -321,7 +322,7 @@ class _AthleteSelectionBottomSheetState
 
               // Search field
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: TextField(
                   controller: _searchController,
                   focusNode: _focusNode,
@@ -337,14 +338,14 @@ class _AthleteSelectionBottomSheetState
                     prefixIcon: HugeIcon(
                       icon: HugeIcons.strokeRoundedSearch01,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                      size: 24,
+                      size: 24.r,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: HugeIcon(
                               icon: HugeIcons.strokeRoundedCancel01,
                               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              size: 24,
+                              size: 24.r,
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -355,19 +356,19 @@ class _AthleteSelectionBottomSheetState
                     filled: true,
                     fillColor: theme.colorScheme.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
                     ),
                   ),
                   style: theme.textTheme.bodyLarge,
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
               // Athletes list
               Expanded(
@@ -385,7 +386,7 @@ class _AthleteSelectionBottomSheetState
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).padding.bottom + 20),
+                    padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, MediaQuery.of(context).padding.bottom + 20.h),
                     child: _buildSaveButton(athletesState, localizations),
                   ),
                 ),
@@ -428,12 +429,12 @@ class _AthleteSelectionBottomSheetState
     return ListView.separated(
       controller: scrollController,
       padding: EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        bottom: bottomPadding + 16.0 + (athletesState.isAthleteSelected ? 100.0 : 0.0), // Учитываем системные кнопки + место для кнопки "Сохранить"
+        left: 20.w,
+        right: 20.w,
+        bottom: bottomPadding + 16.h + (athletesState.isAthleteSelected ? 100.h : 0.0),
       ),
       itemCount: athletesState.athletes.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      separatorBuilder: (context, index) => SizedBox(height: 8.h),
       itemBuilder: (context, index) {
         final athlete = athletesState.athletes[index];
         final isSelected = athletesState.selectedAthlete?.id == athlete.id;
@@ -451,9 +452,9 @@ class _AthleteSelectionBottomSheetState
           HugeIcon(
             icon: icon,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-            size: 48,
+            size: 48.r,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
@@ -502,22 +503,22 @@ class _AthleteSelectionBottomSheetState
   ) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             HugeIcon(
               icon: HugeIcons.strokeRoundedAlertCircle,
               color: theme.colorScheme.error,
-              size: 48,
+              size: 48.r,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               _localizeError(error, localizations),
               style: theme.textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             OutlinedButton(
               onPressed: () {
                 ref.read(eligibleAthletesProvider.notifier).retrySearch();
@@ -539,18 +540,18 @@ class _AthleteSelectionBottomSheetState
   ) {
     return InkWell(
       onTap: () => _onAthleteSelected(athlete),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
       child: Card(
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           side: BorderSide(
             color: isSelected ? AppColors.ironmanRed : Colors.transparent,
             width: 2,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           child: Row(
             children: [
               // Info
@@ -566,7 +567,7 @@ class _AthleteSelectionBottomSheetState
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       localizations.transfer_results_count(
                         athlete.totalRaces,
@@ -576,7 +577,7 @@ class _AthleteSelectionBottomSheetState
                       ),
                     ),
                     if (athlete.lastRaceLocation != null) ...[
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2.h),
                       Text(
                         localizations.transfer_last_race(
                           athlete.lastRaceLocation!,
@@ -594,10 +595,10 @@ class _AthleteSelectionBottomSheetState
 
               // Индикатор выбора
               if (isSelected)
-                const HugeIcon(
+                HugeIcon(
                   icon: HugeIcons.strokeRoundedCheckmarkCircle02,
                   color: AppColors.ironmanRed,
-                  size: 24,
+                  size: 24.r,
                 ),
             ],
           ),
@@ -611,17 +612,17 @@ class _AthleteSelectionBottomSheetState
     if (_isSaving) {
       return SizedBox(
         width: double.infinity,
-        height: 56,
+        height: 56.h,
         child: Container(
           decoration: BoxDecoration(
             gradient: AppButtonStyles.primaryGradient,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r),
           ),
-          child: const Center(
+          child: Center(
             child: SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
+              height: 20.r,
+              width: 20.r,
+              child: const CircularProgressIndicator(
                 strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
@@ -636,8 +637,8 @@ class _AthleteSelectionBottomSheetState
       child: AppButtonStyles.gradientElevatedButton(
         text: localizations.transfer_confirm_button,
         onPressed: () => _onSavePressed(state.selectedAthlete!),
-        textStyle: const TextStyle(
-          fontSize: 16,
+        textStyle: TextStyle(
+          fontSize: 16.sp,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),

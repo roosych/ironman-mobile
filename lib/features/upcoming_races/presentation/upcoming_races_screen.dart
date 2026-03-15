@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
@@ -30,7 +31,6 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // Загружаем все гонки после построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllRaces();
@@ -46,17 +46,17 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
 
   void _loadAllRaces() {
     ref.read(globalUpcomingRacesProvider.notifier).loadUpcomingRaces(
-      onlyFuture: false, // Загружаем все гонки (будущие и прошедшие)
+      onlyFuture: false,
     );
   }
 
   Future<void> _refreshAllRaces() async {
     try {
       await ref.read(globalUpcomingRacesProvider.notifier).refreshUpcomingRaces(
-        onlyFuture: false, // Обновляем все гонки
+        onlyFuture: false,
       );
     } catch (e) {
-      // Ошибка уже обработана в провайдере, алерт покажется через listener
+      // Ошибка уже обработана в провайдере
     }
   }
 
@@ -81,7 +81,6 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // Слушаем ошибки
     ref.listen<UpcomingRacesState>(globalUpcomingRacesProvider, (previous, next) {
       if (!mounted) return;
       if (next.hasError && next.error != null) {
@@ -99,21 +98,18 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           localizations.home_upcoming_races,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
       ),
       floatingActionButton: Container(
-        width: 56,
-        height: 56,
+        width: 56.r,
+        height: 56.r,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(
@@ -137,13 +133,12 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
           child: InkWell(
             onTap: () {
               showRaceSelectionBottomSheet(context);
-              // Обновление списка произойдет автоматически через провайдер в BottomSheet
             },
-            borderRadius: BorderRadius.circular(28),
-            child: const Icon(
+            borderRadius: BorderRadius.circular(28.r),
+            child: Icon(
               Icons.add,
               color: Colors.white,
-              size: 24,
+              size: 24.r,
             ),
           ),
         ),
@@ -152,19 +147,19 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
         children: [
           // TabBar
           Container(
-            margin: const EdgeInsets.all(16.0),
+            margin: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: AppColors.ironmanGray, width: 1),
             ),
-            padding: const EdgeInsets.all(4),
+            padding: EdgeInsets.all(4.r),
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.ironmanWhite,
               unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -176,14 +171,8 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
-              labelStyle: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              labelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
+              unselectedLabelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
               tabs: [
                 Tab(text: localizations.events_tab_active),
                 Tab(text: localizations.events_tab_past),
@@ -231,7 +220,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
         try {
           final dateA = DateTime.parse(a.raceDate);
           final dateB = DateTime.parse(b.raceDate);
-          return dateB.compareTo(dateA); // Сортировка по убыванию даты
+          return dateB.compareTo(dateA);
         } catch (e) {
           return 0;
         }
@@ -268,34 +257,27 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       onRefresh: _refreshAllRaces,
       child: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
           if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
             if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _loadNextPage();
-                }
+                if (mounted) _loadNextPage();
               });
             }
           }
           return false;
         },
         child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
+          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
           itemCount: activeRaces.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
-            // Показываем индикатор загрузки в конце списка
             if (index == activeRaces.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+              return Padding(
+                padding: EdgeInsets.all(16.r),
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
-
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
+              padding: EdgeInsets.only(bottom: 16.h),
               child: UpcomingRaceCard(race: activeRaces[index]),
             );
           },
@@ -328,34 +310,27 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       onRefresh: _refreshAllRaces,
       child: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          // Загружаем следующую страницу, когда пользователь прокрутил до 80% списка
           if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
             if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _loadNextPage();
-                }
+                if (mounted) _loadNextPage();
               });
             }
           }
           return false;
         },
         child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
+          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
           itemCount: pastRaces.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
-            // Показываем индикатор загрузки в конце списка
             if (index == pastRaces.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+              return Padding(
+                padding: EdgeInsets.all(16.r),
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
-
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
+              padding: EdgeInsets.only(bottom: 16.h),
               child: UpcomingRaceCard(race: pastRaces[index]),
             );
           },
@@ -367,7 +342,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
   Widget _buildErrorState(AppLocalizations localizations, VoidCallback onRetry) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -376,7 +351,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             ElevatedButton(
               onPressed: onRetry,
               child: Text(localizations.common_retry),
@@ -387,4 +362,3 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
     );
   }
 }
-

@@ -245,7 +245,7 @@
   "@error_unexpected": {
     "description": "Неожиданная ошибка"
   },
-  "my_races_title": "Предстоящие гонки",
+  "my_races_title": "Мои предстоящие гонки",
   "my_races_no_races": "У вас пока нет предстоящих гонок",
   "my_races_delete": "Удалить",
   "notifications_title": "Уведомления",

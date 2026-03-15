@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -40,7 +41,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
-    // _checkNotificationPermission вызывает setState синхронно — только через postFrame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _checkNotificationPermission();
@@ -66,15 +66,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    // Проверяем статус разрешений при возврате приложения в активное состояние
-    // (например, после возврата из системных настроек)
     if (state == AppLifecycleState.resumed) {
       _checkNotificationPermission();
       _recheckFcmPermissions();
     }
   }
 
-  /// Проверка статуса разрешений уведомлений
   Future<void> _checkNotificationPermission() async {
     setState(() {
       _isCheckingPermission = true;
@@ -99,13 +96,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     }
   }
 
-  /// Повторная проверка разрешений FCM и регистрация токена
   Future<void> _recheckFcmPermissions() async {
     try {
       final wasDenied = _isNotificationDenied;
       await _checkNotificationPermission();
-      
-      // Если разрешения были запрещены, а теперь разрешены - переинициализируем FCM
+
       if (wasDenied && !_isNotificationDenied) {
         await FcmService().recheckPermissionsAndRegister();
       }
@@ -114,25 +109,20 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     }
   }
 
-  /// Открыть системные настройки приложения
   Future<void> _openAppSettings() async {
     final wasDenied = _isNotificationDenied;
     await _permissionService.openAppSettings();
-    
-    // Проверяем статус снова после возврата из настроек
-    // Используем несколько проверок с задержками, так как система может обновлять статус не сразу
+
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         _checkNotificationPermission();
         _recheckFcmPermissions();
       }
     });
-    
-    // Дополнительная проверка через 1 секунду на случай, если первая не сработала
+
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
         _checkNotificationPermission();
-        // Если разрешения были запрещены, а теперь разрешены - переинициализируем FCM
         if (wasDenied && !_isNotificationDenied) {
           FcmService().recheckPermissionsAndRegister();
         }
@@ -144,7 +134,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     try {
       await ref.read(notificationsProvider.notifier).refresh();
     } catch (e) {
-      // Ошибка уже обработана в провайдере, алерт покажется через listener
+      // Ошибка уже обработана в провайдере
     }
   }
 
@@ -157,7 +147,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     });
   }
 
-  /// Локализация ошибки по ключу
   String _localizeError(BuildContext context, String? errorKey) {
     if (errorKey == null) {
       return AppLocalizations.of(context)!.common_loading_error;
@@ -195,7 +184,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     try {
       await ref.read(notificationsProvider.notifier).markAsRead(n.id);
     } catch (_) {
-      // Ignore — UI still открывается, стейт откатится при ошибке
+      // Ignore
     }
 
     if (!mounted) return;
@@ -210,17 +199,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(notificationsProvider);
-
     final theme = Theme.of(context);
 
-    // Слушаем ошибки при refresh (pull to refresh)
     ref.listen<NotificationsState>(notificationsProvider, (previous, next) {
       if (!mounted) return;
-      // Показываем ошибку только если есть данные (не пустой список) и ошибка появилась при refresh
-      if (next.hasError && 
-          next.error != null && 
+      if (next.hasError &&
+          next.error != null &&
           next.notifications.isNotEmpty &&
-          previous?.error != next.error && 
+          previous?.error != next.error &&
           _lastShownError != next.error) {
         _lastShownError = next.error;
         _showErrorSafely(next.error!, context);
@@ -238,19 +224,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: theme.colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           AppLocalizations.of(context)!.notifications_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         actions: [
           IconButton(
-            tooltip: AppLocalizations.of(
-              context,
-            )!.notifications_mark_all_read_tooltip,
+            tooltip: AppLocalizations.of(context)!.notifications_mark_all_read_tooltip,
             onPressed: state.notifications.isEmpty ? null : _markAllAsRead,
             icon: const Icon(Icons.mark_email_read_outlined),
           ),
@@ -282,7 +266,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
             if (state.hasError && state.notifications.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24.r),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -290,14 +274,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                         _localizeError(context, state.error),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       IconButton(
                         onPressed: () =>
                             ref.read(notificationsProvider.notifier).refresh(),
                         icon: HugeIcon(
                           icon: HugeIcons.strokeRoundedRefresh,
                           color: Theme.of(context).colorScheme.primary,
-                          size: 32,
+                          size: 32.r,
                         ),
                         tooltip: AppLocalizations.of(context)!.common_retry,
                       ),
@@ -324,40 +308,35 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
               child: ListView.builder(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 itemCount: totalItemCount,
                 itemBuilder: (context, index) {
-                  // Показываем баннер в начале списка, если разрешения запрещены
                   if (!_isCheckingPermission &&
                       _isNotificationDenied &&
                       index == 0) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.only(bottom: 12.h),
                       child: _buildNotificationPermissionBanner(
                         context,
                         AppLocalizations.of(context)!,
                       ),
                     );
                   }
-                  
-                  // Индикатор загрузки в конце списка
+
                   final notificationIndex = (!_isCheckingPermission &&
                           _isNotificationDenied
                       ? index - 1
                       : index);
                   if (notificationIndex >= state.notifications.length) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      child: const Center(child: CircularProgressIndicator()),
                     );
                   }
                   final n = state.notifications[notificationIndex];
                   final itemKey = 'notification_${n.id}_${n.readAt}';
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.only(bottom: 12.h),
                     child: _NotificationListItem(
                       itemKey: itemKey,
                       isOpen: _openedItemKey == itemKey,
@@ -403,8 +382,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     );
   }
 
-  /// Виджет баннера для уведомления о запрещенных уведомлениях
-  /// Использует такой же дизайн как на Dashboard
   Widget _buildNotificationPermissionBanner(
     BuildContext context,
     AppLocalizations localizations,
@@ -413,14 +390,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
       color: theme.colorScheme.surfaceContainerHighest,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -431,7 +408,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -440,40 +417,42 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                   HugeIcon(
                     icon: HugeIcons.strokeRoundedNotification02,
                     color: AppColors.primaryGradientEnd,
-                    size: 24,
+                    size: 24.r,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
                       localizations.dashboard_notification_card_title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
+                        fontSize: 16.sp,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 localizations.dashboard_notification_card_message,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 14.sp,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Row(
                 children: [
                   Expanded(
                     child: AppButtonStyles.primaryGradientButton(
                       text: localizations.dashboard_notification_card_enable,
                       onPressed: _openAppSettings,
-                      borderRadius: 10,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      borderRadius: 10.r,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       textStyle: theme.textTheme.labelLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ),
@@ -515,7 +494,6 @@ class _NotificationListItem extends ConsumerStatefulWidget {
 
 class _NotificationListItemState extends ConsumerState<_NotificationListItem>
     with SingleTickerProviderStateMixin {
-  static const double _iconArea = 56;
   late final AnimationController _controller;
 
   double get _offset => _controller.value;
@@ -528,8 +506,8 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
           vsync: this,
           duration: const Duration(milliseconds: 160),
           lowerBound: 0,
-          upperBound: _iconArea,
-          value: widget.isOpen ? _iconArea : 0,
+          upperBound: 56,
+          value: widget.isOpen ? 56 : 0,
         )..addListener(() {
           setState(() {});
         });
@@ -540,9 +518,9 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
     super.didUpdateWidget(oldWidget);
     if (!widget.isOpen && _controller.value != 0) {
       _controller.animateTo(0, duration: const Duration(milliseconds: 120));
-    } else if (widget.isOpen && _controller.value != _iconArea) {
+    } else if (widget.isOpen && _controller.value != _controller.upperBound) {
       _controller.animateTo(
-        _iconArea,
+        _controller.upperBound,
         duration: const Duration(milliseconds: 120),
       );
     }
@@ -560,13 +538,13 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
 
   void _onDragUpdate(DragUpdateDetails details) {
     final delta = details.primaryDelta ?? 0;
-    _controller.value = (_controller.value - delta).clamp(0, _iconArea);
+    _controller.value = (_controller.value - delta).clamp(0, _controller.upperBound);
   }
 
   void _onDragEnd(DragEndDetails details) {
-    final shouldOpen = _controller.value > _iconArea * 0.3;
+    final shouldOpen = _controller.value > _controller.upperBound * 0.3;
     if (shouldOpen) {
-      _animateTo(_iconArea);
+      _animateTo(_controller.upperBound);
       widget.onOpenSwipe(widget.itemKey);
     } else {
       _animateTo(0);
@@ -588,16 +566,16 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFE53E3E).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
               ),
               alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 8, left: 8),
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onDelete,
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 40.r,
+                  height: 40.r,
                   decoration: BoxDecoration(
                     color: const Color(0xFFE53E3E).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
@@ -606,10 +584,10 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
                       width: 1,
                     ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.delete_outline,
-                    color: Color(0xFFE53E3E),
-                    size: 22,
+                    color: const Color(0xFFE53E3E),
+                    size: 22.r,
                   ),
                 ),
               ),
@@ -620,7 +598,7 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
             child: Container(
               decoration: BoxDecoration(
                 color: theme.cardColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
                     color: theme.shadowColor.withValues(alpha: 0.08),
@@ -637,92 +615,89 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
                     _animateTo(0);
                     widget.onOpen();
                   },
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Builder(
-                              builder: (context) {
-                                final locale = ref.watch(localeProvider);
-                                final localizedTitle = n.getLocalizedTitle(
-                                  locale.languageCode,
-                                );
-                                return Text(
-                                  localizedTitle.isEmpty
-                                      ? AppLocalizations.of(
-                                          context,
-                                        )!.notifications_fallback_title
-                                      : localizedTitle,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: n.isRead
-                                        ? FontWeight.w400
-                                        : FontWeight.w700,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          if (!n.isRead) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
-                                shape: BoxShape.circle,
+                    padding: EdgeInsets.all(16.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Builder(
+                                builder: (context) {
+                                  final locale = ref.watch(localeProvider);
+                                  final localizedTitle = n.getLocalizedTitle(
+                                    locale.languageCode,
+                                  );
+                                  return Text(
+                                    localizedTitle.isEmpty
+                                        ? AppLocalizations.of(context)!.notifications_fallback_title
+                                        : localizedTitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: n.isRead
+                                          ? FontWeight.w400
+                                          : FontWeight.w700,
+                                      fontSize: 16.sp,
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                          ],
-                        ],
-                      ),
-                      Builder(
-                        builder: (context) {
-                          final locale = ref.watch(localeProvider);
-                          final localizedBody = n.getLocalizedBody(
-                            locale.languageCode,
-                          );
-                          if (localizedBody.isEmpty) {
-                            return const SizedBox.shrink();
-                          }
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 8),
-                              Text(
-                                localizedBody,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.8,
-                                  ),
+                            if (!n.isRead) ...[
+                              SizedBox(width: 8.w),
+                              Container(
+                                width: 8.r,
+                                height: 8.r,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ],
-                          );
-                        },
-                      ),
-                      if (n.createdAt != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.dateFormat.format(n.createdAt!.toLocal()),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.6,
+                          ],
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final locale = ref.watch(localeProvider);
+                            final localizedBody = n.getLocalizedBody(
+                              locale.languageCode,
+                            );
+                            if (localizedBody.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 8.h),
+                                Text(
+                                  localizedBody,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        if (n.createdAt != null) ...[
+                          SizedBox(height: 8.h),
+                          Text(
+                            widget.dateFormat.format(n.createdAt!.toLocal()),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontSize: 12.sp,
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
                 ),
               ),
             ),

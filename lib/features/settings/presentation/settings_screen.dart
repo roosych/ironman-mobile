@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'dart:async';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
@@ -80,7 +81,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     try {
       final wasDenied = _isNotificationDenied;
       await _checkNotificationPermission();
-      
+
       // Если разрешения были запрещены, а теперь разрешены - переинициализируем FCM
       if (wasDenied && !_isNotificationDenied) {
         await FcmService().recheckPermissionsAndRegister();
@@ -94,7 +95,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _openAppSettings() async {
     final wasDenied = _isNotificationDenied;
     await _permissionService.openAppSettings();
-    
+
     // Проверяем статус снова после возврата из настроек
     // Используем несколько проверок с задержками, так как система может обновлять статус не сразу
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -103,7 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         _recheckFcmPermissions();
       }
     });
-    
+
     // Дополнительная проверка через 1 секунду на случай, если первая не сработала
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
@@ -189,13 +190,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: Theme.of(context).colorScheme.onSurface,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           localizations.settings_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         centerTitle: true,
       ),
@@ -203,19 +204,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.r),
               children: [
                 Card(
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     side: BorderSide.none,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
                         child: Row(
                           children: [
                             Expanded(
@@ -226,12 +227,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               ),
                             ),
                             if (_isUpdatingLocale)
-                              const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8.w),
                                 child: SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  width: 16.r,
+                                  height: 16.r,
+                                  child: const CircularProgressIndicator(strokeWidth: 2),
                                 ),
                               ),
                           ],
@@ -284,12 +285,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
                 // Notification Permission Banner (if denied)
                 if (!_isCheckingPermission && _isNotificationDenied) ...[
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildNotificationPermissionBanner(context, localizations),
                 ],
 
                 // Policies Section
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _buildPoliciesCard(context, localizations),
               ],
             ),
@@ -298,15 +299,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           Container(
             width: double.infinity,
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 16.0,
-              top: 8.0,
+              bottom: MediaQuery.of(context).padding.bottom + 16.h,
+              top: 8.h,
             ),
             child: Text(
-              'Версия 1.0.0',
+              'v 1.0.0',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                fontSize: 12,
+                fontSize: 12.sp,
               ),
             ),
           ),
@@ -324,7 +325,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -333,9 +334,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 HugeIcon(
                   icon: HugeIcons.strokeRoundedNotification01,
                   color: theme.colorScheme.error,
-                  size: 24,
+                  size: 24.r,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Text(
                     localizations.notification_permission_disabled_title,
@@ -347,23 +348,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(
               localizations.notification_permission_disabled_message,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             SizedBox(
               width: double.infinity,
               child: AppButtonStyles.primaryGradientButton(
                 text: localizations.notification_permission_open_settings,
                 onPressed: _openAppSettings,
                 borderRadius: 12,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(
-                  fontSize: 16,
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                textStyle: TextStyle(
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                   color: Colors.white,
@@ -382,7 +383,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         side: BorderSide.none,
       ),
       child: InkWell(
@@ -393,17 +394,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           );
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Row(
             children: [
               HugeIcon(
                 icon: HugeIcons.strokeRoundedLicenseDraft,
                 color: theme.colorScheme.onSurface,
-                size: 24,
+                size: 24.r,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               Expanded(
                 child: Text(
                   localizations.settings_policies_and_terms,
@@ -415,7 +416,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowRight01,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                size: 20,
+                size: 20.r,
               ),
             ],
           ),

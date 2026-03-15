@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
@@ -138,13 +139,13 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
               color: AppColors.ironmanWhite,
-              size: 24,
+              size: 24.r,
             ),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           title: Text(
             localizations.athlete_profile_title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
           ),
           centerTitle: true,
         ),
@@ -158,13 +159,13 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
             color: AppColors.ironmanWhite,
-            size: 24,
+            size: 24.r,
           ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           localizations.athlete_profile_title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
         centerTitle: true,
       ),
@@ -178,25 +179,25 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               pinned: true,
               delegate: _StickyTabBarDelegate(
                 child: Container(
-                  margin: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                    bottom: 16,
+                  margin: EdgeInsets.only(
+                    left: 16.w,
+                    right: 16.w,
+                    top: 16.h,
+                    bottom: 16.h,
                   ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(color: AppColors.ironmanGray, width: 1),
                   ),
-                  padding: const EdgeInsets.all(4),
+                  padding: EdgeInsets.all(4.r),
                   child: TabBar(
                     controller: _tabController,
                     labelColor: AppColors.ironmanWhite,
                     unselectedLabelColor: theme.colorScheme.onSurface
                         .withValues(alpha: 0.5),
                     indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -208,12 +209,12 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
-                    labelStyle: const TextStyle(
-                      fontSize: 15,
+                    labelStyle: TextStyle(
+                      fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                     ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 15,
+                    unselectedLabelStyle: TextStyle(
+                      fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                     ),
                     tabs: [
@@ -228,7 +229,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final isSelected = _tabController.index == 0;
                             return HugeIcon(
                               icon: HugeIcons.strokeRoundedUser,
-                              size: 24,
+                              size: 20.r,
                               color: isSelected
                                   ? AppColors.ironmanWhite
                                   : currentTheme.colorScheme.onSurface
@@ -248,7 +249,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final isSelected = _tabController.index == 1;
                             return HugeIcon(
                               icon: HugeIcons.strokeRoundedTimer01,
-                              size: 24,
+                              size: 20.r,
                               color: isSelected
                                   ? AppColors.ironmanWhite
                                   : currentTheme.colorScheme.onSurface
@@ -268,7 +269,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final isSelected = _tabController.index == 2;
                             return HugeIcon(
                               icon: HugeIcons.strokeRoundedAward01,
-                              size: 24,
+                              size: 20.r,
                               color: isSelected
                                   ? AppColors.ironmanWhite
                                   : currentTheme.colorScheme.onSurface
@@ -288,7 +289,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final isSelected = _tabController.index == 3;
                             return HugeIcon(
                               icon: HugeIcons.strokeRoundedCalendar03,
-                              size: 24,
+                              size: 20.r,
                               color: isSelected
                                   ? AppColors.ironmanWhite
                                   : currentTheme.colorScheme.onSurface
@@ -308,7 +309,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                             final isSelected = _tabController.index == 4;
                             return HugeIcon(
                               icon: HugeIcons.strokeRoundedImage01,
-                              size: 24,
+                              size: 20.r,
                               color: isSelected
                                   ? AppColors.ironmanWhite
                                   : currentTheme.colorScheme.onSurface
@@ -347,15 +348,15 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             children: [
           // Аватар с бейджем
           Stack(
             children: [
               Container(
-                width: 120,
-                height: 120,
+                width: 120.r,
+                height: 120.r,
                 decoration: const BoxDecoration(shape: BoxShape.circle),
                 child: ClipOval(
                   child: athlete.avatar != null
@@ -363,10 +364,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                           ImageUrlHelper.getFullImageUrl(athlete.avatar!),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return _buildDefaultAvatar(theme, 120);
+                            return _buildDefaultAvatar(theme, 120.r);
                           },
                         )
-                      : _buildDefaultAvatar(theme, 120),
+                      : _buildDefaultAvatar(theme, 120.r),
                 ),
               ),
               // Бейдж с номером Ironman
@@ -375,8 +376,8 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   bottom: 0,
                   right: 0,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 32.r,
+                    height: 32.r,
                     decoration: const BoxDecoration(
                       color: AppColors.ironmanRed,
                       shape: BoxShape.circle,
@@ -384,9 +385,9 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     child: Center(
                       child: Text(
                         '${athlete.ironmanNumber}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.ironmanWhite,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -395,12 +396,13 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           // Имя
           Text(
             athlete.name.toUpperCase(),
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
+              fontSize: 20.sp,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -408,27 +410,27 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           ),
           // Флаг и название страны (показываем только если есть country_iso)
           if (athlete.countryIso != null) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Флаг
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.r),
                     child: CountryFlag.fromCountryCode(
                       athlete.countryIso!.toUpperCase(),
-                      height: 20,
-                      width: 30,
+                      height: 16,
+                      width: 24,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   // Название страны
                   Text(
                     Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColors.ironmanWhite,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -442,9 +444,9 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
         // Блок рейтинга (показываем только если есть данные рейтинга)
         if (athlete.ranking != null &&
             (athlete.ranking!.ironman != null || athlete.ranking!.ironman703 != null)) ...[
-          SizedBox(height: athlete.countryIso != null ? 16 : 8),
+          SizedBox(height: athlete.countryIso != null ? 16.h : 8.h),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0), // Match tab block margins
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: _buildRatingBlock(context, theme, athlete),
           ),
         ],
@@ -492,11 +494,11 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          top: 16.0,
-          bottom: 100.0, // Отступ снизу для кнопок устройства
+        padding: EdgeInsets.only(
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
+          bottom: 100.h,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -505,17 +507,18 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               localizations.athlete_profile_info_tab,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Bio
             _buildBioCard(
               context,
               theme,
               localizations,
-              athlete.bio ?? localizations.athlete_profile_info_not_available,
+              athlete.bio,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // Social Links
             _buildSocialLinksCard(
               context,
@@ -538,13 +541,13 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     BuildContext context,
     ThemeData theme,
     AppLocalizations localizations,
-    String bio,
+    String? bio,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -554,9 +557,9 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               HugeIcon(
                 icon: HugeIcons.strokeRoundedEdit01,
                 color: AppColors.ironmanRed,
-                size: 20,
+                size: 20.r,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Text(
                 localizations.athlete_profile_bio,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -565,8 +568,19 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(bio, style: theme.textTheme.bodyLarge),
+          SizedBox(height: 12.h),
+          if (bio != null)
+            Text(bio, style: theme.textTheme.bodyLarge)
+          else
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              child: Text(
+                localizations.athlete_profile_info_not_available,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -579,10 +593,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     SocialLinks socialLinks,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,9 +606,9 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               HugeIcon(
                 icon: HugeIcons.strokeRoundedShare01,
                 color: AppColors.ironmanRed,
-                size: 20,
+                size: 20.r,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Text(
                 localizations.athlete_profile_social_links,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -603,7 +617,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           if (socialLinks.strava != null ||
               socialLinks.facebook != null ||
               socialLinks.instagram != null) ...[
@@ -621,7 +635,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       socialLinks.strava!,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: AppColors.ironmanRed,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                       ),
                     ),
                   ),
@@ -629,7 +643,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               ),
             ],
             if (socialLinks.facebook != null) ...[
-              if (socialLinks.strava != null) const SizedBox(height: 8),
+              if (socialLinks.strava != null) SizedBox(height: 8.h),
               Row(
                 children: [
                   Text(
@@ -643,7 +657,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       socialLinks.facebook!,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: AppColors.ironmanRed,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                       ),
                     ),
                   ),
@@ -652,7 +666,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             ],
             if (socialLinks.instagram != null) ...[
               if (socialLinks.strava != null || socialLinks.facebook != null)
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
               Row(
                 children: [
                   Text(
@@ -666,7 +680,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       socialLinks.instagram!,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: AppColors.ironmanRed,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                       ),
                     ),
                   ),
@@ -675,7 +689,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             ],
           ] else
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: EdgeInsets.symmetric(vertical: 8.h),
               child: Text(
                 localizations.athlete_profile_social_links_not_specified,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -755,7 +769,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       return Center(
         key: const ValueKey('error'),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -764,7 +778,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () {
                   ref
@@ -800,32 +814,33 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 16.0,
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: 16.h,
             ),
             sliver: SliverToBoxAdapter(
               child: Text(
                 localizations.athlete_profile_results_tab,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
                 ),
               ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 16.0,
-              bottom: 100.0,
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: 16.h,
+              bottom: 100.h,
             ),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                    padding: EdgeInsets.only(bottom: 16.h),
                     child: ResultCard(
                       result: approvedResults[index],
                       isMyResults: true,
@@ -872,7 +887,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     if (recordsState.hasError && recordsState.records == null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -881,7 +896,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () {
                   ref
@@ -916,11 +931,11 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          top: 16.0,
-          bottom: 100.0,
+        padding: EdgeInsets.only(
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
+          bottom: 100.h,
         ),
         child: personalBestsData != null
             ? Column(
@@ -930,9 +945,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     localizations.home_personal_bests,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: 20.sp,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   // Ironman
                   if (hasRaceTypeData(
                     personalBestsData['ironman'] as Map<String, dynamic>?,
@@ -947,7 +963,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   if (hasRaceTypeData(
                     personalBestsData['ironman'] as Map<String, dynamic>?,
                   ))
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                   // Ironman 70.3
                   if (hasRaceTypeData(
                     personalBestsData['ironman_70_3'] as Map<String, dynamic>?,
@@ -963,7 +979,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   if (hasRaceTypeData(
                     personalBestsData['ironman_70_3'] as Map<String, dynamic>?,
                   ))
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                   // 5150
                   if (hasRaceTypeData(
                     personalBestsData['5150'] as Map<String, dynamic>?,
@@ -1009,7 +1025,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     if (upcomingRacesState.hasError && upcomingRacesState.races.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1018,7 +1034,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () {
                   ref.read(athleteUpcomingRacesProvider(widget.athlete.id).notifier).loadUpcomingRaces(
@@ -1045,16 +1061,17 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 16.0,
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: 16.h,
             ),
             sliver: SliverToBoxAdapter(
               child: Text(
                 localizations.home_upcoming_races,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
                 ),
               ),
             ),
@@ -1080,7 +1097,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
+                      padding: EdgeInsets.only(bottom: 16.h),
                       child: UpcomingRaceCard(
                         race: upcomingRacesState.races[index],
                         showAthleteName: false,
@@ -1117,12 +1134,12 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     return Card(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           side: BorderSide.none,
         ),
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1143,10 +1160,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                       builder: (BuildContext context) {
                         return Dialog(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16.r),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(24),
+                            padding: EdgeInsets.all(24.r),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -1159,13 +1176,14 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                         localizations.athlete_rating_title,
                                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                               fontWeight: FontWeight.bold,
+                                              fontSize: 20.sp,
                                             ),
                                       ),
                                     ),
                                     IconButton(
                                       icon: HugeIcon(
                                         icon: HugeIcons.strokeRoundedCancel01,
-                                        size: 24,
+                                        size: 24.r,
                                         color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                       onPressed: () => Navigator.of(context).pop(),
@@ -1174,7 +1192,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 // Content
                                 Text(
                                   localizations.athlete_rating_info,
@@ -1190,12 +1208,12 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   child: HugeIcon(
                     icon: HugeIcons.strokeRoundedInformationCircle,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    size: 20,
+                    size: 20.r,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             // Рейтинги
             Column(
               children: [
@@ -1208,7 +1226,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                     athlete.ranking!.ironman!.total,
                   ),
                 if (athlete.ranking!.ironman != null && athlete.ranking!.ironman703 != null)
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                 if (athlete.ranking!.ironman703 != null)
                   _buildRatingRow(
                     context,
@@ -1273,7 +1291,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     if (photosState.hasError && photosState.photos.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1282,7 +1300,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: _loadPhotos,
                 child: Text(localizations.common_retry),
@@ -1319,12 +1337,12 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  crossAxisSpacing: 4,
-                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4.w,
+                  mainAxisSpacing: 4.h,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -1341,18 +1359,18 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                         );
                       },
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4.r),
                         child: Image.network(
                           ImageUrlHelper.getFullImageUrl(photo.url),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: theme.colorScheme.surfaceContainerHighest,
-                              child: const Center(
+                              child: Center(
                                 child: HugeIcon(
                                   icon: HugeIcons.strokeRoundedImageNotFound01,
                                   color: Colors.white38,
-                                  size: 32,
+                                  size: 32.r,
                                 ),
                               ),
                             );
@@ -1366,18 +1384,82 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
               ),
             ),
             if (photosState.isLoadingMore)
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: EdgeInsets.all(16.r),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
               ),
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            SliverToBoxAdapter(child: SizedBox(height: 100.h)),
           ],
         ),
       ),
     );
   }
+}
+
+// Вспомогательные функции для расчёта темпа
+Map<String, double> _getDistances(String raceType) {
+  final type = raceType.toLowerCase().replaceAll(' ', '').replaceAll('_', '');
+
+  if (type.contains('70.3') || type.contains('703')) {
+    return {'swim': 1.9, 'bike': 90.0, 'run': 21.1};
+  } else if (type.contains('5150')) {
+    return {'swim': 1.5, 'bike': 40.0, 'run': 10.0};
+  } else {
+    return {'swim': 3.8, 'bike': 180.0, 'run': 42.2};
+  }
+}
+
+Duration? _parseTime(String time) {
+  try {
+    final parts = time.split(':');
+    if (parts.length != 3) return null;
+
+    final hours = int.parse(parts[0]);
+    final minutes = int.parse(parts[1]);
+    final seconds = int.parse(parts[2]);
+
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  } catch (_) {
+    return null;
+  }
+}
+
+String _calculateSwimPace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final totalSeconds = duration.inSeconds;
+  final pacePerHundredMetersSeconds = (totalSeconds / distance) * 0.1;
+
+  final minutes = (pacePerHundredMetersSeconds / 60).floor();
+  final seconds = (pacePerHundredMetersSeconds % 60).round();
+
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}
+
+String _calculateBikePace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final hours = duration.inSeconds / 3600;
+  final speed = distance / hours;
+
+  return speed.toStringAsFixed(1);
+}
+
+String _calculateRunPace(String timeStr, double distance) {
+  final duration = _parseTime(timeStr);
+  if (duration == null || distance <= 0) return '';
+
+  final totalSeconds = duration.inSeconds;
+  final pacePerKmSeconds = totalSeconds / distance;
+
+  final minutes = (pacePerKmSeconds / 60).floor();
+  final seconds = (pacePerKmSeconds % 60).round();
+
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
 }
 
 class _PersonalBestsCard extends StatelessWidget {
@@ -1406,14 +1488,22 @@ class _PersonalBestsCard extends StatelessWidget {
     }
   }
 
+  Map<String, dynamic>? _getDisciplineData(String discipline) {
+    final value = data[discipline];
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
   String? _getTime(String discipline) {
-    final disciplineData = data[discipline] as Map<String, dynamic>?;
-    return disciplineData?['time'] as String?;
+    return _getDisciplineData(discipline)?['time'] as String?;
   }
 
   Map<String, dynamic>? _getRace(String discipline) {
-    final disciplineData = data[discipline] as Map<String, dynamic>?;
-    return disciplineData?['race'] as Map<String, dynamic>?;
+    final race = _getDisciplineData(discipline)?['race'];
+    if (race is Map<String, dynamic>) return race;
+    if (race is Map) return Map<String, dynamic>.from(race);
+    return null;
   }
 
   String _formatDate(String? isoDate) {
@@ -1435,87 +1525,80 @@ class _PersonalBestsCard extends StatelessWidget {
     final bikeRace = _getRace('bike');
     final runRace = _getRace('run');
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide.none,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Centered race type text
-            Center(
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 4),
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: AppColors.ironmanRed,
-                      width: 2,
-                    ),
+    return Padding(
+      padding: EdgeInsets.all(6.r),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Centered race type text
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(bottom: 4.h),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.ironmanRed,
+                    width: 2,
                   ),
                 ),
-                child: Text(
-                  _getRaceTypeText(title),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 17,
-                  ),
+              ),
+              child: Text(
+                _getRaceTypeText(title),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 17.sp,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            // Swim
-            if (swimTime != null)
-              _DisciplineRow(
-                imagePath: 'assets/images/svg/swim.png',
-                time: swimTime,
-                date: swimRace?['race_date'] as String?,
-                location: swimRace?['location'] as String?,
-                formatDate: _formatDate,
-                raceType: title,
-                athleteId: athleteId,
-                results: results,
+          ),
+          SizedBox(height: 16.h),
+          // Swim
+          if (swimTime != null)
+            _DisciplineRow(
+              imagePath: 'assets/images/svg/swim.png',
+              time: swimTime,
+              date: swimRace?['race_date'] as String?,
+              location: swimRace?['location'] as String?,
+              formatDate: _formatDate,
+              raceType: title,
+              athleteId: athleteId,
+              results: results,
+            ),
+          if (swimTime != null && (bikeTime != null || runTime != null))
+            SizedBox(height: 8.h),
+          // Bike
+          if (bikeTime != null)
+            _DisciplineRow(
+              imagePath: 'assets/images/svg/bike.png',
+              time: bikeTime,
+              date: bikeRace?['race_date'] as String?,
+              location: bikeRace?['location'] as String?,
+              formatDate: _formatDate,
+              raceType: title,
+              athleteId: athleteId,
+              results: results,
+            ),
+          if (bikeTime != null && runTime != null) SizedBox(height: 8.h),
+          // Run
+          if (runTime != null)
+            _DisciplineRow(
+              imagePath: 'assets/images/svg/run.png',
+              time: runTime,
+              date: runRace?['race_date'] as String?,
+              location: runRace?['location'] as String?,
+              formatDate: _formatDate,
+              raceType: title,
+              athleteId: athleteId,
+              results: results,
+            ),
+          if (swimTime == null && bikeTime == null && runTime == null)
+            Text(
+              AppLocalizations.of(context)!.common_no_data,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-            if (swimTime != null && (bikeTime != null || runTime != null))
-              const SizedBox(height: 8),
-            // Bike
-            if (bikeTime != null)
-              _DisciplineRow(
-                imagePath: 'assets/images/svg/bike.png',
-                time: bikeTime,
-                date: bikeRace?['race_date'] as String?,
-                location: bikeRace?['location'] as String?,
-                formatDate: _formatDate,
-                raceType: title,
-                athleteId: athleteId,
-                results: results,
-              ),
-            if (bikeTime != null && runTime != null) const SizedBox(height: 8),
-            // Run
-            if (runTime != null)
-              _DisciplineRow(
-                imagePath: 'assets/images/svg/run.png',
-                time: runTime,
-                date: runRace?['race_date'] as String?,
-                location: runRace?['location'] as String?,
-                formatDate: _formatDate,
-                raceType: title,
-                athleteId: athleteId,
-                results: results,
-              ),
-            if (swimTime == null && bikeTime == null && runTime == null)
-              Text(
-                'Нет данных',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -1528,10 +1611,10 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   _StickyTabBarDelegate({required this.child});
 
   @override
-  double get minExtent => 88; // TabBar height (~48) + padding (8) + top margin (16) + bottom margin (16)
+  double get minExtent => 88.h;
 
   @override
-  double get maxExtent => 88;
+  double get maxExtent => 88.h;
 
   @override
   Widget build(
@@ -1569,10 +1652,49 @@ class _DisciplineRow extends StatelessWidget {
     this.results,
   });
 
+  String _getDisciplineFromImagePath() {
+    if (imagePath.contains('swim')) return 'swim';
+    if (imagePath.contains('bike')) return 'bike';
+    if (imagePath.contains('run')) return 'run';
+    return 'swim';
+  }
+
+  String _calculatePace(BuildContext context) {
+    final discipline = _getDisciplineFromImagePath();
+    final distances = _getDistances(raceType);
+    final distance = distances[discipline] ?? 0.0;
+
+    switch (discipline) {
+      case 'swim':
+        return _calculateSwimPace(time, distance);
+      case 'bike':
+        return _calculateBikePace(time, distance);
+      case 'run':
+        return _calculateRunPace(time, distance);
+      default:
+        return '';
+    }
+  }
+
+  String _getPaceUnit(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final discipline = _getDisciplineFromImagePath();
+
+    switch (discipline) {
+      case 'swim':
+        return localizations.pace_calculator_min_per_100m;
+      case 'bike':
+        return localizations.pace_calculator_km_per_h;
+      case 'run':
+        return localizations.pace_calculator_min_per_km;
+      default:
+        return '';
+    }
+  }
+
   RaceResult? _findResult() {
     if (results == null || date == null || location == null) return null;
 
-    // Ищем результат по дате и локации, только среди подтвержденных
     for (final result in results!) {
       if (result.isApproved && result.date == date && result.location == location) {
         return result;
@@ -1595,65 +1717,110 @@ class _DisciplineRow extends StatelessWidget {
               );
             }
           : null,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.r),
+      splashColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+      highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+        margin: EdgeInsets.symmetric(vertical: 2.h),
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.ironmanGray, width: 1),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColors.resultsBorder, width: 1),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Icon
-            Image.asset(imagePath, width: 40, height: 40, fit: BoxFit.contain),
-            const SizedBox(width: 16),
-            // Time
+            // Основное содержимое
             Expanded(
-              child: Text(
-                time,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            // Date and location
-            if (date != null || location != null)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (date != null)
-                      Text(
-                        formatDate(date),
-                        style: Theme.of(context).textTheme.bodySmall,
-                        textAlign: TextAlign.right,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Верхняя строка: иконка слева, время справа
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        imagePath,
+                        width: 40.w,
+                        height: 40.h,
+                        fit: BoxFit.contain,
                       ),
-                    if (location != null) ...[
-                      if (date != null) const SizedBox(height: 4),
-                      Text(
-                        location!,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        textAlign: TextAlign.right,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            time,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Builder(
+                            builder: (BuildContext context) {
+                              final pace = _calculatePace(context);
+                              final paceUnit = _getPaceUnit(context);
+                              if (pace.isNotEmpty && paceUnit.isNotEmpty) {
+                                return Padding(
+                                  padding: EdgeInsets.only(top: 2.h),
+                                  child: Text(
+                                    '~$pace $paceUnit',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontSize: 11.sp,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ],
                       ),
                     ],
+                  ),
+                  // Нижняя строка: дата слева, локация справа
+                  if (date != null || location != null) ...[
+                    SizedBox(height: 4.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (date != null)
+                          Text(
+                            formatDate(date),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          )
+                        else
+                          const SizedBox.shrink(),
+                        if (location != null)
+                          Expanded(
+                            child: Text(
+                              location!.isEmpty ? '' : location![0].toUpperCase() + location!.substring(1),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontSize: 13.sp,
+                              ),
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
+                      ],
+                    ),
                   ],
-                ),
+                ],
               ),
-            // Chevron
+            ),
+            // Шеврон справа
             if (result != null) ...[
-              const SizedBox(width: 8),
+              SizedBox(width: 12.w),
               HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowRight01,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
-                size: 20,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                size: 20.r,
               ),
             ],
           ],

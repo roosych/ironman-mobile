@@ -1483,7 +1483,7 @@ abstract class AppLocalizations {
   /// My races screen title
   ///
   /// In en, this message translates to:
-  /// **'Upcoming Races'**
+  /// **'My Upcoming Races'**
   String get my_races_title;
 
   /// No races message for my races screen
