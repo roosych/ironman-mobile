@@ -209,11 +209,11 @@ class AuthApi {
   }
 
   /// Update user locale
-  /// PUT /auth/locale
+  /// PUT /user/locale
   Future<String> updateLocale(String locale) async {
     try {
       final response = await _client.put<Map<String, dynamic>>(
-        '/auth/locale',
+        '/user/locale',
         data: {'locale': locale},
       );
 
