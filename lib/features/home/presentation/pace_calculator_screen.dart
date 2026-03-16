@@ -644,12 +644,6 @@ class DisciplineCard extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
-          side: BorderSide(
-            color: isSelected
-                ? AppColors.ironmanRed
-                : AppColors.ironmanGray,
-            width: isSelected ? 2 : 1,
-          ),
         ),
         child: InkWell(
           onTap: onTap,
