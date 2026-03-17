@@ -139,7 +139,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     SizedBox(height: 16.h),
                     Center(
                       child: Text(
-                        displayName.toUpperCase(),
+                        displayName,
                         style: Theme.of(context).textTheme.titleLarge
                             ?.copyWith(fontWeight: FontWeight.bold, fontSize: 22.sp),
                         textAlign: TextAlign.center,

@@ -144,6 +144,13 @@
   "@home_finishes": {
     "description": "Finishes label"
   },
+  "home_finishes_count": "{count, plural, =1{finish} other{finishes}}",
+  "@home_finishes_count": {
+    "description": "Finishes count label with pluralization",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "home_add_race": "Add Race",
   "@home_add_race": {
     "description": "Add race button text"
@@ -220,6 +227,10 @@
   "results_no_results": "No results",
   "@results_no_results": {
     "description": "No results message"
+  },
+  "home_no_personal_bests": "No personal bests yet",
+  "@home_no_personal_bests": {
+    "description": "No personal bests message"
   },
   "results_all_coming_soon": "All athletes results coming soon",
   "@results_all_coming_soon": {

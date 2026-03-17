@@ -117,6 +117,17 @@ class AppLocalizationsAz extends AppLocalizations {
   String get home_finishes => 'finiş';
 
   @override
+  String home_finishes_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'finiş',
+      one: 'finiş',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_add_race => 'Əlavə et';
 
   @override
@@ -179,6 +190,9 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get results_no_results => 'Nəticə yoxdur';
+
+  @override
+  String get home_no_personal_bests => 'Hələ şəxsi rekord yoxdur';
 
   @override
   String get results_all_coming_soon =>

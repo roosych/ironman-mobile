@@ -203,10 +203,10 @@ class UpcomingRaceCard extends StatelessWidget {
                   SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
-                      race.createdBy!.name.toUpperCase(),
+                      race.createdBy!.name,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 14.sp,
+                        fontSize: 16.sp,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

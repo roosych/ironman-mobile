@@ -736,7 +736,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          ranking.name.toUpperCase(),
+                          ranking.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -1047,7 +1047,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  athlete.name.toUpperCase(),
+                  athlete.name,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

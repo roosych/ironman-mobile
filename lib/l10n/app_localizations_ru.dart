@@ -117,6 +117,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home_finishes => 'финишов';
 
   @override
+  String home_finishes_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'финишей',
+      few: 'финиша',
+      one: 'финиш',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_add_race => 'Добавить гонку';
 
   @override
@@ -180,6 +192,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get results_no_results => 'Нет результатов';
+
+  @override
+  String get home_no_personal_bests => 'Личных рекордов пока нет';
 
   @override
   String get results_all_coming_soon => 'Результаты всех атлетов скоро';

@@ -234,10 +234,10 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    athlete.name.toUpperCase(),
+                    athlete.name,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      fontSize: 18.sp,
+                      fontSize: 20.sp,
                     ),
                   ),
                   if (athlete.raceCounts.ironman > 0) ...[

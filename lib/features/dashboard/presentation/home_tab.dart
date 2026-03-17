@@ -340,7 +340,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         ),
                       ),
                       Text(
-                        user.name.toUpperCase(),
+                        user.name,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.sp,
@@ -1294,7 +1294,10 @@ class _PersonalBestsExpandableCardState
                       padding: EdgeInsets.all(16.r),
                       child: const Center(child: CircularProgressIndicator()),
                     )
-                  else if (personalBests != null)
+                  else if (personalBests != null &&
+                      (_safeGetPersonalBestsData(personalBests['ironman']) != null ||
+                          _safeGetPersonalBestsData(personalBests['ironman_70_3']) != null ||
+                          _safeGetPersonalBestsData(personalBests['5150']) != null))
                     Padding(
                       padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 32.h),
                       child: Column(
@@ -1332,6 +1335,14 @@ class _PersonalBestsExpandableCardState
                               results: widget.results,
                             ),
                         ],
+                      ),
+                    )
+                  else if (!recordsState.isLoading)
+                    Padding(
+                      padding: EdgeInsets.all(24.r),
+                      child: Text(
+                        localizations.home_no_personal_bests,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ),
                 ],

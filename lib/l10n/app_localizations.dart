@@ -316,6 +316,12 @@ abstract class AppLocalizations {
   /// **'finishes'**
   String get home_finishes;
 
+  /// Finishes count label with pluralization
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{finish} other{finishes}}'**
+  String home_finishes_count(int count);
+
   /// Add race button text
   ///
   /// In en, this message translates to:
@@ -423,6 +429,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results'**
   String get results_no_results;
+
+  /// No personal bests message
+  ///
+  /// In en, this message translates to:
+  /// **'No personal bests yet'**
+  String get home_no_personal_bests;
 
   /// All athletes results coming soon message
   ///

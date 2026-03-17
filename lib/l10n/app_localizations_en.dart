@@ -117,6 +117,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home_finishes => 'finishes';
 
   @override
+  String home_finishes_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'finishes',
+      one: 'finish',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_add_race => 'Add Race';
 
   @override
@@ -179,6 +190,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get results_no_results => 'No results';
+
+  @override
+  String get home_no_personal_bests => 'No personal bests yet';
 
   @override
   String get results_all_coming_soon => 'All athletes results coming soon';

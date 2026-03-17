@@ -344,6 +344,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
       athleteDetailProvider(widget.athlete.id),
     );
     final athlete = athleteDetailState.athlete ?? widget.athlete;
+    final localizations = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -351,93 +352,224 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           padding: EdgeInsets.all(24.r),
           child: Column(
             children: [
-          // Аватар с бейджем
-          Stack(
-            children: [
-              Container(
-                width: 120.r,
-                height: 120.r,
-                decoration: const BoxDecoration(shape: BoxShape.circle),
-                child: ClipOval(
-                  child: athlete.avatar != null
-                      ? Image.network(
-                          ImageUrlHelper.getFullImageUrl(athlete.avatar!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return _buildDefaultAvatar(theme, 120.r);
-                          },
-                        )
-                      : _buildDefaultAvatar(theme, 120.r),
-                ),
-              ),
-              // Бейдж с номером Ironman
-              if (athlete.ironmanNumber != null && athlete.ironmanNumber != 0)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 32.r,
-                    height: 32.r,
-                    decoration: const BoxDecoration(
-                      color: AppColors.ironmanRed,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${athlete.ironmanNumber}',
-                        style: TextStyle(
-                          color: AppColors.ironmanWhite,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
+              // Аватар слева, весь контент справа
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Аватар с бейджем
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 100.r,
+                        height: 100.r,
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        child: ClipOval(
+                          child: athlete.avatar != null
+                              ? Image.network(
+                                  ImageUrlHelper.getFullImageUrl(athlete.avatar!),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return _buildDefaultAvatar(theme, 100.r);
+                                  },
+                                )
+                              : _buildDefaultAvatar(theme, 90.r),
                         ),
                       ),
-                    ),
+                      if (athlete.ironmanNumber != null && athlete.ironmanNumber != 0)
+                        Positioned(
+                          bottom: 0.h,
+                          right: 0.w,
+                          child: Container(
+                            width: 32.r,
+                            height: 32.r,
+                            decoration: const BoxDecoration(
+                              color: AppColors.ironmanRed,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${athlete.ironmanNumber}',
+                                style: TextStyle(
+                                  color: AppColors.ironmanWhite,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          // Имя
-          Text(
-            athlete.name.toUpperCase(),
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 20.sp,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          // Флаг и название страны (показываем только если есть country_iso)
-          if (athlete.countryIso != null) ...[
-            SizedBox(height: 8.h),
-            Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Флаг
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4.r),
-                    child: CountryFlag.fromCountryCode(
-                      athlete.countryIso!.toUpperCase(),
-                      height: 16,
-                      width: 24,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  // Название страны
-                  Text(
-                    Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.ironmanWhite,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
+                  SizedBox(width: 20.w),
+                  // Весь правый контент
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Имя с флагом
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (athlete.countryIso != null) ...[
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.h),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(3.r),
+                                  child: CountryFlag.fromCountryCode(
+                                    athlete.countryIso!.toUpperCase(),
+                                    height: 16,
+                                    width: 22,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                            ],
+                            Expanded(
+                              child: Text(
+                                athlete.name,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22.sp,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Страна
+                        // if (athlete.countryIso != null) ...[
+                        //   SizedBox(height: 8.h),
+                        //   Row(
+                        //     children: [
+                        //       ClipRRect(
+                        //         borderRadius: BorderRadius.circular(3.r),
+                        //         child: CountryFlag.fromCountryCode(
+                        //           athlete.countryIso!.toUpperCase(),
+                        //           height: 14,
+                        //           width: 20,
+                        //         ),
+                        //       ),
+                        //       SizedBox(width: 6.w),
+                        //       Flexible(
+                        //         child: Text(
+                        //           Countries.getCountryName(athlete.countryIso) ?? athlete.countryIso!,
+                        //           style: theme.textTheme.bodyMedium?.copyWith(
+                        //             color: AppColors.ironmanWhite,
+                        //             fontSize: 15.sp,
+                        //             fontWeight: FontWeight.w500,
+                        //           ),
+                        //           overflow: TextOverflow.ellipsis,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ],
+                        SizedBox(height: 12.h),
+                        // Блок количества гонок
+                        IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              // FULL
+                              Expanded(
+                                child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'IM',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    children: [
+                                      Text(
+                                        '${athlete.raceCounts.ironman}',
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                          color: AppColors.ironmanWhite,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 24.sp,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                      Text(
+                                        localizations.home_finishes_count(athlete.raceCounts.ironman),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              ),
+                              // Разделитель
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: VerticalDivider(
+                                  color: AppColors.ironmanWhite.withValues(alpha: 0.3),
+                                  thickness: 1,
+                                  width: 1,
+                                ),
+                              ),
+                              // HALF
+                              Expanded(
+                                child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '70.3',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    children: [
+                                      Text(
+                                        '${athlete.raceCounts.ironman703}',
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                          color: AppColors.ironmanWhite,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 24.sp,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                      Text(
+                                        localizations.home_finishes_count(athlete.raceCounts.ironman703),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
             ],
           ),
         ),
@@ -447,7 +579,83 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           SizedBox(height: athlete.countryIso != null ? 16.h : 8.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: _buildRatingBlock(context, theme, athlete),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      localizations.athlete_rating_title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.sp,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(24.r),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            localizations.athlete_rating_title,
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.sp,
+                                                ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: HugeIcon(
+                                            icon: HugeIcons.strokeRoundedCancel01,
+                                            size: 24.r,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                          onPressed: () => Navigator.of(context).pop(),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      localizations.athlete_rating_info,
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: HugeIcon(
+                        icon: HugeIcons.strokeRoundedInformationCircle,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 20.r,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                _buildRatingBlock(context, theme, athlete),
+              ],
+            ),
           ),
         ],
       ],
@@ -1143,77 +1351,6 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Заголовок с иконкой подсказки
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  localizations.athlete_rating_title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(24.r),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Header with title and close button
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        localizations.athlete_rating_title,
-                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20.sp,
-                                            ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: HugeIcon(
-                                        icon: HugeIcons.strokeRoundedCancel01,
-                                        size: 24.r,
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                      ),
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 16.h),
-                                // Content
-                                Text(
-                                  localizations.athlete_rating_info,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: HugeIcon(
-                    icon: HugeIcons.strokeRoundedInformationCircle,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    size: 20.r,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
             // Рейтинги
             Column(
               children: [
@@ -1251,6 +1388,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           raceType,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
           ),
         ),
         RichText(
@@ -1261,6 +1399,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
+                  fontSize: 22.sp,
                 ),
               ),
               TextSpan(
@@ -1268,6 +1407,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
+                  fontSize: 14.sp,
                 ),
               ),
             ],
