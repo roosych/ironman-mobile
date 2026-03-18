@@ -54,7 +54,12 @@ class PolicyTypesResponse {
     final List<dynamic> dataList = json['data'] as List<dynamic>? ?? [];
     return PolicyTypesResponse(
       success: json['success'] as bool? ?? false,
-      data: dataList.map((item) => PolicyType.fromJson(item as Map<String, dynamic>)).toList(),
+      data: dataList.map((item) {
+        if (item is String) {
+          return PolicyType(value: item, name: item);
+        }
+        return PolicyType.fromJson(item as Map<String, dynamic>);
+      }).toList(),
       message: json['message'] as String?,
       error: json['error'] as String?,
     );

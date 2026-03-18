@@ -30,14 +30,16 @@ class Policy {
     return Policy(
       id: json['id'] as int,
       type: json['type'] as String,
-      typeName: json['type_name'] as String,
+      typeName: json['type_name'] as String? ?? json['type'] as String,
       language: json['language'] as String,
       title: json['title'] as String,
       content: json['content'] as String,
-      isActive: json['is_active'] as bool,
+      isActive: json['is_active'] as bool? ?? true,
       effectiveDate: DateTime.parse(json['effective_date'] as String),
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : DateTime.parse(json['created_at'] as String),
     );
   }
 
