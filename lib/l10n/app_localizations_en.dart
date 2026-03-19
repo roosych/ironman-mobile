@@ -264,6 +264,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratings_compare_records => 'Compare personal records';
 
   @override
+  String ratings_faster_by(String name, String time) {
+    return '$name is faster by $time';
+  }
+
+  @override
+  String get unit_sec => 'sec';
+
+  @override
+  String get unit_min => 'min';
+
+  @override
+  String get unit_hr => 'hr';
+
+  @override
   String get ratings_race_type_full => 'FULL 140.6';
 
   @override

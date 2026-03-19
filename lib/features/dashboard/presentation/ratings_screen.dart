@@ -925,6 +925,8 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                       _showComparison = false;
                     });
                   },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   icon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCancel01,
                     color: theme.colorScheme.onSurface,
@@ -933,7 +935,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 8.h),
             // Карточка сравнения
             Container(
               decoration: BoxDecoration(

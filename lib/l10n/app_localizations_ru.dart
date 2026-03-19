@@ -266,6 +266,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ratings_compare_records => 'Сравнить личные рекорды';
 
   @override
+  String ratings_faster_by(String name, String time) {
+    return '$name быстрее на $time';
+  }
+
+  @override
+  String get unit_sec => 'сек';
+
+  @override
+  String get unit_min => 'мин';
+
+  @override
+  String get unit_hr => 'ч';
+
+  @override
   String get ratings_race_type_full => 'FULL 140.6';
 
   @override

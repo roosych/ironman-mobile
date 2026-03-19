@@ -265,6 +265,20 @@ class AppLocalizationsAz extends AppLocalizations {
   String get ratings_compare_records => 'Şəxsi rekordları müqayisə et';
 
   @override
+  String ratings_faster_by(String name, String time) {
+    return '$name $time daha sürətlidir';
+  }
+
+  @override
+  String get unit_sec => 'san';
+
+  @override
+  String get unit_min => 'dəq';
+
+  @override
+  String get unit_hr => 's';
+
+  @override
   String get ratings_race_type_full => 'FULL 140.6';
 
   @override

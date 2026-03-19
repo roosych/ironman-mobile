@@ -1,9 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
-import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/features/dashboard/application/records_notifier.dart';
 import 'package:ironman_mobile/features/dashboard/domain/personal_record.dart';
 
@@ -34,7 +34,7 @@ class DisciplinesComparisonWidget extends ConsumerStatefulWidget {
 
 class _DisciplinesComparisonWidgetState
     extends ConsumerState<DisciplinesComparisonWidget> {
-  bool _isExpanded = false;
+  bool _isExpanded = true;
 
   @override
   void initState() {
@@ -82,21 +82,22 @@ class _DisciplinesComparisonWidgetState
     }
   }
 
-  String _getFirstName(String fullName) {
-    final parts = fullName.trim().split(' ');
-    if (parts.length >= 2) {
-      return parts[1]; // Возвращаем второе слово (имя)
-    }
-    return fullName;
-  }
 
-  String _formatTimeDifference(int seconds1, int seconds2) {
-    final diff = (seconds1 - seconds2).abs();
-    final hours = diff ~/ 3600;
-    final minutes = (diff % 3600) ~/ 60;
-    final secs = diff % 60;
-    final sign = seconds1 < seconds2 ? '-' : '+';
-    return '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  String _formatDiffReadable(int diffSeconds) {
+    final loc = widget.localizations;
+    if (diffSeconds < 60) {
+      return '$diffSeconds ${loc.unit_sec}';
+    } else if (diffSeconds < 3600) {
+      final m = diffSeconds ~/ 60;
+      final s = diffSeconds % 60;
+      if (s == 0) return '$m ${loc.unit_min}';
+      return '$m ${loc.unit_min} $s ${loc.unit_sec}';
+    } else {
+      final h = diffSeconds ~/ 3600;
+      final m = (diffSeconds % 3600) ~/ 60;
+      if (m == 0) return '$h ${loc.unit_hr}';
+      return '$h ${loc.unit_hr} $m ${loc.unit_min}';
+    }
   }
 
   @override
@@ -116,7 +117,7 @@ class _DisciplinesComparisonWidgetState
       ),
       child: Column(
         children: [
-          // Заголовок с кнопкой раскрытия
+          // Header with expand toggle
           InkWell(
             onTap: () {
               setState(() {
@@ -149,191 +150,327 @@ class _DisciplinesComparisonWidgetState
               ),
             ),
           ),
-          // Содержимое таблицы
+          // Content
           if (_isExpanded)
-            Padding(
-              padding: EdgeInsets.all(16.r),
-              child: isLoading
-                  ? Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(24.r),
-                        child: const CircularProgressIndicator(),
-                      ),
-                    )
-                  : _buildComparisonTable(records1, records2),
-            ),
+            isLoading
+                ? Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.r),
+                      child: const CircularProgressIndicator(),
+                    ),
+                  )
+                : _buildDisciplineCards(records1, records2),
         ],
       ),
     );
   }
 
-  Widget _buildComparisonTable(
+  Widget _buildDisciplineCards(
     PersonalRecord? records1,
     PersonalRecord? records2,
   ) {
     final isDark = widget.theme.brightness == Brightness.dark;
     final disciplines = [
-      {'key': 'swim', 'imagePath': isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png'},
+      {
+        'key': 'swim',
+        'label': widget.localizations.ratings_discipline_swim,
+        'imagePath': isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
+      },
       {'key': 't1', 'label': 'T1'},
-      {'key': 'bike', 'imagePath': isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png'},
+      {
+        'key': 'bike',
+        'label': widget.localizations.ratings_discipline_bike,
+        'imagePath': isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
+      },
       {'key': 't2', 'label': 'T2'},
-      {'key': 'run', 'imagePath': isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png'},
+      {
+        'key': 'run',
+        'label': widget.localizations.ratings_discipline_run,
+        'imagePath': isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
+      },
     ];
 
-    return Table(
-      columnWidths: {
-        0: FixedColumnWidth(60.w),
-        1: const FlexColumnWidth(1),
-        2: const FlexColumnWidth(1),
-        3: const FlexColumnWidth(1),
-      },
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      border: TableBorder(
-        horizontalInside: BorderSide(
-          color: widget.theme.colorScheme.outlineVariant,
-          width: 1,
-        ),
-      ),
-      children: [
-        // Заголовок таблицы
-        TableRow(
-          decoration: BoxDecoration(
-            color: widget.theme.colorScheme.surfaceContainerHighest
-                .withValues(alpha: 0.3),
+    final cards = <Widget>[];
+    for (final d in disciplines) {
+      final key = d['key'] as String;
+      DisciplineRecord? record1;
+      DisciplineRecord? record2;
+      switch (key) {
+        case 'swim':
+          record1 = records1?.swim;
+          record2 = records2?.swim;
+        case 't1':
+          record1 = records1?.t1;
+          record2 = records2?.t1;
+        case 'bike':
+          record1 = records1?.bike;
+          record2 = records2?.bike;
+        case 't2':
+          record1 = records1?.t2;
+          record2 = records2?.t2;
+        case 'run':
+          record1 = records1?.run;
+          record2 = records2?.run;
+      }
+      if (record1 == null && record2 == null) continue;
+      if (cards.isNotEmpty) {
+        cards.add(
+          Divider(
+            height: 1,
+            thickness: 1,
+            indent: 16.w,
+            endIndent: 16.w,
+            color: widget.theme.colorScheme.outlineVariant,
           ),
-          children: [
-            _buildTableCell('', isHeader: true, alignment: Alignment.centerLeft),
-            _buildTableCell(_getFirstName(widget.athlete1Name), isHeader: true, alignment: Alignment.center),
-            _buildTableCell(_getFirstName(widget.athlete2Name), isHeader: true, alignment: Alignment.center),
-            _buildTableCell('', isHeader: true, alignment: Alignment.center),
-          ],
+        );
+      }
+      cards.add(
+        _buildDisciplineCard(
+          label: d['label'] as String,
+          imagePath: d['imagePath'],
+          record1: record1,
+          record2: record2,
         ),
-        // Строки дисциплин
-        ...disciplines.map((discipline) {
-          final key = discipline['key'] as String;
-          final imagePath = discipline['imagePath'];
-          final label = discipline['label'];
-
-          DisciplineRecord? record1;
-          DisciplineRecord? record2;
-
-          switch (key) {
-            case 'swim':
-              record1 = records1?.swim;
-              record2 = records2?.swim;
-              break;
-            case 't1':
-              record1 = records1?.t1;
-              record2 = records2?.t1;
-              break;
-            case 'bike':
-              record1 = records1?.bike;
-              record2 = records2?.bike;
-              break;
-            case 't2':
-              record1 = records1?.t2;
-              record2 = records2?.t2;
-              break;
-            case 'run':
-              record1 = records1?.run;
-              record2 = records2?.run;
-              break;
-          }
-
-          final hasRecord1 = record1 != null;
-          final hasRecord2 = record2 != null;
-          final hasBoth = hasRecord1 && hasRecord2;
-
-          String difference = '-';
-          Color? differenceColor;
-
-          if (hasBoth) {
-            final diff = _formatTimeDifference(record1.seconds, record2.seconds);
-            difference = diff;
-            differenceColor = AppColors.ironmanRed;
-          }
-
-          return TableRow(
-            children: [
-              _buildTableCell(label ?? '', imagePath: imagePath, alignment: Alignment.centerLeft),
-              _buildTableCell(
-                hasRecord1 ? record1.time : '-',
-                alignment: Alignment.center,
-                color: hasRecord1 && hasBoth && record1.seconds < record2.seconds ? Colors.green : null,
-              ),
-              _buildTableCell(
-                hasRecord2 ? record2.time : '-',
-                alignment: Alignment.center,
-                color: hasRecord2 && hasBoth && record2.seconds < record1.seconds ? Colors.green : null,
-              ),
-              _buildTableCell(difference, alignment: Alignment.center, color: differenceColor),
-            ],
-          );
-        }),
-      ],
-    );
+      );
+    }
+    return Column(children: cards);
   }
 
-  Widget _buildTableCell(
-    String text, {
-    bool isHeader = false,
-    Alignment alignment = Alignment.center,
-    IconData? icon,
+  Widget _buildDisciplineCard({
+    required String label,
     String? imagePath,
-    Color? color,
+    DisciplineRecord? record1,
+    DisciplineRecord? record2,
   }) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(minWidth: 60.w),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
-        child: Align(
-          alignment: alignment,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: alignment == Alignment.centerLeft
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.center,
+    final hasBoth = record1 != null && record2 != null;
+
+    final theme = widget.theme;
+    final name1 = widget.athlete1Name;
+    final name2 = widget.athlete2Name;
+
+    // Faster athlete: full bar + green gradient; slower: proportional bar + gray gradient
+    final bool isFaster1 = hasBoth ? record1.seconds <= record2.seconds : true;
+    const greenGradient = LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [Color(0xFFABEBC6), Color(0xFF27AE60)],
+    );
+    const grayGradient = LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [Color(0xFFE0E0E0), Color(0xFF616161)],
+    );
+    const greenThumb = Color(0xFF27AE60);
+    const grayThumb = Color(0xFF616161);
+
+    final double ratio1;
+    final double ratio2;
+    final LinearGradient gradient1;
+    final LinearGradient gradient2;
+    final Color thumbColor1;
+    final Color thumbColor2;
+
+    if (hasBoth) {
+      final fasterSecs = min(record1.seconds, record2.seconds);
+      final slowerSecs = max(record1.seconds, record2.seconds);
+      final slowerRatio = fasterSecs / slowerSecs;
+      if (isFaster1) {
+        ratio1 = 1.0;
+        ratio2 = slowerRatio;
+        gradient1 = greenGradient;
+        gradient2 = grayGradient;
+        thumbColor1 = greenThumb;
+        thumbColor2 = grayThumb;
+      } else {
+        ratio1 = slowerRatio;
+        ratio2 = 1.0;
+        gradient1 = grayGradient;
+        gradient2 = greenGradient;
+        thumbColor1 = grayThumb;
+        thumbColor2 = greenThumb;
+      }
+    } else {
+      ratio1 = 1.0;
+      ratio2 = 1.0;
+      gradient1 = greenGradient;
+      gradient2 = greenGradient;
+      thumbColor1 = greenThumb;
+      thumbColor2 = greenThumb;
+    }
+
+    return Padding(
+      padding: EdgeInsets.all(16.r),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Discipline header: icon + name
+          Row(
             children: [
-              if (imagePath != null)
+              if (imagePath != null) ...[
                 Image.asset(
                   imagePath,
                   width: 32.r,
                   height: 32.r,
                   fit: BoxFit.contain,
-                )
-              else if (icon != null) ...[
-                HugeIcon(
-                  icon: icon,
-                  color: widget.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  size: 16.r,
                 ),
                 SizedBox(width: 8.w),
               ],
-              if (text.isNotEmpty)
-                Flexible(
-                  child: Text(
-                    text,
-                    style: isHeader
-                        ? widget.theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                          )
-                        : widget.theme.textTheme.bodyMedium?.copyWith(
-                            color: color,
-                            fontWeight: color != null ? FontWeight.w600 : null,
-                            fontSize: 14.sp,
-                          ),
-                    textAlign: alignment == Alignment.centerLeft
-                        ? TextAlign.left
-                        : TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
+              Text(
+                label,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20.sp,
                 ),
+              ),
             ],
           ),
-        ),
+          SizedBox(height: 12.h),
+          // Athlete 1
+          if (record1 != null)
+            _buildAthleteBar(
+              name: name1,
+              time: record1.time,
+              ratio: ratio1,
+              gradient: gradient1,
+              thumbColor: thumbColor1,
+            ),
+          if (record1 != null && record2 != null) SizedBox(height: 8.h),
+          // Athlete 2
+          if (record2 != null)
+            _buildAthleteBar(
+              name: name2,
+              time: record2.time,
+              ratio: ratio2,
+              gradient: gradient2,
+              thumbColor: thumbColor2,
+            ),
+          // Difference
+          if (hasBoth) ...[
+            SizedBox(height: 10.h),
+            Center(
+              child: Text(
+                record1.seconds <= record2.seconds
+                    ? widget.localizations.ratings_faster_by(
+                        name1,
+                        _formatDiffReadable(
+                          (record2.seconds - record1.seconds).abs(),
+                        ),
+                      )
+                    : widget.localizations.ratings_faster_by(
+                        name2,
+                        _formatDiffReadable(
+                          (record1.seconds - record2.seconds).abs(),
+                        ),
+                      ),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.textTheme.titleMedium?.color,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ],
       ),
+    );
+  }
+
+  Widget _buildAthleteBar({
+    required String name,
+    required String time,
+    required double ratio,
+    required LinearGradient gradient,
+    required Color thumbColor,
+  }) {
+    final theme = widget.theme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              name,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 16.sp,
+              ),
+            ),
+            Text(
+              time,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.sp,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 6.h),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final totalWidth = constraints.maxWidth;
+            final thumbDiameter = 14.r;
+            final trackHeight = 6.h;
+            final filledWidth = (totalWidth - thumbDiameter) * ratio.clamp(0.0, 1.0);
+
+            return SizedBox(
+              height: thumbDiameter,
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  // Track
+                  Positioned.fill(
+                    child: Center(
+                      child: Container(
+                        height: trackHeight,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(3.r),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Filled portion
+                  Positioned(
+                    left: 0,
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (filledWidth > 0)
+                            Container(
+                              width: filledWidth,
+                              height: trackHeight,
+                              decoration: BoxDecoration(
+                                gradient: gradient,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(3.r),
+                                  bottomLeft: Radius.circular(3.r),
+                                ),
+                              ),
+                            ),
+                          // Thumb
+                          Container(
+                            width: thumbDiameter,
+                            height: thumbDiameter,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.surface,
+                              border: Border.all(color: thumbColor, width: 2),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

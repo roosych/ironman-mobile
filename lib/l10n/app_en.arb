@@ -311,6 +311,17 @@
   "ratings_compare": "Compare",
   "ratings_disciplines_comparison": "Discipline comparison by athlete's best records",
   "ratings_compare_records": "Compare personal records",
+  "ratings_faster_by": "{name} is faster by {time}",
+  "@ratings_faster_by": {
+    "description": "Athlete faster by time message",
+    "placeholders": {
+      "name": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+  "unit_sec": "sec",
+  "unit_min": "min",
+  "unit_hr": "hr",
   "ratings_race_type_full": "FULL 140.6",
   "ratings_race_type_half": "HALF 70.3",
   "@ratings_compare": {

@@ -568,6 +568,30 @@ abstract class AppLocalizations {
   /// **'Compare personal records'**
   String get ratings_compare_records;
 
+  /// Athlete faster by time message
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is faster by {time}'**
+  String ratings_faster_by(String name, String time);
+
+  /// No description provided for @unit_sec.
+  ///
+  /// In en, this message translates to:
+  /// **'sec'**
+  String get unit_sec;
+
+  /// No description provided for @unit_min.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get unit_min;
+
+  /// No description provided for @unit_hr.
+  ///
+  /// In en, this message translates to:
+  /// **'hr'**
+  String get unit_hr;
+
   /// No description provided for @ratings_race_type_full.
   ///
   /// In en, this message translates to:

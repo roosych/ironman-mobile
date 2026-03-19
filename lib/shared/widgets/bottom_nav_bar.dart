@@ -22,11 +22,35 @@ class BottomNavBar extends StatelessWidget {
         final iconSize = screenWidth < 360 ? 22.0 : 24.0;
         final horizontalPadding = screenWidth < 360 ? 4.0 : 8.0;
 
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-          ),
-          child: SafeArea(
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 1.5,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? [
+                          Colors.transparent,
+                          Colors.white.withValues(alpha: 0.07),
+                          Colors.white.withValues(alpha: 0.10),
+                          Colors.white.withValues(alpha: 0.07),
+                          Colors.transparent,
+                        ]
+                      : [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.04),
+                          Colors.black.withValues(alpha: 0.07),
+                          Colors.black.withValues(alpha: 0.04),
+                          Colors.transparent,
+                        ],
+                ),
+              ),
+            ),
+            Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: SafeArea(
             child: Padding(
               padding: EdgeInsets.only(top: 8, left: horizontalPadding, right: horizontalPadding),
               child: Row(
@@ -68,6 +92,8 @@ class BottomNavBar extends StatelessWidget {
               ),
             ),
           ),
+        ),
+          ],
         );
       },
     );

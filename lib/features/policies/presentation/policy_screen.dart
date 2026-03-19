@@ -123,9 +123,9 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
               backgroundColor: Colors.transparent,
               elevation: 0,
               leading: IconButton(
-                icon: const HugeIcon(
+                icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: 24,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
@@ -148,6 +148,7 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
                   child: TabBar(
                     controller: _tabController,
                     isScrollable: true,
+                    tabAlignment: TabAlignment.center,
                     labelColor: Colors.black87,
                     unselectedLabelColor: Colors.grey.shade600,
                     indicatorColor: Theme.of(context).primaryColor,
