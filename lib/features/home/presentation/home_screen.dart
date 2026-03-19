@@ -59,10 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final loc = AppLocalizations.of(context);
     if (loc == null) {
       return const Scaffold(
-        backgroundColor: AppColors.ironmanBlack,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.ironmanWhite),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -70,7 +67,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final navActiveIndex = _currentIndex == 0 ? -1 : _currentIndex - 1;
 
     return Scaffold(
-      backgroundColor: AppColors.ironmanBlack,
       body: IndexedStack(
         index: _currentIndex,
         children: List.generate(
@@ -111,13 +107,15 @@ class _HomeBottomNav extends StatelessWidget {
       // (icon: HugeIcons.strokeRoundedUser, label: loc.nav_login), // icon+text version
     ];
 
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.ironmanBlack,
+        color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             blurRadius: 20,
-            color: AppColors.ironmanBlack.withValues(alpha: 0.5),
+            color: theme.shadowColor.withValues(alpha: 0.15),
           ),
         ],
       ),
@@ -131,7 +129,7 @@ class _HomeBottomNav extends StatelessWidget {
                 final isActive = i == activeIndex;
                 final color = isActive
                     ? AppColors.ironmanRed
-                    : AppColors.ironmanTextSecondary;
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.5);
                 return _NavItem(
                   icon: items[i].icon,
                   label: items[i].label,

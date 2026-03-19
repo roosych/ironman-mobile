@@ -101,18 +101,16 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  child: Text(
-                    localizations.delete_account_confirm_button,
-                    style: TextStyle(
+                    textStyle: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
                   ),
+                  child: Text(localizations.delete_account_confirm_button),
                 ),
               ),
             ],
@@ -131,6 +129,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(changePasswordProvider);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     // Listen for state changes
     ref.listen(changePasswordProvider, (previous, next) {
@@ -235,7 +234,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             labelText: localizations.change_password_current,
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
-                              color: AppColors.ironmanWhite,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                               size: 20.r,
                             ),
                             suffixIcon: IconButton(
@@ -243,7 +242,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                 icon: _obscureCurrentPassword
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
-                                color: AppColors.ironmanWhite,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
                               onPressed: () {
@@ -275,7 +274,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             labelText: localizations.change_password_new,
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
-                              color: AppColors.ironmanWhite,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                               size: 20.r,
                             ),
                             suffixIcon: IconButton(
@@ -283,7 +282,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                 icon: _obscureNewPassword
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
-                                color: AppColors.ironmanWhite,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
                               onPressed: () {
@@ -321,7 +320,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                             labelText: localizations.change_password_confirm,
                             prefixIcon: HugeIcon(
                               icon: HugeIcons.strokeRoundedLockPassword,
-                              color: AppColors.ironmanWhite,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                               size: 20.r,
                             ),
                             suffixIcon: IconButton(
@@ -329,7 +328,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                 icon: _obscureConfirmPassword
                                     ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOff,
-                                color: AppColors.ironmanWhite,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
                               onPressed: () {
@@ -423,11 +422,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       // Delete account button
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
+                        child: OutlinedButton(
                           onPressed: _showDeleteAccountDialog,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
                             padding: EdgeInsets.symmetric(vertical: 16.h),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.r),

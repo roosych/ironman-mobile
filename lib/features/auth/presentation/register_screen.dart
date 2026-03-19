@@ -8,6 +8,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/utils/alert_helper.dart';
 import 'package:ironman_mobile/shared/data/countries.dart';
+import 'package:ironman_mobile/features/settings/application/theme_notifier.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
@@ -317,16 +318,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             elevation: 0,
             leading: IconButton(
               icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowLeft01,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 size: 24.r,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
+              IconButton(
+                icon: HugeIcon(
+                  icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                      ? HugeIcons.strokeRoundedSun01
+                      : HugeIcons.strokeRoundedMoon02,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 24.r,
+                ),
+                onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+              ),
               Padding(
                 padding: EdgeInsets.only(right: 16.w),
                 child: const LanguageSelector(),
@@ -371,6 +384,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 enabled: !authState.isLoading,
                                 decoration: InputDecoration(
                                   labelText: localizations.register_name,
+                                  filled: true,
+                                  fillColor: Theme.of(context).colorScheme.surface,
                                   prefixIcon: HugeIcon(
                                     icon: HugeIcons.strokeRoundedUser,
                                     color: Theme.of(
@@ -394,6 +409,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   decoration: InputDecoration(
                                     labelText: localizations.register_select_country,
                                     errorText: _countryError,
+                                    filled: true,
+                                    fillColor: Theme.of(context).colorScheme.surface,
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedLocation01,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -443,6 +460,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 enabled: !authState.isLoading,
                                 decoration: InputDecoration(
                                   labelText: localizations.login_email,
+                                  filled: true,
+                                  fillColor: Theme.of(context).colorScheme.surface,
                                   prefixIcon: HugeIcon(
                                     icon: HugeIcons.strokeRoundedMail01,
                                     color: Theme.of(
@@ -468,6 +487,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 enabled: !authState.isLoading,
                                 decoration: InputDecoration(
                                   labelText: localizations.login_password,
+                                  filled: true,
+                                  fillColor: Theme.of(context).colorScheme.surface,
                                   prefixIcon: HugeIcon(
                                     icon: HugeIcons.strokeRoundedLockPassword,
                                     color: Theme.of(
@@ -512,6 +533,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 decoration: InputDecoration(
                                   labelText:
                                       localizations.register_confirm_password,
+                                  filled: true,
+                                  fillColor: Theme.of(context).colorScheme.surface,
                                   prefixIcon: HugeIcon(
                                     icon: HugeIcons.strokeRoundedLockPassword,
                                     color: Theme.of(
@@ -629,6 +652,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1,
+                                          color: Colors.white,
                                         ),
                                       ),
                               ),
@@ -732,7 +756,7 @@ class _CountrySelectorState extends State<_CountrySelector> {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         border: Border.all(
-          color: AppColors.ironmanGray,
+          color: Theme.of(context).colorScheme.outline,
           width: 1,
         ),
       ),

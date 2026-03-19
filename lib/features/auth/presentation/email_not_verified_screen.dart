@@ -7,6 +7,8 @@ import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../../../shared/utils/error_handler.dart';
 import '../../../core/theme/app_button_styles.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../settings/application/theme_notifier.dart';
 import '../application/auth_notifier.dart';
 
 class EmailNotVerifiedScreen extends ConsumerStatefulWidget {
@@ -142,6 +144,27 @@ class _EmailNotVerifiedScreenState extends ConsumerState<EmailNotVerifiedScreen>
     return Stack(
       children: [
         Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: HugeIcon(
+                  icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                      ? HugeIcons.strokeRoundedSun01
+                      : HugeIcons.strokeRoundedMoon02,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 24.r,
+                ),
+                onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 16.w),
+                child: const LanguageSelector(),
+              ),
+            ],
+          ),
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(

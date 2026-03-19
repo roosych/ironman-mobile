@@ -151,12 +151,11 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.ironmanGray, width: 1),
             ),
             padding: EdgeInsets.all(4.r),
             child: TabBar(
               controller: _tabController,
-              labelColor: AppColors.ironmanWhite,
+              labelColor: Colors.white,
               unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.r),

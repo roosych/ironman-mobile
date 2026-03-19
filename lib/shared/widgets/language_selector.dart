@@ -42,7 +42,7 @@ class LanguageSelector extends ConsumerWidget {
       },
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      itemBuilder: (_) => [
+      itemBuilder: (ctx) => [
         const Locale('az'),
         const Locale('en'),
         const Locale('ru'),
@@ -60,18 +60,17 @@ class LanguageSelector extends ConsumerWidget {
               Text(
                 _getLanguageName(l),
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight:
-                      isActive ? FontWeight.w600 : FontWeight.normal,
+                  color: Theme.of(ctx).colorScheme.onSurface,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ],
           ),
         );
       }).toList(),
-      child: const HugeIcon(
+      child: HugeIcon(
         icon: HugeIcons.strokeRoundedEarth,
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onSurface,
         size: 22,
       ),
     );

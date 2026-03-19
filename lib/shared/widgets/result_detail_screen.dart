@@ -226,7 +226,9 @@ class ResultDetailScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/images/svg/flag.png',
+                      Theme.of(context).brightness == Brightness.dark
+                          ? 'assets/images/flag_light.png'
+                          : 'assets/images/flag_dark.png',
                       width: 24.w,
                       height: 24.h,
                       fit: BoxFit.contain,
@@ -260,7 +262,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Swim
             _DisciplineCard(
-              imagePath: 'assets/images/svg/swim.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/swim_light.png'
+                  : 'assets/images/swim_dark.png',
               label: AppLocalizations.of(context)!.result_swim,
               time: result.swimTime,
               pace: _calculateSwimPace(result.swimTime, _getDistances(result.raceType)['swim']!),
@@ -277,7 +281,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Bike
             _DisciplineCard(
-              imagePath: 'assets/images/svg/bike.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/bike_light.png'
+                  : 'assets/images/bike_dark.png',
               label: AppLocalizations.of(context)!.result_bike,
               time: result.bikeTime,
               pace: _calculateBikePace(result.bikeTime, _getDistances(result.raceType)['bike']!),
@@ -294,7 +300,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Run
             _DisciplineCard(
-              imagePath: 'assets/images/svg/run.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/run_light.png'
+                  : 'assets/images/run_dark.png',
               label: AppLocalizations.of(context)!.result_run,
               time: result.runTime,
               pace: _calculateRunPace(result.runTime, _getDistances(result.raceType)['run']!),
@@ -341,9 +349,6 @@ class _DisciplineCard extends StatelessWidget {
             width: 32.r,
             height: 32.r,
             fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) {
-              return SizedBox(width: 32.r, height: 32.r);
-            },
           ),
           SizedBox(width: 16.w),
           // Label
@@ -399,21 +404,18 @@ class _TransitionCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide.none,
+      ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(8.r),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: HugeIcon(
-                icon: HugeIcons.strokeRoundedArrowLeftRight,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 20.r,
-              ),
+            HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeftRight,
+              color: theme.colorScheme.onSurfaceVariant,
+              size: 20.r,
             ),
             SizedBox(width: 12.w),
             Expanded(

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
+import 'package:ironman_mobile/features/settings/application/theme_notifier.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import '../application/auth_notifier.dart';
 import '../application/auth_state.dart';
@@ -142,12 +143,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               leading: IconButton(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: 24.r,
                 ),
                 onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false),
               ),
               actions: [
+                IconButton(
+                  icon: HugeIcon(
+                    icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                        ? HugeIcons.strokeRoundedSun01
+                        : HugeIcons.strokeRoundedMoon02,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    size: 24.r,
+                  ),
+                  onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+                ),
                 Padding(
                   padding: EdgeInsets.only(right: 16.w),
                   child: const LanguageSelector(),
@@ -192,6 +203,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   enabled: !authState.isLoading,
                                   decoration: InputDecoration(
                                     labelText: localizations.login_email,
+                                    filled: true,
+                                    fillColor: Theme.of(context).colorScheme.surface,
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedMail01,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -215,6 +228,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   enabled: !authState.isLoading,
                                   decoration: InputDecoration(
                                     labelText: localizations.login_password,
+                                    filled: true,
+                                    fillColor: Theme.of(context).colorScheme.surface,
                                     prefixIcon: HugeIcon(
                                       icon: HugeIcons.strokeRoundedLockPassword,
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,

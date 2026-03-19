@@ -113,7 +113,6 @@ class _DisciplinesComparisonWidgetState
       decoration: BoxDecoration(
         color: widget.theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.ironmanGray, width: 1),
       ),
       child: Column(
         children: [
@@ -172,12 +171,13 @@ class _DisciplinesComparisonWidgetState
     PersonalRecord? records1,
     PersonalRecord? records2,
   ) {
+    final isDark = widget.theme.brightness == Brightness.dark;
     final disciplines = [
-      {'key': 'swim', 'imagePath': 'assets/images/svg/swim.png'},
+      {'key': 'swim', 'imagePath': isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png'},
       {'key': 't1', 'label': 'T1'},
-      {'key': 'bike', 'imagePath': 'assets/images/svg/bike.png'},
+      {'key': 'bike', 'imagePath': isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png'},
       {'key': 't2', 'label': 'T2'},
-      {'key': 'run', 'imagePath': 'assets/images/svg/run.png'},
+      {'key': 'run', 'imagePath': isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png'},
     ];
 
     return Table(
@@ -190,7 +190,7 @@ class _DisciplinesComparisonWidgetState
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder(
         horizontalInside: BorderSide(
-          color: AppColors.ironmanGray,
+          color: widget.theme.colorScheme.outlineVariant,
           width: 1,
         ),
       ),

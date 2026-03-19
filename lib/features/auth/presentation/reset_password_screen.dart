@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/features/settings/application/theme_notifier.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
@@ -152,6 +153,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               labelText: localizations.login_email,
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedMail01,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -188,6 +191,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ],
             decoration: InputDecoration(
               labelText: localizations.reset_password_otp,
+              filled: true,
+              fillColor: theme.colorScheme.surface,
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedShieldKey,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -206,6 +211,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             obscureText: _obscurePassword,
             decoration: InputDecoration(
               labelText: localizations.change_password_new,
+              filled: true,
+              fillColor: theme.colorScheme.surface,
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedLockPassword,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -235,6 +242,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             obscureText: _obscureConfirm,
             decoration: InputDecoration(
               labelText: localizations.change_password_confirm,
+              filled: true,
+              fillColor: theme.colorScheme.surface,
               prefixIcon: HugeIcon(
                 icon: HugeIcons.strokeRoundedLockPassword,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -353,12 +362,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               leading: IconButton(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: 24.r,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: [
+                IconButton(
+                  icon: HugeIcon(
+                    icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                        ? HugeIcons.strokeRoundedSun01
+                        : HugeIcons.strokeRoundedMoon02,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    size: 24.r,
+                  ),
+                  onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+                ),
                 Padding(
                   padding: EdgeInsets.only(right: 16.w),
                   child: const LanguageSelector(),

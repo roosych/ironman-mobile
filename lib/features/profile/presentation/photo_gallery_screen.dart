@@ -370,7 +370,7 @@ class _AddPhotoCard extends StatelessWidget {
                 child: HugeIcon(
                   icon: HugeIcons.strokeRoundedImageAdd02,
                   size: 32.r,
-                  color: AppColors.ironmanWhite,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
       ),

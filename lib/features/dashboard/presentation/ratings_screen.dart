@@ -98,6 +98,87 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
     final state = ref.watch(rankingsProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            color: theme.colorScheme.onSurface,
+            size: 24.r,
+          ),
+          onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
+        ),
+        title: Text(
+          localizations.ratings_title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22.sp,
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(56.h),
+          child: Container(
+            color: theme.scaffoldBackgroundColor,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+              child: ListenableBuilder(
+                listenable: _mainTabController,
+                builder: (context, _) {
+                  const tabs = ['IRONMAN', 'IRONMAN 70.3'];
+                  return Row(
+                    children: List.generate(tabs.length, (i) {
+                      final isSelected = _mainTabController.index == i;
+                      return Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 2.w),
+                          child: GestureDetector(
+                            onTap: () => _mainTabController.animateTo(i),
+                            child: Container(
+                              decoration: isSelected
+                                  ? BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AppColors.primaryGradientStart,
+                                          AppColors.primaryGradientEnd,
+                                        ],
+                                      ),
+                                    )
+                                  : BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      color: theme.colorScheme.outlineVariant,
+                                    ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12.h),
+                                child: Center(
+                                  child: Text(
+                                    tabs[i],
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           NotificationListener<ScrollNotification>(
@@ -109,122 +190,35 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
               }
               return false;
             },
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    leading: IconButton(
-                      icon: HugeIcon(
-                        icon: HugeIcons.strokeRoundedArrowLeft01,
-                        color: theme.colorScheme.onSurface,
-                        size: 24.r,
-                      ),
-                      onPressed:
-                          widget.onBack ??
-                          () => Navigator.of(context).maybePop(),
-                    ),
-                    title: Text(
-                      localizations.ratings_title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22.sp,
-                      ),
-                    ),
-                    pinned: true,
-                    floating: false,
-                    snap: false,
-                    forceElevated: false,
-                    bottom: PreferredSize(
-                      preferredSize: Size.fromHeight(kToolbarHeight + 16.h),
-                      child: Container(
-                        color: theme.scaffoldBackgroundColor,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 8.h,
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surface,
-                              borderRadius: BorderRadius.circular(12.r),
-                              border: Border.all(
-                                color: AppColors.ironmanGray,
-                                width: 1,
-                              ),
-                            ),
-                            padding: EdgeInsets.all(4.r),
-                            child: TabBar(
-                              controller: _mainTabController,
-                              labelColor: Colors.white,
-                              labelStyle: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              unselectedLabelColor: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.5),
-                              unselectedLabelStyle: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              indicator: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.r),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    AppColors.primaryGradientStart,
-                                    AppColors.primaryGradientEnd,
-                                  ],
-                                ),
-                              ),
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              dividerColor: Colors.transparent,
-                              labelPadding: EdgeInsets.symmetric(
-                                horizontal: 20.w,
-                              ),
-                              indicatorPadding: EdgeInsets.zero,
-                              tabs: const [
-                                Tab(text: 'IRONMAN'),
-                                Tab(text: 'IRONMAN 70.3'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ];
-              },
-              body: TabBarView(
-                controller: _mainTabController,
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  // Таб Ironman
-                  _RaceTypeTab(
-                    raceType: 'ironman',
-                    disciplines: _getDisciplines(localizations),
-                    onDisciplineSelected: (discipline) {
-                      ref.read(rankingsProvider.notifier).loadRankings(
-                        raceType: 'ironman',
-                        discipline: discipline,
-                        forceLoading: true,
-                      );
-                    },
-                  ),
-                  // Таб Ironman 70.3
-                  _RaceTypeTab(
-                    raceType: 'ironman_70_3',
-                    disciplines: _getDisciplines(localizations),
-                    onDisciplineSelected: (discipline) {
-                      ref.read(rankingsProvider.notifier).loadRankings(
-                        raceType: 'ironman_70_3',
-                        discipline: discipline,
-                        forceLoading: true,
-                      );
-                    },
-                  ),
-                ],
-              ),
+            child: TabBarView(
+              controller: _mainTabController,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                // Таб Ironman
+                _RaceTypeTab(
+                  raceType: 'ironman',
+                  disciplines: _getDisciplines(localizations),
+                  onDisciplineSelected: (discipline) {
+                    ref.read(rankingsProvider.notifier).loadRankings(
+                      raceType: 'ironman',
+                      discipline: discipline,
+                      forceLoading: true,
+                    );
+                  },
+                ),
+                // Таб Ironman 70.3
+                _RaceTypeTab(
+                  raceType: 'ironman_70_3',
+                  disciplines: _getDisciplines(localizations),
+                  onDisciplineSelected: (discipline) {
+                    ref.read(rankingsProvider.notifier).loadRankings(
+                      raceType: 'ironman_70_3',
+                      discipline: discipline,
+                      forceLoading: true,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           // Плавающий алерт с подсказкой
@@ -261,7 +255,7 @@ class _RatingsScreenState extends ConsumerState<RatingsScreen>
                     child: Text(
                       localizations.ratings_tap_to_compare_hint,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.ironmanWhite,
+                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
@@ -301,19 +295,20 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   late TabController _subTabController;
   bool _showComparison = false;
   bool _didInitialLoad = false;
+  bool _searchVisible = true;
   String _searchQuery = '';
   late TextEditingController _searchController;
 
-  String? _getDisciplineImagePath(String discipline) {
+  String? _getDisciplineImagePath(String discipline, bool isDark) {
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return 'assets/images/svg/swim.png';
+        return isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png';
       case 'bike':
-        return 'assets/images/svg/bike.png';
+        return isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png';
       case 'run':
-        return 'assets/images/svg/run.png';
+        return isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png';
       case 'total':
-        return 'assets/images/svg/flag.png';
+        return isDark ? 'assets/images/flag_light.png' : 'assets/images/flag_dark.png';
       default:
         return null;
     }
@@ -371,6 +366,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
         if (!mounted) return;
         setState(() {
           _showComparison = false;
+          _searchVisible = true;
         });
       });
 
@@ -394,9 +390,10 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
 
     return Column(
       children: [
+        SizedBox(height: 8.h),
         // Подтабы с дисциплинами
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 2.h),
           child: Center(
             child: TabBar(
               controller: _subTabController,
@@ -430,7 +427,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               isScrollable: false,
               tabs: widget.disciplines.map((discipline) {
-                final imagePath = _getDisciplineImagePath(discipline['value']!);
+                final imagePath = _getDisciplineImagePath(discipline['value']!, Theme.of(context).brightness == Brightness.dark);
                 return Tab(
                   child: Center(
                     child: imagePath != null
@@ -447,63 +444,89 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             ),
           ),
         ),
-        // Поисковая строка
-        Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
-          child: TextField(
-            controller: _searchController,
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-                if (_showComparison && value.isNotEmpty) {
-                  _showComparison = false;
-                  ref.read(rankingsProvider.notifier).clearSelection();
-                }
-              });
-            },
-            decoration: InputDecoration(
-              hintText: localizations.athletes_search_hint,
-              hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              prefixIcon: HugeIcon(
-                icon: HugeIcons.strokeRoundedSearch01,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                size: 24.r,
-              ),
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: HugeIcon(
-                        icon: HugeIcons.strokeRoundedCancel01,
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.5,
-                        ),
+        // Поисковая строка (скрывается при скролле вниз)
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: _searchVisible
+              ? Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                        if (_showComparison && value.isNotEmpty) {
+                          _showComparison = false;
+                          ref.read(rankingsProvider.notifier).clearSelection();
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: localizations.athletes_search_hint,
+                      hintStyle: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      prefixIcon: HugeIcon(
+                        icon: HugeIcons.strokeRoundedSearch01,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                         size: 24.r,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _searchQuery = '';
-                          _searchController.clear();
-                        });
-                      },
-                    )
-                  : null,
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 12.h,
-              ),
-            ),
-            style: theme.textTheme.bodyLarge,
-          ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedCancel01,
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
+                                size: 24.r,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                  _searchController.clear();
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: theme.colorScheme.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
+                    ),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
         // Контент с рейтингами
-        Expanded(child: _buildRankingsList(state, theme, localizations)),
+        SizedBox(height: 4.h),
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollUpdateNotification) {
+                final delta = notification.scrollDelta ?? 0;
+                if (delta > 4 && _searchVisible) {
+                  setState(() => _searchVisible = false);
+                } else if (delta < -4 && !_searchVisible) {
+                  setState(() => _searchVisible = true);
+                }
+              } else if (notification is ScrollEndNotification) {
+                if (notification.metrics.pixels <= 0 && !_searchVisible) {
+                  setState(() => _searchVisible = true);
+                }
+              }
+              return false;
+            },
+            child: _buildRankingsList(state, theme, localizations),
+          ),
+        ),
       ],
     );
   }
@@ -653,7 +676,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                       fontWeight: FontWeight.bold,
                       fontSize: 16.sp,
                       color: state.canCompare
-                          ? AppColors.ironmanWhite
+                          ? Colors.white
                           : AppColors.ironmanTextSecondary,
                     ),
                   ),
@@ -691,8 +714,8 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColors.ironmanRed : AppColors.ironmanGray,
-            width: isSelected ? 2 : 1,
+            color: isSelected ? AppColors.ironmanRed : Colors.transparent,
+            width: 1,
           ),
         ),
         child: Stack(
@@ -713,7 +736,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.ironmanLightGray,
+                        color: theme.colorScheme.outlineVariant,
                         width: 1,
                       ),
                     ),
@@ -798,7 +821,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                 width: 32.r,
                 height: 32.r,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
+                  color: theme.colorScheme.outlineVariant,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12.r),
                     bottomRight: Radius.circular(8.r),
@@ -810,7 +833,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.ironmanWhite,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -916,7 +939,6 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: AppColors.ironmanGray, width: 1),
               ),
               child: Column(
                 children: [
@@ -930,7 +952,7 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   // Разделитель
                   Container(
                     height: 1,
-                    color: AppColors.ironmanGray,
+                    color: theme.colorScheme.outlineVariant,
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
                   ),
                   // Атлет 2
@@ -1026,7 +1048,10 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
             height: 64.r,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.ironmanLightGray, width: 1),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant,
+                width: 1,
+              ),
             ),
             child: ClipOval(
               child: athlete.avatar != null

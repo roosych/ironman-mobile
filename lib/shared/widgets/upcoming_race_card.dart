@@ -181,12 +181,8 @@ class UpcomingRaceCard extends StatelessWidget {
                   Container(
                     width: 36.r,
                     height: 36.r,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.ironmanLightGray,
-                        width: 1,
-                      ),
                     ),
                     child: ClipOval(
                       child: race.createdBy!.avatar != null

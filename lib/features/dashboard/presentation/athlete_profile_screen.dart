@@ -138,7 +138,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
           leading: IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
-              color: AppColors.ironmanWhite,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 24.r,
             ),
             onPressed: () => Navigator.of(context).maybePop(),
@@ -154,24 +154,28 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     }
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: AppColors.ironmanWhite,
-            size: 24.r,
-          ),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: Text(
-          localizations.athlete_profile_title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
-        ),
-        centerTitle: true,
-      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
+            SliverAppBar(
+              leading: IconButton(
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedArrowLeft01,
+                  color: theme.colorScheme.onSurface,
+                  size: 24.r,
+                ),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+              title: Text(
+                localizations.athlete_profile_title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
+              ),
+              centerTitle: true,
+              pinned: true,
+              floating: false,
+              snap: false,
+              forceElevated: false,
+            ),
             // Профиль атлета
             SliverToBoxAdapter(child: _buildProfileHeader(context, theme)),
             // Закрепленные табы
@@ -188,12 +192,11 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.ironmanGray, width: 1),
                   ),
                   padding: EdgeInsets.all(4.r),
                   child: TabBar(
                     controller: _tabController,
-                    labelColor: AppColors.ironmanWhite,
+                    labelColor: Colors.white,
                     unselectedLabelColor: theme.colorScheme.onSurface
                         .withValues(alpha: 0.5),
                     indicator: BoxDecoration(
@@ -231,7 +234,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               icon: HugeIcons.strokeRoundedUser,
                               size: 20.r,
                               color: isSelected
-                                  ? AppColors.ironmanWhite
+                                  ? Colors.white
                                   : currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
                             );
@@ -251,7 +254,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               icon: HugeIcons.strokeRoundedTimer01,
                               size: 20.r,
                               color: isSelected
-                                  ? AppColors.ironmanWhite
+                                  ? Colors.white
                                   : currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
                             );
@@ -271,7 +274,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               icon: HugeIcons.strokeRoundedAward01,
                               size: 20.r,
                               color: isSelected
-                                  ? AppColors.ironmanWhite
+                                  ? Colors.white
                                   : currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
                             );
@@ -291,7 +294,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               icon: HugeIcons.strokeRoundedCalendar03,
                               size: 20.r,
                               color: isSelected
-                                  ? AppColors.ironmanWhite
+                                  ? Colors.white
                                   : currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
                             );
@@ -311,7 +314,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               icon: HugeIcons.strokeRoundedImage01,
                               size: 20.r,
                               color: isSelected
-                                  ? AppColors.ironmanWhite
+                                  ? Colors.white
                                   : currentTheme.colorScheme.onSurface
                                       .withValues(alpha: 0.5),
                             );
@@ -391,7 +394,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               child: Text(
                                 '${athlete.ironmanNumber}',
                                 style: TextStyle(
-                                  color: AppColors.ironmanWhite,
+                                  color: Colors.white,
                                   fontSize: 15.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -479,7 +482,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                   Text(
                                     'IM',
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                       fontSize: 11.sp,
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 1.2,
@@ -493,7 +496,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                       Text(
                                         '${athlete.raceCounts.ironman}',
                                         style: theme.textTheme.headlineSmall?.copyWith(
-                                          color: AppColors.ironmanWhite,
+                                          color: theme.colorScheme.onSurface,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 24.sp,
                                         ),
@@ -502,7 +505,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                       Text(
                                         localizations.home_finishes_count(athlete.raceCounts.ironman),
                                         style: theme.textTheme.bodySmall?.copyWith(
-                                          color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                           fontSize: 15.sp,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -516,7 +519,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                                 child: VerticalDivider(
-                                  color: AppColors.ironmanWhite.withValues(alpha: 0.3),
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                                   thickness: 1,
                                   width: 1,
                                 ),
@@ -529,7 +532,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                   Text(
                                     '70.3',
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                       fontSize: 11.sp,
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 1.2,
@@ -543,7 +546,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                       Text(
                                         '${athlete.raceCounts.ironman703}',
                                         style: theme.textTheme.headlineSmall?.copyWith(
-                                          color: AppColors.ironmanWhite,
+                                          color: theme.colorScheme.onSurface,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 24.sp,
                                         ),
@@ -552,7 +555,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                                       Text(
                                         localizations.home_finishes_count(athlete.raceCounts.ironman703),
                                         style: theme.textTheme.bodySmall?.copyWith(
-                                          color: AppColors.ironmanWhite.withValues(alpha: 0.6),
+                                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                           fontSize: 15.sp,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -1695,7 +1698,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Swim
           if (swimTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/swim.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
               time: swimTime,
               date: swimRace?['race_date'] as String?,
               location: swimRace?['location'] as String?,
@@ -1709,7 +1712,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Bike
           if (bikeTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/bike.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
               time: bikeTime,
               date: bikeRace?['race_date'] as String?,
               location: bikeRace?['location'] as String?,
@@ -1722,7 +1725,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Run
           if (runTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/run.png',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
               time: runTime,
               date: runRace?['race_date'] as String?,
               location: runRace?['location'] as String?,
@@ -1894,7 +1897,6 @@ class _DisciplineRow extends StatelessWidget {
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                               fontSize: 24.sp,
-                              color: Colors.white,
                             ),
                           ),
                           Builder(

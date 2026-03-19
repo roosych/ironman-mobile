@@ -115,7 +115,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
         final loc = AppLocalizations.of(ctx)!;
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.ironmanDarkGray,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
           ),
           child: SafeArea(
@@ -141,7 +141,6 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                         title,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ironmanWhite,
                         ),
                       ),
                       CupertinoButton(
@@ -167,7 +166,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                     mode: CupertinoTimerPickerMode.hms,
                     initialTimerDuration: clampedInitial,
                     onTimerDurationChanged: (Duration d) => selected = d,
-                    backgroundColor: AppColors.ironmanDarkGray,
+                    backgroundColor: theme.colorScheme.surface,
                   ),
                 ),
               ],
@@ -222,10 +221,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 hintText: localizations.add_result_location_hint,
                 hintStyle: theme.textTheme.bodyLarge,
                 filled: true,
-                fillColor: AppColors.ironmanDarkGray,
+                fillColor: theme.colorScheme.surface,
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedLocation01,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   size: 20.r,
                 ),
                 errorBorder: OutlineInputBorder(
@@ -261,10 +260,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   hintText: localizations.add_result_date_hint,
                   hintStyle: theme.textTheme.bodyLarge,
                   filled: true,
-                  fillColor: AppColors.ironmanDarkGray,
+                  fillColor: theme.colorScheme.surface,
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedCalendar03,
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     size: 20.r,
                   ),
                   suffixIcon: const Icon(Icons.arrow_drop_down),
@@ -305,10 +304,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                 labelText: localizations.add_result_race_type,
                 hintStyle: theme.textTheme.bodyLarge,
                 filled: true,
-                fillColor: AppColors.ironmanDarkGray,
+                fillColor: theme.colorScheme.surface,
                 prefixIcon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAward01,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   size: 20.r,
                 ),
                 errorBorder: OutlineInputBorder(
@@ -353,7 +352,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Total time
             DisciplineCard(
               icon: Icons.flag_outlined,
-              iconAsset: 'assets/images/svg/flag.png',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/flag_light.png' : 'assets/images/flag_dark.png',
               label: localizations.add_result_total_time,
               duration: _totalTime,
               rightLabel: null,
@@ -384,7 +383,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Swim time
             DisciplineCard(
               icon: Icons.pool_outlined,
-              iconAsset: 'assets/images/svg/swim.png',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
               label: localizations.add_result_swim,
               duration: _swimTime,
               rightLabel: null,
@@ -419,7 +418,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Bike time
             DisciplineCard(
               icon: Icons.directions_bike_outlined,
-              iconAsset: 'assets/images/svg/bike.png',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
               label: localizations.add_result_bike,
               duration: _bikeTime,
               rightLabel: null,
@@ -454,7 +453,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Run time
             DisciplineCard(
               icon: Icons.directions_run_outlined,
-              iconAsset: 'assets/images/svg/run.png',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
               label: localizations.add_result_run,
               duration: _runTime,
               rightLabel: null,
@@ -630,7 +629,7 @@ class DisciplineCard extends StatelessWidget {
 
   final IconData icon;
 
-  /// Optional PNG/SVG asset path (e.g. assets/images/svg/swim.png). When set, shown instead of [icon].
+  /// Optional PNG/SVG asset path (e.g. assets/images/svg/swim.svg). When set, shown instead of [icon].
   final String? iconAsset;
   final String label;
   final Duration duration;
@@ -648,13 +647,13 @@ class DisciplineCard extends StatelessWidget {
       color: Colors.transparent,
       child: Card(
         elevation: 0,
-        color: AppColors.ironmanDarkGray,
+        color: theme.colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
           side: BorderSide(
             color: isSelected
                 ? AppColors.ironmanRed
-                : AppColors.ironmanGray,
+                : theme.colorScheme.outlineVariant,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -685,7 +684,6 @@ class DisciplineCard extends StatelessWidget {
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 18.sp,
-                          color: AppColors.ironmanWhite,
                         ),
                       ),
                       if (isLocked) ...[
@@ -706,7 +704,6 @@ class DisciplineCard extends StatelessWidget {
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     fontSize: 20.sp,
-                    color: AppColors.ironmanWhite,
                   ),
                 ),
               ],
