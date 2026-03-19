@@ -82,6 +82,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(editProfileProvider);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     ref.listen(editProfileProvider, (previous, next) {
       if (previous?.isLoading == true && next.isLoading == false && next.error == null) {
@@ -169,10 +170,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               labelText: localizations.edit_profile_name,
                               prefixIcon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedUser,
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
-                              border: const OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
                             ),
                             textInputAction: TextInputAction.next,
                             onChanged: (value) {
@@ -192,11 +204,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                   color: Colors.white,
                                   size: 20.r,
                                 ),
-                                suffixIcon: const Icon(
+                                suffixIcon: Icon(
                                   Icons.arrow_drop_down,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 ),
-                                border: const OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                ),
                                 enabled: !state.isLoading,
                               ),
                               isEmpty: _selectedCountry == null,
@@ -242,11 +265,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 padding: EdgeInsets.only(bottom: 60.h),
                                 child: HugeIcon(
                                   icon: HugeIcons.strokeRoundedEdit01,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                   size: 20.r,
                                 ),
                               ),
-                              border: const OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
                             ),
                             maxLines: 4,
                             textInputAction: TextInputAction.newline,
@@ -274,10 +308,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               hintText: 'Strava ID',
                               prefixIcon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedBicycle,
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
-                              border: const OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
                             ),
                             keyboardType: TextInputType.url,
                             textInputAction: TextInputAction.next,
@@ -295,10 +340,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               hintText: '@username',
                               prefixIcon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedInstagram,
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
-                              border: const OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
                             ),
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.next,
@@ -316,10 +372,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               hintText: 'username',
                               prefixIcon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedFacebook01,
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
-                              border: const OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                              ),
                             ),
                             keyboardType: TextInputType.url,
                             textInputAction: TextInputAction.done,

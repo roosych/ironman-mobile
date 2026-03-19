@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -24,6 +25,7 @@ import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
 import '../../../core/services/notification_permission_service.dart';
 import '../application/records_notifier.dart';
+import '../../../features/settings/application/theme_notifier.dart';
 
 /// Helper function to safely cast personal bests data
 Map<String, dynamic>? _safeGetPersonalBestsData(dynamic data) {
@@ -233,8 +235,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     // Данные о количестве гонок берутся из profile.stats, которые приходят при авторизации
     // resultsState используется только для отображения списка результатов в карточке
 
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
     return Scaffold(
-      backgroundColor: AppColors.ironmanBlack,
+      backgroundColor: scaffoldBg,
       body: Stack(
         children: [
           // Background image with gradient overlay
@@ -254,9 +257,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.ironmanBlack.withValues(alpha: 0.2),
-                    AppColors.ironmanBlack.withValues(alpha: 0.6),
-                    AppColors.ironmanBlack,
+                    scaffoldBg.withValues(alpha: 0.2),
+                    scaffoldBg.withValues(alpha: 0.6),
+                    scaffoldBg,
                   ],
                   stops: const [0.0, 0.6, 1.0],
                 ),
@@ -309,7 +312,18 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             size: 28.r,
                           ),
                         ),
-                        SizedBox(width: 8.w), // Отступ между иконками
+                        // Theme toggle
+                        IconButton(
+                          onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+                          icon: HugeIcon(
+                            icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                                ? HugeIcons.strokeRoundedSun03
+                                : HugeIcons.strokeRoundedMoon02,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 28.r,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
                         // Notifications
                         _NotificationButton(
                           onTap: () {
@@ -1444,7 +1458,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Swim
           if (swimTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/swim.png',
+              imagePath: 'assets/images/svg/swim.svg',
               time: swimTime,
               date: swimRace?['race_date'] as String?,
               location: swimRace?['location'] as String?,
@@ -1458,7 +1472,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Bike
           if (bikeTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/bike.png',
+              imagePath: 'assets/images/svg/bike.svg',
               time: bikeTime,
               date: bikeRace?['race_date'] as String?,
               location: bikeRace?['location'] as String?,
@@ -1471,7 +1485,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Run
           if (runTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/run.png',
+              imagePath: 'assets/images/svg/run.svg',
               time: runTime,
               date: runRace?['race_date'] as String?,
               location: runRace?['location'] as String?,
@@ -1609,7 +1623,7 @@ class _DisciplineRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Icon
-                      Image.asset(
+                      SvgPicture.asset(
                         imagePath,
                         width: 40.w,
                         height: 40.h,
@@ -1624,7 +1638,6 @@ class _DisciplineRow extends StatelessWidget {
                             style: Theme.of(context).textTheme.headlineSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
                                 ),
                           ),
                           Builder(

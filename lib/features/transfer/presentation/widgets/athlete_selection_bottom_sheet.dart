@@ -276,10 +276,7 @@ class _AthleteSelectionBottomSheetState
               topLeft: Radius.circular(20.r),
               topRight: Radius.circular(20.r),
             ),
-            border: Border.all(
-              color: AppColors.ironmanGray,
-              width: 1,
-            ),
+            border: Border.all(color: theme.colorScheme.outline, width: 1),
           ),
           child: Column(
             children: [

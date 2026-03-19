@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -113,7 +114,6 @@ class _DisciplinesComparisonWidgetState
       decoration: BoxDecoration(
         color: widget.theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.ironmanGray, width: 1),
       ),
       child: Column(
         children: [
@@ -173,11 +173,11 @@ class _DisciplinesComparisonWidgetState
     PersonalRecord? records2,
   ) {
     final disciplines = [
-      {'key': 'swim', 'imagePath': 'assets/images/svg/swim.png'},
+      {'key': 'swim', 'imagePath': 'assets/images/svg/swim.svg'},
       {'key': 't1', 'label': 'T1'},
-      {'key': 'bike', 'imagePath': 'assets/images/svg/bike.png'},
+      {'key': 'bike', 'imagePath': 'assets/images/svg/bike.svg'},
       {'key': 't2', 'label': 'T2'},
-      {'key': 'run', 'imagePath': 'assets/images/svg/run.png'},
+      {'key': 'run', 'imagePath': 'assets/images/svg/run.svg'},
     ];
 
     return Table(
@@ -190,7 +190,7 @@ class _DisciplinesComparisonWidgetState
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder(
         horizontalInside: BorderSide(
-          color: AppColors.ironmanGray,
+          color: widget.theme.colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -295,7 +295,7 @@ class _DisciplinesComparisonWidgetState
                 : MainAxisAlignment.center,
             children: [
               if (imagePath != null)
-                Image.asset(
+                SvgPicture.asset(
                   imagePath,
                   width: 32.r,
                   height: 32.r,

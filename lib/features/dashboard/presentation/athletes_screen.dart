@@ -80,10 +80,11 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           leading: IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
-              color: AppColors.ironmanWhite,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 24.r,
             ),
             onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
@@ -185,7 +186,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.ironmanLightGray,
+                      color: theme.colorScheme.outline,
                       width: 1,
                     ),
                   ),
@@ -251,7 +252,7 @@ class _AthletesScreenState extends ConsumerState<AthletesScreen> {
                           TextSpan(
                             text: 'IRONMAN',
                             style: TextStyle(
-                              color: AppColors.ironmanWhite,
+                              color: theme.colorScheme.onSurface,
                               fontWeight: FontWeight.w400,
                               fontSize: 14.sp,
                             ),

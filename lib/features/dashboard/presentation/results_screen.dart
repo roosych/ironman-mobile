@@ -289,8 +289,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 fontSize: 22.sp,
               ),
             ),
-            backgroundColor: AppColors.ironmanBlack,
-            foregroundColor: AppColors.ironmanWhite,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
             leading: widget.onBack != null
                 ? IconButton(
                     icon: const Icon(Icons.arrow_back),
@@ -363,13 +363,99 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       );
     }
 
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+
     return GestureDetector(
       onTap: () {
-        // Скрываем клавиатуру при тапе вне поля ввода
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          leading: IconButton(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeft01,
+              color: theme.colorScheme.onSurface,
+              size: 24.r,
+            ),
+            onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
+          ),
+          title: Text(
+            localizations.results_title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.sp,
+            ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(56.h),
+            child: Container(
+              color: theme.scaffoldBackgroundColor,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+                child: ListenableBuilder(
+                  listenable: _tabController,
+                  builder: (context, _) {
+                    final tabs = [
+                      localizations.results_all_athletes,
+                      localizations.results_my_results,
+                    ];
+                    return Row(
+                      children: List.generate(2, (i) {
+                        final isSelected = _tabController.index == i;
+                        return Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 2.w),
+                            child: GestureDetector(
+                              onTap: () => _tabController.animateTo(i),
+                              child: Container(
+                                decoration: isSelected
+                                    ? BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12.r),
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            AppColors.primaryGradientStart,
+                                            AppColors.primaryGradientEnd,
+                                          ],
+                                        ),
+                                      )
+                                    : BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12.r),
+                                        color: theme.colorScheme.outlineVariant,
+                                      ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  child: Center(
+                                    child: Text(
+                                      tabs[i],
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
         floatingActionButton: AnimatedBuilder(
           animation: _tabController,
           builder: (context, child) {
@@ -417,92 +503,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 : const SizedBox.shrink();
           },
         ),
-        body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              leading: IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedArrowLeft01,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: 24.r,
-                ),
-                onPressed:
-                    widget.onBack ?? () => Navigator.of(context).maybePop(),
-              ),
-              title: Text(
-                AppLocalizations.of(context)!.results_title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22.sp,
-                ),
-              ),
-              pinned: true,
-              floating: false,
-              snap: false,
-              forceElevated: false,
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(kToolbarHeight + 16.h),
-                child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 8.h,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: AppColors.ironmanGray,
-                          width: 1,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(4.r),
-                      child: TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.white,
-                        labelStyle: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        unselectedLabelColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.5),
-                        unselectedLabelStyle: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.r),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.primaryGradientStart,
-                              AppColors.primaryGradientEnd,
-                            ],
-                          ),
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        labelPadding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                        ),
-                        indicatorPadding: EdgeInsets.zero,
-                        tabs: _buildTabs(context),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
         body: Column(
           children: [
-            // Поле поиска
+            // Поле поиска (фиксированное)
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
               child: TextField(
@@ -513,20 +516,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.athletes_search_hint,
+                  hintText: localizations.athletes_search_hint,
                   hintStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   prefixIcon: HugeIcon(
                     icon: HugeIcons.strokeRoundedSearch01,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     size: 24.r,
                   ),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
                           icon: HugeIcon(
                             icon: HugeIcons.strokeRoundedCancel01,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                             size: 24.r,
                           ),
                           onPressed: () {
@@ -538,7 +541,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         )
                       : null,
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surface,
+                  fillColor: theme.colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide.none,
@@ -548,7 +551,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     vertical: 12.h,
                   ),
                 ),
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: theme.textTheme.bodyLarge,
               ),
             ),
             // Контент вкладок
@@ -561,7 +564,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             ),
           ],
         ),
-      ),
       ),
     );
   }

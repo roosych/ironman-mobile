@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
+import 'package:ironman_mobile/features/settings/application/theme_notifier.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/widgets/language_selector.dart';
 
@@ -148,9 +150,10 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         final loc = AppLocalizations.of(ctx)!;
+        final ctxTheme = Theme.of(ctx);
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.ironmanDarkGray,
+            color: ctxTheme.colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
           ),
           child: SafeArea(
@@ -169,14 +172,13 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                         onPressed: () => Navigator.of(ctx).pop(),
                         child: Text(
                           loc.common_cancel,
-                          style: const TextStyle(color: AppColors.ironmanRed),
+                          style: TextStyle(color: ctxTheme.colorScheme.primary),
                         ),
                       ),
                       Text(
                         title,
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: ctxTheme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.ironmanWhite,
                         ),
                       ),
                       CupertinoButton(
@@ -187,8 +189,8 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                         },
                         child: Text(
                           loc.pace_calculator_done,
-                          style: const TextStyle(
-                            color: AppColors.ironmanRed,
+                          style: TextStyle(
+                            color: ctxTheme.colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -202,7 +204,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                     mode: CupertinoTimerPickerMode.hms,
                     initialTimerDuration: clampedInitial,
                     onTimerDurationChanged: (Duration d) => selected = d,
-                    backgroundColor: AppColors.ironmanDarkGray,
+                    backgroundColor: ctxTheme.colorScheme.surface,
                   ),
                 ),
               ],
@@ -233,33 +235,16 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
       body: Stack(
         children: [
           // Background image with gradient overlay
-          Transform.rotate(
-            angle: 3.14159, // 180 градусов (π радиан)
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.5, // До середины экрана
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/bg.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      AppColors.ironmanBlack.withValues(alpha: 0.3),
-                      AppColors.ironmanBlack.withValues(alpha: 0.7),
-                      AppColors.ironmanBlack,
-                    ],
-                    stops: const [0.0, 0.3, 0.7, 1.0],
-                  ),
-                ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg.png'),
+                fit: BoxFit.cover,
               ),
             ),
+            child: const SizedBox.shrink(),
           ),
           // Main content
           Scaffold(
@@ -272,7 +257,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                   ? IconButton(
                       icon: HugeIcon(
                         icon: HugeIcons.strokeRoundedArrowLeft01,
-                        color: AppColors.ironmanWhite,
+                        color: theme.colorScheme.onSurface,
                         size: 24.r,
                       ),
                       onPressed: () => Navigator.of(context).maybePop(),
@@ -283,13 +268,22 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 22.sp,
-                  color: AppColors.ironmanWhite,
                 ),
               ),
               centerTitle: true,
               actions: ref.watch(authProvider).isAuthenticated
                   ? null
                   : [
+                      IconButton(
+                        icon: HugeIcon(
+                          icon: ref.watch(themeModeProvider) == ThemeMode.dark
+                              ? HugeIcons.strokeRoundedSun01
+                              : HugeIcons.strokeRoundedMoon02,
+                          color: theme.colorScheme.onSurface,
+                          size: 24.r,
+                        ),
+                        onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(right: 16.w),
                         child: const LanguageSelector(),
@@ -322,7 +316,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 20.h),
                             DisciplineCard(
                               icon: Icons.pool_outlined,
-                              iconAsset: 'assets/images/svg/swim.png',
+                              iconAsset: 'assets/images/svg/swim.svg',
                               label: '${_swimKm.toStringAsFixed(_swimKm >= 1 ? 1 : 2)} ${loc.pace_calculator_km_unit}',
                               duration: _swimTime,
                               rightLabel: loc.pace_calculator_min_per_100m,
@@ -359,7 +353,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 6.h),
                             DisciplineCard(
                               icon: Icons.directions_bike_outlined,
-                              iconAsset: 'assets/images/svg/bike.png',
+                              iconAsset: 'assets/images/svg/bike.svg',
                               label: '${_bikeKm % 1 == 0 ? _bikeKm.toInt() : _bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                               duration: _bikeTime,
                               rightLabel: loc.pace_calculator_km_per_h,
@@ -396,7 +390,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 6.h),
                             DisciplineCard(
                               icon: Icons.directions_run_outlined,
-                              iconAsset: 'assets/images/svg/run.png',
+                              iconAsset: 'assets/images/svg/run.svg',
                               label: '${_runKm % 1 == 0 ? _runKm.toInt() : _runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                               duration: _runTime,
                               rightLabel: loc.pace_calculator_min_per_km,
@@ -474,7 +468,7 @@ class DistanceTabs extends StatelessWidget {
                       )
                     : BoxDecoration(
                         borderRadius: BorderRadius.circular(12.r),
-                        color: AppColors.ironmanGray,
+                        color: theme.colorScheme.outlineVariant,
                       ),
                 child: Material(
                   color: Colors.transparent,
@@ -490,8 +484,8 @@ class DistanceTabs extends StatelessWidget {
                           style: theme.textTheme.labelMedium?.copyWith(
                             fontSize: 16.sp,
                             color: isSelected
-                                ? AppColors.ironmanWhite
-                                : AppColors.ironmanTextSecondary,
+                                ? Colors.white
+                                : theme.colorScheme.onSurfaceVariant,
                             fontWeight: isSelected
                                 ? FontWeight.w600
                                 : FontWeight.w500,
@@ -536,7 +530,7 @@ class TotalTimeCard extends StatelessWidget {
         Text(
           totalRaceTimeLabel,
           style: theme.textTheme.labelMedium?.copyWith(
-            color: AppColors.ironmanTextSecondary,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         SizedBox(height: 8.h),
@@ -550,7 +544,7 @@ class TotalTimeCard extends StatelessWidget {
                 onPressed: onReset,
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedRefresh,
-                  color: AppColors.ironmanWhite,
+                  color: theme.colorScheme.onSurface,
                   size: 22.r,
                 ),
                 padding: EdgeInsets.zero,
@@ -561,7 +555,6 @@ class TotalTimeCard extends StatelessWidget {
               formatDurationHhMmSs(totalTime),
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.ironmanWhite,
                 fontSize: 32.sp,
               ),
             ),
@@ -593,7 +586,7 @@ class _DisciplineIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (iconAsset != null && iconAsset!.isNotEmpty) {
-      return Image.asset(
+      return SvgPicture.asset(
         iconAsset!,
         width: size,
         height: size,
@@ -624,7 +617,7 @@ class DisciplineCard extends StatelessWidget {
 
   final IconData icon;
 
-  /// Optional PNG/SVG asset path (e.g. assets/images/svg/swim.png). When set, shown instead of [icon].
+  /// Optional PNG/SVG asset path (e.g. assets/images/svg/swim.svg). When set, shown instead of [icon].
   final String? iconAsset;
   final String label;
   final Duration duration;
@@ -656,8 +649,8 @@ class DisciplineCard extends StatelessWidget {
                   icon: icon,
                   iconAsset: iconAsset,
                   color: isSelected
-                      ? AppColors.ironmanRed
-                      : AppColors.ironmanTextSecondary,
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                   size: 36.r,
                 ),
                 SizedBox(width: 12.w),
@@ -672,7 +665,7 @@ class DisciplineCard extends StatelessWidget {
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                               fontSize: 20.sp,
-                              color: AppColors.ironmanWhite,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           if (isLocked) ...[
@@ -680,7 +673,7 @@ class DisciplineCard extends StatelessWidget {
                             Icon(
                               Icons.lock_outline,
                               size: 18.r,
-                              color: AppColors.ironmanTextSecondary,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ],
@@ -689,7 +682,7 @@ class DisciplineCard extends StatelessWidget {
                       Text(
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
-                          color: AppColors.ironmanTextSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -705,14 +698,14 @@ class DisciplineCard extends StatelessWidget {
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           fontSize: 20.sp,
-                          color: AppColors.ironmanWhite,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(height: 2.h),
                       Text(
                         rightLabel!,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.ironmanTextSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

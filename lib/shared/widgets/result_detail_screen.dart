@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -260,7 +261,7 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Swim
             _DisciplineCard(
-              imagePath: 'assets/images/svg/swim.png',
+              imagePath: 'assets/images/svg/swim.svg',
               label: AppLocalizations.of(context)!.result_swim,
               time: result.swimTime,
               pace: _calculateSwimPace(result.swimTime, _getDistances(result.raceType)['swim']!),
@@ -277,7 +278,7 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Bike
             _DisciplineCard(
-              imagePath: 'assets/images/svg/bike.png',
+              imagePath: 'assets/images/svg/bike.svg',
               label: AppLocalizations.of(context)!.result_bike,
               time: result.bikeTime,
               pace: _calculateBikePace(result.bikeTime, _getDistances(result.raceType)['bike']!),
@@ -294,7 +295,7 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Run
             _DisciplineCard(
-              imagePath: 'assets/images/svg/run.png',
+              imagePath: 'assets/images/svg/run.svg',
               label: AppLocalizations.of(context)!.result_run,
               time: result.runTime,
               pace: _calculateRunPace(result.runTime, _getDistances(result.raceType)['run']!),
@@ -336,14 +337,11 @@ class _DisciplineCard extends StatelessWidget {
       child: Row(
         children: [
           // Icon
-          Image.asset(
+          SvgPicture.asset(
             imagePath,
             width: 32.r,
             height: 32.r,
             fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) {
-              return SizedBox(width: 32.r, height: 32.r);
-            },
           ),
           SizedBox(width: 16.w),
           // Label
@@ -399,21 +397,18 @@ class _TransitionCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide.none,
+      ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(8.r),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: HugeIcon(
-                icon: HugeIcons.strokeRoundedArrowLeftRight,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 20.r,
-              ),
+            HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeftRight,
+              color: theme.colorScheme.onSurfaceVariant,
+              size: 20.r,
             ),
             SizedBox(width: 12.w),
             Expanded(
