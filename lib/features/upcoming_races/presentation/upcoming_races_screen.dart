@@ -94,6 +94,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: theme.scaffoldBackgroundColor,
         leading: IconButton(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
@@ -146,36 +147,62 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       body: Column(
         children: [
           // TabBar
-          Container(
-            margin: EdgeInsets.all(16.r),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            padding: EdgeInsets.all(4.r),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.white,
-              unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.r),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryGradientStart,
-                    AppColors.primaryGradientEnd,
-                  ],
-                ),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              labelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
-              unselectedLabelStyle: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
-              tabs: [
-                Tab(text: localizations.events_tab_active),
-                Tab(text: localizations.events_tab_past),
-              ],
+          Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+            child: ListenableBuilder(
+              listenable: _tabController,
+              builder: (context, _) {
+                final tabs = [
+                  localizations.events_tab_active,
+                  localizations.events_tab_past,
+                ];
+                return Row(
+                  children: List.generate(2, (i) {
+                    final isSelected = _tabController.index == i;
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2.w),
+                        child: GestureDetector(
+                          onTap: () => _tabController.animateTo(i),
+                          child: Container(
+                            decoration: isSelected
+                                ? BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AppColors.primaryGradientStart,
+                                        AppColors.primaryGradientEnd,
+                                      ],
+                                    ),
+                                  )
+                                : BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    color: theme.colorScheme.outlineVariant,
+                                  ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              child: Center(
+                                child: Text(
+                                  tabs[i],
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
             ),
           ),
           // TabBarView

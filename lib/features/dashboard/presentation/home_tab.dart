@@ -1171,7 +1171,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
                     ),
                     child: HugeIcon(
                       icon: HugeIcons.strokeRoundedArrowRight01,
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                       size: 20.r,
                     ),
                   ),
