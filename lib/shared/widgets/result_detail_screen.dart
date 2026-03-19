@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -227,7 +226,9 @@ class ResultDetailScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/images/svg/flag.png',
+                      Theme.of(context).brightness == Brightness.dark
+                          ? 'assets/images/flag_light.png'
+                          : 'assets/images/flag_dark.png',
                       width: 24.w,
                       height: 24.h,
                       fit: BoxFit.contain,
@@ -261,7 +262,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Swim
             _DisciplineCard(
-              imagePath: 'assets/images/svg/swim.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/swim_light.png'
+                  : 'assets/images/swim_dark.png',
               label: AppLocalizations.of(context)!.result_swim,
               time: result.swimTime,
               pace: _calculateSwimPace(result.swimTime, _getDistances(result.raceType)['swim']!),
@@ -278,7 +281,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Bike
             _DisciplineCard(
-              imagePath: 'assets/images/svg/bike.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/bike_light.png'
+                  : 'assets/images/bike_dark.png',
               label: AppLocalizations.of(context)!.result_bike,
               time: result.bikeTime,
               pace: _calculateBikePace(result.bikeTime, _getDistances(result.raceType)['bike']!),
@@ -295,7 +300,9 @@ class ResultDetailScreen extends ConsumerWidget {
 
             // Run
             _DisciplineCard(
-              imagePath: 'assets/images/svg/run.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark
+                  ? 'assets/images/run_light.png'
+                  : 'assets/images/run_dark.png',
               label: AppLocalizations.of(context)!.result_run,
               time: result.runTime,
               pace: _calculateRunPace(result.runTime, _getDistances(result.raceType)['run']!),
@@ -337,7 +344,7 @@ class _DisciplineCard extends StatelessWidget {
       child: Row(
         children: [
           // Icon
-          SvgPicture.asset(
+          Image.asset(
             imagePath,
             width: 32.r,
             height: 32.r,

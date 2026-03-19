@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -316,7 +315,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 20.h),
                             DisciplineCard(
                               icon: Icons.pool_outlined,
-                              iconAsset: 'assets/images/svg/swim.svg',
+                              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
                               label: '${_swimKm.toStringAsFixed(_swimKm >= 1 ? 1 : 2)} ${loc.pace_calculator_km_unit}',
                               duration: _swimTime,
                               rightLabel: loc.pace_calculator_min_per_100m,
@@ -353,7 +352,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 6.h),
                             DisciplineCard(
                               icon: Icons.directions_bike_outlined,
-                              iconAsset: 'assets/images/svg/bike.svg',
+                              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
                               label: '${_bikeKm % 1 == 0 ? _bikeKm.toInt() : _bikeKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                               duration: _bikeTime,
                               rightLabel: loc.pace_calculator_km_per_h,
@@ -390,7 +389,7 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
                             SizedBox(height: 6.h),
                             DisciplineCard(
                               icon: Icons.directions_run_outlined,
-                              iconAsset: 'assets/images/svg/run.svg',
+                              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
                               label: '${_runKm % 1 == 0 ? _runKm.toInt() : _runKm.toStringAsFixed(1)} ${loc.pace_calculator_km_unit}',
                               duration: _runTime,
                               rightLabel: loc.pace_calculator_min_per_km,
@@ -586,7 +585,7 @@ class _DisciplineIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (iconAsset != null && iconAsset!.isNotEmpty) {
-      return SvgPicture.asset(
+      return Image.asset(
         iconAsset!,
         width: size,
         height: size,

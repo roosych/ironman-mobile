@@ -687,12 +687,22 @@ class _NotificationListItemState extends ConsumerState<_NotificationListItem>
                         ),
                         if (n.createdAt != null) ...[
                           SizedBox(height: 8.h),
-                          Text(
-                            widget.dateFormat.format(n.createdAt!.toLocal()),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                              fontSize: 12.sp,
-                            ),
+                          Row(
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedCalendar03,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                size: 14.r,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                widget.dateFormat.format(n.createdAt!.toLocal()),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ],

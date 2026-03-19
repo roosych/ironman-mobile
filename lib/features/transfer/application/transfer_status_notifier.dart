@@ -12,7 +12,7 @@ class TransferStatusNotifier extends StateNotifier<TransferStatusState> {
 
   TransferStatusNotifier({TransferApi? api})
       : _api = api ?? TransferApi(),
-        super(const TransferStatusState());
+        super(const TransferStatusState(isLoading: true));
 
   /// Загружает текущий статус заявки
   Future<void> loadCurrentStatus() async {

@@ -87,12 +87,22 @@ class NotificationDetailScreen extends ConsumerWidget {
                       ),
                       if (notification.createdAt != null) ...[
                         SizedBox(height: 8.h),
-                        Text(
-                          _dateFormat.format(notification.createdAt!.toLocal()),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                            fontSize: 12.sp,
-                          ),
+                        Row(
+                          children: [
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedCalendar03,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              size: 14.r,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              _dateFormat.format(notification.createdAt!.toLocal()),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                       if (localizedBody.isNotEmpty) ...[

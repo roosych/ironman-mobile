@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -300,16 +299,16 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
   String _searchQuery = '';
   late TextEditingController _searchController;
 
-  String? _getDisciplineImagePath(String discipline) {
+  String? _getDisciplineImagePath(String discipline, bool isDark) {
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return 'assets/images/svg/swim.svg';
+        return isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png';
       case 'bike':
-        return 'assets/images/svg/bike.svg';
+        return isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png';
       case 'run':
-        return 'assets/images/svg/run.svg';
+        return isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png';
       case 'total':
-        return 'assets/images/svg/flag.png';
+        return isDark ? 'assets/images/flag_light.png' : 'assets/images/flag_dark.png';
       default:
         return null;
     }
@@ -428,11 +427,11 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               isScrollable: false,
               tabs: widget.disciplines.map((discipline) {
-                final imagePath = _getDisciplineImagePath(discipline['value']!);
+                final imagePath = _getDisciplineImagePath(discipline['value']!, Theme.of(context).brightness == Brightness.dark);
                 return Tab(
                   child: Center(
                     child: imagePath != null
-                        ? SvgPicture.asset(
+                        ? Image.asset(
                             imagePath,
                             width: 60.w,
                             height: 24.h,
@@ -734,8 +733,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
                   Container(
                     width: 56.r,
                     height: 56.r,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant,
+                        width: 1,
+                      ),
                     ),
                     child: ClipOval(
                       child: ranking.avatar != null
@@ -1043,8 +1046,12 @@ class _RaceTypeTabState extends ConsumerState<_RaceTypeTab>
           Container(
             width: 64.r,
             height: 64.r,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant,
+                width: 1,
+              ),
             ),
             child: ClipOval(
               child: athlete.avatar != null

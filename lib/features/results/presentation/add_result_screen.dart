@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -353,7 +352,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Total time
             DisciplineCard(
               icon: Icons.flag_outlined,
-              iconAsset: 'assets/images/svg/flag.png',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/flag_light.png' : 'assets/images/flag_dark.png',
               label: localizations.add_result_total_time,
               duration: _totalTime,
               rightLabel: null,
@@ -384,7 +383,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Swim time
             DisciplineCard(
               icon: Icons.pool_outlined,
-              iconAsset: 'assets/images/svg/swim.svg',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
               label: localizations.add_result_swim,
               duration: _swimTime,
               rightLabel: null,
@@ -419,7 +418,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Bike time
             DisciplineCard(
               icon: Icons.directions_bike_outlined,
-              iconAsset: 'assets/images/svg/bike.svg',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
               label: localizations.add_result_bike,
               duration: _bikeTime,
               rightLabel: null,
@@ -454,7 +453,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
             // Run time
             DisciplineCard(
               icon: Icons.directions_run_outlined,
-              iconAsset: 'assets/images/svg/run.svg',
+              iconAsset: Theme.of(context).brightness == Brightness.dark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
               label: localizations.add_result_run,
               duration: _runTime,
               rightLabel: null,
@@ -599,7 +598,7 @@ class _DisciplineIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (iconAsset != null && iconAsset!.isNotEmpty) {
-      return SvgPicture.asset(
+      return Image.asset(
         iconAsset!,
         width: size,
         height: size,

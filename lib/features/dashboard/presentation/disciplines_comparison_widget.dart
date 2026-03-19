@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -172,12 +171,13 @@ class _DisciplinesComparisonWidgetState
     PersonalRecord? records1,
     PersonalRecord? records2,
   ) {
+    final isDark = widget.theme.brightness == Brightness.dark;
     final disciplines = [
-      {'key': 'swim', 'imagePath': 'assets/images/svg/swim.svg'},
+      {'key': 'swim', 'imagePath': isDark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png'},
       {'key': 't1', 'label': 'T1'},
-      {'key': 'bike', 'imagePath': 'assets/images/svg/bike.svg'},
+      {'key': 'bike', 'imagePath': isDark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png'},
       {'key': 't2', 'label': 'T2'},
-      {'key': 'run', 'imagePath': 'assets/images/svg/run.svg'},
+      {'key': 'run', 'imagePath': isDark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png'},
     ];
 
     return Table(
@@ -295,7 +295,7 @@ class _DisciplinesComparisonWidgetState
                 : MainAxisAlignment.center,
             children: [
               if (imagePath != null)
-                SvgPicture.asset(
+                Image.asset(
                   imagePath,
                   width: 32.r,
                   height: 32.r,

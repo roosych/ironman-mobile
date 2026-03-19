@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -1699,7 +1698,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Swim
           if (swimTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/swim.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/swim_light.png' : 'assets/images/swim_dark.png',
               time: swimTime,
               date: swimRace?['race_date'] as String?,
               location: swimRace?['location'] as String?,
@@ -1713,7 +1712,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Bike
           if (bikeTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/bike.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/bike_light.png' : 'assets/images/bike_dark.png',
               time: bikeTime,
               date: bikeRace?['race_date'] as String?,
               location: bikeRace?['location'] as String?,
@@ -1726,7 +1725,7 @@ class _PersonalBestsCard extends StatelessWidget {
           // Run
           if (runTime != null)
             _DisciplineRow(
-              imagePath: 'assets/images/svg/run.svg',
+              imagePath: Theme.of(context).brightness == Brightness.dark ? 'assets/images/run_light.png' : 'assets/images/run_dark.png',
               time: runTime,
               date: runRace?['race_date'] as String?,
               location: runRace?['location'] as String?,
@@ -1884,7 +1883,7 @@ class _DisciplineRow extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SvgPicture.asset(
+                      Image.asset(
                         imagePath,
                         width: 40.w,
                         height: 40.h,

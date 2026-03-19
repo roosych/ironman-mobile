@@ -48,7 +48,9 @@ class ResultCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12.r),
         side: showBorder
             ? BorderSide(
-                color: AppColors.resultsBorder,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF2A2A2A)
+                    : AppColors.resultsBorder,
                 width: 1,
               )
             : BorderSide.none,
