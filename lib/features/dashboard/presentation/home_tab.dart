@@ -18,8 +18,9 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_state.dart';
 import 'package:ironman_mobile/features/upcoming_races/presentation/upcoming_races_screen.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
-import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
-import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
+import 'package:ironman_mobile/shared/widgets/grouped_upcoming_race_card.dart';
+import 'package:ironman_mobile/features/upcoming_races/domain/upcoming_race.dart';
+// import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import '../../notifications/application/notifications_notifier.dart';
 import '../../../core/services/notification_permission_service.dart';
@@ -1036,9 +1037,9 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
     ).push(MaterialPageRoute(builder: (_) => const UpcomingRacesScreen()));
   }
 
-  void _addUpcomingRace(BuildContext context) {
-    showRaceSelectionBottomSheet(context);
-  }
+  // void _addUpcomingRace(BuildContext context) {
+  //   showRaceSelectionBottomSheet(context);
+  // }
 
   List<dynamic> _getActiveRaces(List<dynamic> races) {
     final now = DateTime.now();
@@ -1059,16 +1060,28 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
         date1.day == date2.day;
   }
 
+  /// Группирует гонки по уникальному ключу (тип + локация + дата),
+  /// возвращает список групп (каждая группа — одна уникальная гонка с атлетами).
+  List<List<UpcomingRace>> _groupRaces(List<dynamic> races) {
+    final Map<String, List<UpcomingRace>> grouped = {};
+    for (final race in races) {
+      final r = race as UpcomingRace;
+      final key = '${r.raceType}|${r.location}|${r.raceDate}';
+      grouped.putIfAbsent(key, () => []).add(r);
+    }
+    return grouped.values.toList();
+  }
+
   Widget _buildActiveRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
     if (state.isLoading && state.races.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     final activeRaces = _getActiveRaces(state.races);
-    // Берем только первые 5 активных гонок для отображения на главном экране
-    final limitedActiveRaces = activeRaces.take(5).toList();
+    // Группируем по уникальной гонке и берём первые 5 уникальных
+    final groupedRaces = _groupRaces(activeRaces).take(5).toList();
 
-    if (limitedActiveRaces.isEmpty) {
+    if (groupedRaces.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -1086,7 +1099,7 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         final cardWidth = screenWidth * 0.9;
-        final cardSpacing = 12.0;
+        const cardSpacing = 12.0;
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -1094,14 +1107,14 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (int index = 0; index < limitedActiveRaces.length; index++)
+              for (int index = 0; index < groupedRaces.length; index++)
                 Padding(
                   padding: EdgeInsets.only(
-                    right: index < limitedActiveRaces.length - 1 ? cardSpacing : 0,
+                    right: index < groupedRaces.length - 1 ? cardSpacing : 0,
                   ),
                   child: SizedBox(
                     width: cardWidth,
-                    child: UpcomingRaceCard(race: limitedActiveRaces[index]),
+                    child: GroupedUpcomingRaceCard(races: groupedRaces[index]),
                   ),
                 ),
             ],
@@ -1184,18 +1197,18 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
             _buildActiveRacesTab(context, state, localizations),
 
             SizedBox(height: 16.h),
-            // Кнопка добавления новой гонки
-            Center(
-              child: AppButtonStyles.gradientElevatedButton(
-                text: localizations.home_add_race,
-                onPressed: () => _addUpcomingRace(context),
-                icon: Icon(Icons.add, size: 20.r, color: Colors.white),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 24.w,
-                  vertical: 12.h,
-                ),
-              ),
-            ),
+            // Кнопка добавления новой гонки (временно закомментирована)
+            // Center(
+            //   child: AppButtonStyles.gradientElevatedButton(
+            //     text: localizations.home_add_race,
+            //     onPressed: () => _addUpcomingRace(context),
+            //     icon: Icon(Icons.add, size: 20.r, color: Colors.white),
+            //     padding: EdgeInsets.symmetric(
+            //       horizontal: 24.w,
+            //       vertical: 12.h,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       );

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
-import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
+import 'package:ironman_mobile/shared/widgets/grouped_upcoming_race_card.dart';
 import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../domain/upcoming_race.dart';
@@ -259,6 +259,15 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
         date1.day == date2.day;
   }
 
+  List<List<UpcomingRace>> _groupRaces(List<UpcomingRace> races) {
+    final Map<String, List<UpcomingRace>> grouped = {};
+    for (final race in races) {
+      final key = '${race.raceType}|${race.location}|${race.raceDate}';
+      grouped.putIfAbsent(key, () => []).add(race);
+    }
+    return grouped.values.toList();
+  }
+
   Widget _buildActiveRacesTab(UpcomingRacesState state, AppLocalizations localizations) {
     if (state.isLoading && state.races.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -268,9 +277,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       return _buildErrorState(localizations, _loadAllRaces);
     }
 
-    final activeRaces = _getActiveRaces(state.races);
+    final grouped = _groupRaces(_getActiveRaces(state.races));
 
-    if (activeRaces.isEmpty) {
+    if (grouped.isEmpty) {
       return Center(
         child: Text(
           localizations.home_no_upcoming_races,
@@ -294,9 +303,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
         },
         child: ListView.builder(
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
-          itemCount: activeRaces.length + (state.isLoadingMore ? 1 : 0),
+          itemCount: grouped.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index == activeRaces.length) {
+            if (index == grouped.length) {
               return Padding(
                 padding: EdgeInsets.all(16.r),
                 child: const Center(child: CircularProgressIndicator()),
@@ -304,7 +313,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
             }
             return Padding(
               padding: EdgeInsets.only(bottom: 16.h),
-              child: UpcomingRaceCard(race: activeRaces[index]),
+              child: GroupedUpcomingRaceCard(races: grouped[index]),
             );
           },
         ),
@@ -321,9 +330,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       return _buildErrorState(localizations, _loadAllRaces);
     }
 
-    final pastRaces = _getPastRaces(state.races);
+    final grouped = _groupRaces(_getPastRaces(state.races));
 
-    if (pastRaces.isEmpty) {
+    if (grouped.isEmpty) {
       return Center(
         child: Text(
           localizations.events_no_past_races,
@@ -347,9 +356,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
         },
         child: ListView.builder(
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
-          itemCount: pastRaces.length + (state.isLoadingMore ? 1 : 0),
+          itemCount: grouped.length + (state.isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index == pastRaces.length) {
+            if (index == grouped.length) {
               return Padding(
                 padding: EdgeInsets.all(16.r),
                 child: const Center(child: CircularProgressIndicator()),
@@ -357,7 +366,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
             }
             return Padding(
               padding: EdgeInsets.only(bottom: 16.h),
-              child: UpcomingRaceCard(race: pastRaces[index]),
+              child: GroupedUpcomingRaceCard(races: grouped[index]),
             );
           },
         ),
