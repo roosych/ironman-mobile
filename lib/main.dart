@@ -162,7 +162,7 @@ class MyApp extends ConsumerWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: _red, width: 2),
+            borderSide: const BorderSide(color: _red, width: 1),
           ),
         ),
         textTheme: const TextTheme(
@@ -252,7 +252,7 @@ class MyApp extends ConsumerWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: _red, width: 2),
+            borderSide: const BorderSide(color: _red, width: 1),
           ),
         ),
         textTheme: const TextTheme(
