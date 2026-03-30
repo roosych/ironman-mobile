@@ -2,16 +2,14 @@ import '../models/race_model.dart';
 
 /// Состояние для выбора гонки
 class RaceSelectionState {
-  final List<RaceModel> allRaces;      // Полный список с сервера
-  final List<RaceModel> races;        // Фильтрованный список для отображения
+  final List<RaceModel> races;        // Список гонок с сервера
   final RaceModel? selectedRace;      // Выбранная гонка
   final String searchQuery;           // Текущий поисковый запрос
-  final bool allRacesLoaded;         // Флаг успешной загрузки
+  final bool allRacesLoaded;         // Флаг успешной первой загрузки
   final bool isLoading;
   final String? error;
 
   const RaceSelectionState({
-    this.allRaces = const [],
     this.races = const [],
     this.selectedRace,
     this.searchQuery = '',
@@ -29,7 +27,6 @@ class RaceSelectionState {
 
   /// Создание копии состояния с измененными полями
   RaceSelectionState copyWith({
-    List<RaceModel>? allRaces,
     List<RaceModel>? races,
     RaceModel? selectedRace,
     String? searchQuery,
@@ -40,7 +37,6 @@ class RaceSelectionState {
     bool clearSelection = false,
   }) {
     return RaceSelectionState(
-      allRaces: allRaces ?? this.allRaces,
       races: races ?? this.races,
       selectedRace: clearSelection ? null : (selectedRace ?? this.selectedRace),
       searchQuery: searchQuery ?? this.searchQuery,
@@ -55,7 +51,6 @@ class RaceSelectionState {
     if (identical(this, other)) return true;
 
     return other is RaceSelectionState &&
-        other.allRaces == allRaces &&
         other.races == races &&
         other.selectedRace == selectedRace &&
         other.searchQuery == searchQuery &&
@@ -67,7 +62,6 @@ class RaceSelectionState {
   @override
   int get hashCode {
     return Object.hash(
-      allRaces,
       races,
       selectedRace,
       searchQuery,
@@ -79,6 +73,6 @@ class RaceSelectionState {
 
   @override
   String toString() {
-    return 'RaceSelectionState(allRaces: ${allRaces.length}, races: ${races.length}, selectedRace: $selectedRace, searchQuery: $searchQuery, allRacesLoaded: $allRacesLoaded, isLoading: $isLoading, error: $error)';
+    return 'RaceSelectionState(races: ${races.length}, selectedRace: $selectedRace, searchQuery: $searchQuery, allRacesLoaded: $allRacesLoaded, isLoading: $isLoading, error: $error)';
   }
 }

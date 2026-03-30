@@ -64,7 +64,6 @@ class FcmService {
 
         if (settings.authorizationStatus == AuthorizationStatus.authorized ||
             settings.authorizationStatus == AuthorizationStatus.provisional) {
-          // iOS: разрешить показ в foreground
           await _messaging.setForegroundNotificationPresentationOptions(
             alert: true,
             badge: true,
@@ -145,8 +144,6 @@ class FcmService {
           );
         }
 
-        // ВАЖНО: Обновляем настройки для iOS даже если инфраструктура уже инициализирована
-        // Это нужно, чтобы уведомления показывались в foreground после включения разрешений
         await _messaging.setForegroundNotificationPresentationOptions(
           alert: true,
           badge: true,
@@ -198,6 +195,23 @@ class FcmService {
         _currentToken = token;
         await _registerToken(token);
       }
+
+      // Debug: вывод токенов для тестирования пушей
+      debugPrint('');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('🔑 FCM TOKEN: $_currentToken');
+      if (Platform.isIOS) {
+        final apnsToken = await _messaging.getAPNSToken();
+        debugPrint('📱 APNs TOKEN: $apnsToken');
+        if (apnsToken == null) {
+          debugPrint('⚠️  APNs TOKEN is NULL — проверь:');
+          debugPrint('   1. Запуск на реальном устройстве (не симулятор)');
+          debugPrint('   2. Push Notifications capability в Xcode');
+          debugPrint('   3. APN ключ загружен в Firebase Console');
+        }
+      }
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('');
     } catch (e) {
       debugPrint('FCM: Error getting token: $e');
     }
@@ -289,9 +303,6 @@ class FcmService {
       debugPrint('🔥 FCM: Body: ${message.notification?.body}');
       debugPrint('🔥 FCM: Data: ${message.data}');
       debugPrint('🔥 FCM: Message ID: ${message.messageId}');
-
-      // Показываем локальное уведомление, т.к. стандартно FCM не отображает его в foreground
-      _showLocalNotification(message);
 
       // Здесь можно обновить UI приложения
       _handleNotification(message);

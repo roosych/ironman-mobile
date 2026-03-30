@@ -12,12 +12,21 @@ class RacesApi {
 
   /// Получить список доступных гонок из API /races
   ///
-  /// Загружает все активные гонки, доступные для выбора пользователем.
+  /// Загружает гонки, доступные для выбора пользователем.
   /// Требует авторизации через Bearer token.
-  Future<List<RaceModel>> fetchAvailableRaces() async {
+  Future<List<RaceModel>> fetchAvailableRaces({
+    String? search,
+    int perPage = 50,
+  }) async {
     try {
+      final queryParams = <String, dynamic>{
+        'per_page': perPage,
+        if (search != null && search.isNotEmpty) 'search': search,
+      };
+
       final response = await _client.get<Map<String, dynamic>>(
         '/races',
+        queryParameters: queryParams,
       );
 
       final data = response.data;
