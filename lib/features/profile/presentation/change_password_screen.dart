@@ -182,6 +182,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           leading: IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,

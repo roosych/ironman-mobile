@@ -135,6 +135,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     if (isLoadingInitialData) {
       return Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           leading: IconButton(
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedArrowLeft01,
@@ -158,6 +159,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
+              backgroundColor: theme.scaffoldBackgroundColor,
               leading: IconButton(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedArrowLeft01,

@@ -186,6 +186,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,

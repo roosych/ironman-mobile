@@ -226,6 +226,7 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
