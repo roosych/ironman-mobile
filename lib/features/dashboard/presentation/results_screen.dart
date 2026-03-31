@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,6 +34,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   late final TabController _tabController;
   String _searchQuery = '';
   late TextEditingController _searchController;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -105,6 +108,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     _searchController.dispose();
+    _searchDebounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -226,6 +230,28 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     }
   }
 
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value;
+    });
+    // Серверный поиск для вкладки "Все атлеты" с дебаунсом 500ms
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        ref.read(allRaceResultsProvider.notifier).searchAllResults(value);
+      }
+    });
+  }
+
+  void _onSearchCleared() {
+    _searchDebounce?.cancel();
+    setState(() {
+      _searchQuery = '';
+      _searchController.clear();
+    });
+    ref.read(allRaceResultsProvider.notifier).searchAllResults('');
+  }
+
   List<dynamic> _filterResults(List<dynamic> results) {
     if (_searchQuery.isEmpty) return results;
 
@@ -305,11 +331,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 padding: EdgeInsets.all(16.r),
                 child: TextField(
                   controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
+                  onChanged: _onSearchChanged,
                   decoration: InputDecoration(
                     hintText: AppLocalizations.of(context)!.athletes_search_hint,
                     hintStyle: TextStyle(
@@ -327,12 +349,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                               size: 24.r,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = '';
-                                _searchController.clear();
-                              });
-                            },
+                            onPressed: _onSearchCleared,
                           )
                         : null,
                     filled: true,
@@ -510,11 +527,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 0),
               child: TextField(
                 controller: _searchController,
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
+                onChanged: _onSearchChanged,
                 decoration: InputDecoration(
                   hintText: localizations.athletes_search_hint,
                   hintStyle: TextStyle(
@@ -532,12 +545,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                             size: 24.r,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _searchQuery = '';
-                              _searchController.clear();
-                            });
-                          },
+                          onPressed: _onSearchCleared,
                         )
                       : null,
                   filled: true,
@@ -692,9 +700,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildAllAthletesTab(RaceResultsState state) {
-    // Фильтруем только подтвержденные результаты и применяем поиск
-    final approvedResults = state.results.where((r) => r.isApproved).toList();
-    final filteredResults = _filterResults(approvedResults);
+    // Сервер уже фильтрует по is_approved и search — используем результаты напрямую
+    final filteredResults = state.results;
 
     if (state.isLoading && state.results.isEmpty) {
       return const Center(child: CircularProgressIndicator());

@@ -197,7 +197,7 @@ class RaceResultsApi {
     }
   }
 
-  Future<PaginatedResponse> fetchAllResults({int? page, bool onlyApproved = true}) async {
+  Future<PaginatedResponse> fetchAllResults({int? page, bool onlyApproved = true, String? search}) async {
     try {
       final queryParams = <String, dynamic>{};
       if (page != null) {
@@ -205,6 +205,9 @@ class RaceResultsApi {
       }
       if (onlyApproved) {
         queryParams['is_approved'] = 1;
+      }
+      if (search != null && search.isNotEmpty) {
+        queryParams['search'] = search;
       }
       final response = await _client.get<Map<String, dynamic>>(
         '/race-results',

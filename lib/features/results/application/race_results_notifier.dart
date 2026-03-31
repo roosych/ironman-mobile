@@ -142,6 +142,7 @@ final allRaceResultsProvider =
 
 class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
   final RaceResultsApi _api;
+  String? _currentSearch;
 
   AllRaceResultsNotifier({RaceResultsApi? api})
       : _api = api ?? RaceResultsApi(),
@@ -156,7 +157,33 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(isLoading: showLoading, clearError: true);
 
     try {
-      final response = await _api.fetchAllResults();
+      final response = await _api.fetchAllResults(search: _currentSearch);
+      state = state.copyWith(
+        results: response.results,
+        isLoading: false,
+        pagination: response.meta,
+      );
+    } on RaceResultsApiException catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.message,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Произошла ошибка',
+      );
+    }
+  }
+
+  /// Поиск по всем результатам через API — сбрасывает пагинацию и загружает с 1-й страницы
+  Future<void> searchAllResults(String query) async {
+    _currentSearch = query.isNotEmpty ? query : null;
+
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final response = await _api.fetchAllResults(search: _currentSearch);
       state = state.copyWith(
         results: response.results,
         isLoading: false,
@@ -185,7 +212,7 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
 
     try {
       final nextPage = state.pagination?.nextPage ?? 2;
-      final response = await _api.fetchAllResults(page: nextPage);
+      final response = await _api.fetchAllResults(page: nextPage, search: _currentSearch);
       state = state.copyWith(
         results: response.results,
         isLoadingMore: false,
@@ -209,7 +236,7 @@ class AllRaceResultsNotifier extends StateNotifier<RaceResultsState> {
     state = state.copyWith(clearError: true);
 
     try {
-      final response = await _api.fetchAllResults();
+      final response = await _api.fetchAllResults(search: _currentSearch);
       state = state.copyWith(
         results: response.results,
         pagination: response.meta,
