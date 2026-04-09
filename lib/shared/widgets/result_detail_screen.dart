@@ -375,7 +375,7 @@ class _DisciplineCard extends StatelessWidget {
               if (pace != null && pace!.isNotEmpty && paceUnit != null) ...[
                 SizedBox(height: 2.h),
                 Text(
-                  '~$pace $paceUnit',
+                  '$pace $paceUnit',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 12.sp,

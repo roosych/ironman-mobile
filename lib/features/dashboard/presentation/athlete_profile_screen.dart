@@ -1909,7 +1909,7 @@ class _DisciplineRow extends StatelessWidget {
                                 return Padding(
                                   padding: EdgeInsets.only(top: 2.h),
                                   child: Text(
-                                    '~$pace $paceUnit',
+                                    '$pace $paceUnit',
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontSize: 11.sp,
