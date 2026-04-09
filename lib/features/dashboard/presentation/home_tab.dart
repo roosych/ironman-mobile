@@ -391,6 +391,10 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
               SizedBox(key: const ValueKey('spacer2'), height: 12.h),
 
+              // My Upcoming Races Expandable Section
+              if (profileId != null)
+                _MyUpcomingRacesExpandableSection(profileId: profileId),
+
               // Pace Calculator card
               Padding(
                 key: const ValueKey('pace_calc'),
@@ -1011,15 +1015,32 @@ class _UpcomingRacesSection extends ConsumerStatefulWidget {
 }
 
 class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+  double _pageWidth = 0;
+
   @override
   void initState() {
     super.initState();
-    // Загружаем гонки после построения виджета
+    _scrollController.addListener(() {
+      if (_pageWidth > 0) {
+        final page = (_scrollController.offset / _pageWidth).round();
+        if (page != _currentPage) {
+          setState(() => _currentPage = page);
+        }
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllRaces();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _loadAllRaces() {
@@ -1073,12 +1094,13 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
   }
 
   Widget _buildActiveRacesTab(BuildContext context, UpcomingRacesState state, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+
     if (state.isLoading && state.races.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     final activeRaces = _getActiveRaces(state.races);
-    // Группируем по уникальной гонке и берём первые 5 уникальных
     final groupedRaces = _groupRaces(activeRaces).take(5).toList();
 
     if (groupedRaces.isEmpty) {
@@ -1087,40 +1109,61 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
           padding: const EdgeInsets.all(16.0),
           child: Text(
             localizations.home_no_upcoming_races,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ),
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
-        final cardWidth = screenWidth * 0.9;
-        const cardSpacing = 12.0;
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: cardSpacing / 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (int index = 0; index < groupedRaces.length; index++)
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: index < groupedRaces.length - 1 ? cardSpacing : 0,
-                  ),
-                  child: SizedBox(
-                    width: cardWidth,
-                    child: GroupedUpcomingRaceCard(races: groupedRaces[index]),
-                  ),
+    return Column(
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            _pageWidth = constraints.maxWidth;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              physics: const PageScrollPhysics(),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (int index = 0; index < groupedRaces.length; index++)
+                    SizedBox(
+                      width: _pageWidth,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        child: GroupedUpcomingRaceCard(races: groupedRaces[index]),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+        if (groupedRaces.length > 1) ...[
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              groupedRaces.length,
+              (index) => AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: EdgeInsets.symmetric(horizontal: 3.w),
+                width: _currentPage == index ? 16.w : 6.w,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  color: _currentPage == index
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(3.r),
                 ),
-            ],
+              ),
+            ),
           ),
-        );
-      },
+        ],
+      ],
     );
   }
 
@@ -1215,6 +1258,248 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
       // ); // Закрывающая скобка Card - закомментирована
   }
 }
+
+// ─── Мои предстоящие гонки ────────────────────────────────────────────────────
+
+class _MyUpcomingRacesExpandableSection extends ConsumerWidget {
+  final int profileId;
+  const _MyUpcomingRacesExpandableSection({required this.profileId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(myDashboardUpcomingRacesProvider);
+    if (!state.isLoading && state.races.isEmpty) return const SizedBox.shrink();
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: _MyUpcomingRacesExpandableCard(profileId: profileId),
+        ),
+        SizedBox(height: 12.h),
+      ],
+    );
+  }
+}
+
+class _MyUpcomingRacesExpandableCard extends ConsumerStatefulWidget {
+  final int profileId;
+
+  const _MyUpcomingRacesExpandableCard({required this.profileId});
+
+  @override
+  ConsumerState<_MyUpcomingRacesExpandableCard> createState() =>
+      _MyUpcomingRacesExpandableCardState();
+}
+
+class _MyUpcomingRacesExpandableCardState
+    extends ConsumerState<_MyUpcomingRacesExpandableCard> {
+  bool _isExpanded = false;
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+  double _pageWidth = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_pageWidth > 0) {
+        final page = (_scrollController.offset / _pageWidth).round();
+        if (page != _currentPage) {
+          setState(() => _currentPage = page);
+        }
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref
+            .read(myDashboardUpcomingRacesProvider.notifier)
+            .loadUpcomingRacesFirstPage(
+              userProfileId: widget.profileId,
+              onlyFuture: true,
+            );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  List<List<UpcomingRace>> _groupRaces(List<dynamic> races) {
+    final Map<String, List<UpcomingRace>> grouped = {};
+    for (final race in races) {
+      final r = race as UpcomingRace;
+      final key = '${r.raceType}|${r.location}|${r.raceDate}';
+      grouped.putIfAbsent(key, () => []).add(r);
+    }
+    return grouped.values.toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final state = ref.watch(myDashboardUpcomingRacesProvider);
+    final groupedRaces = _groupRaces(state.races);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        side: BorderSide.none,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          // Header
+          InkWell(
+            onTap: () => setState(() => _isExpanded = !_isExpanded),
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Row(
+                children: [
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedCalendar03,
+                    color: theme.colorScheme.primary,
+                    size: 32.r,
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: Text(
+                      localizations.my_races_title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  if (state.isLoading && state.races.isEmpty)
+                    SizedBox(
+                      width: 20.r,
+                      height: 20.r,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else if (groupedRaces.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Text(
+                        '${groupedRaces.length}',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  SizedBox(width: 8.w),
+                  AnimatedRotation(
+                    turns: _isExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      _isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: theme.colorScheme.onSurface,
+                      size: 24.r,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Expanded content
+          if (_isExpanded)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: Column(
+                children: [
+                  const Divider(height: 1),
+                  if (state.isLoading && state.races.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.all(16.r),
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
+                  else if (groupedRaces.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.all(24.r),
+                      child: Text(
+                        localizations.my_races_no_races,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    )
+                  else
+                    Column(
+                      children: [
+                        SizedBox(height: 12.h),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            _pageWidth = constraints.maxWidth;
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: _scrollController,
+                              physics: const PageScrollPhysics(),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  for (int i = 0; i < groupedRaces.length; i++)
+                                    SizedBox(
+                                      width: _pageWidth,
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                        child: GroupedUpcomingRaceCard(
+                                          races: groupedRaces[i],
+                                          showAthletes: false,
+                                          showBorder: true,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        if (groupedRaces.length > 1) ...[
+                          SizedBox(height: 12.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              groupedRaces.length,
+                              (index) => AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                margin: EdgeInsets.symmetric(horizontal: 3.w),
+                                width: _currentPage == index ? 16.w : 6.w,
+                                height: 6.h,
+                                decoration: BoxDecoration(
+                                  color: _currentPage == index
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(3.r),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                        SizedBox(height: 16.h),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Personal Bests ───────────────────────────────────────────────────────────
 
 class _PersonalBestsExpandableCard extends ConsumerStatefulWidget {
   final int? profileId;

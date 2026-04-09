@@ -16,10 +16,14 @@ import '../utils/image_url_helper.dart';
 /// По тапу на блок атлетов открывает боттомшит со списком.
 class GroupedUpcomingRaceCard extends StatelessWidget {
   final List<UpcomingRace> races;
+  final bool showAthletes;
+  final bool showBorder;
 
   const GroupedUpcomingRaceCard({
     super.key,
     required this.races,
+    this.showAthletes = true,
+    this.showBorder = false,
   });
 
   UpcomingRace get _race => races.first;
@@ -233,7 +237,9 @@ class GroupedUpcomingRaceCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
-        side: BorderSide.none,
+        side: showBorder
+            ? BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.4), width: 1)
+            : BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
@@ -319,7 +325,7 @@ class GroupedUpcomingRaceCard extends StatelessWidget {
               ],
             ),
             // Блок атлетов
-            if (athletes.isNotEmpty) ...[
+            if (showAthletes && athletes.isNotEmpty) ...[
               SizedBox(height: 12.h),
               const Divider(),
               SizedBox(height: 8.h),

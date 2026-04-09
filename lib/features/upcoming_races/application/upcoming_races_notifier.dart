@@ -31,6 +31,12 @@ final dashboardUpcomingRacesProvider =
       return UpcomingRacesNotifier();
     });
 
+// Провайдер для блока "Мои гонки" на Dashboard (гонки текущего пользователя)
+final myDashboardUpcomingRacesProvider =
+    StateNotifierProvider<UpcomingRacesNotifier, UpcomingRacesState>((ref) {
+      return UpcomingRacesNotifier();
+    });
+
 // Оставляем старый провайдер для обратной совместимости (будет удален после обновления всех мест)
 @Deprecated(
   'Используйте globalUpcomingRacesProvider, athleteUpcomingRacesProvider или myRacesProvider',
