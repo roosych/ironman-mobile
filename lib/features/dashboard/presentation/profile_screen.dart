@@ -100,42 +100,47 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                      onTap: (avatarState.isLoading || authState.isLoading)
-                          ? null
-                          : () {
-                              ref
-                                  .read(profileAvatarProvider.notifier)
-                                  .pickAndUploadAvatar();
-                            },
-                      child: Stack(
-                        children: [
-                          UserAvatarWidget(
-                            url: avatarUrl,
-                            radius: 50,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: EdgeInsets.all(6.r),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  width: 2,
-                                ),
-                              ),
-                              child: HugeIcon(
-                                icon: HugeIcons.strokeRoundedCamera01,
-                                size: 16.r,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    // временно отключена загрузка аватара
+                    // GestureDetector(
+                    //   onTap: (avatarState.isLoading || authState.isLoading)
+                    //       ? null
+                    //       : () {
+                    //           ref
+                    //               .read(profileAvatarProvider.notifier)
+                    //               .pickAndUploadAvatar();
+                    //         },
+                    //   child: Stack(
+                    //     children: [
+                    //       UserAvatarWidget(
+                    //         url: avatarUrl,
+                    //         radius: 50,
+                    //       ),
+                    //       Positioned(
+                    //         bottom: 0,
+                    //         right: 0,
+                    //         child: Container(
+                    //           padding: EdgeInsets.all(6.r),
+                    //           decoration: BoxDecoration(
+                    //             color: Theme.of(context).colorScheme.primary,
+                    //             shape: BoxShape.circle,
+                    //             border: Border.all(
+                    //               color: Theme.of(context).colorScheme.surface,
+                    //               width: 2,
+                    //             ),
+                    //           ),
+                    //           child: HugeIcon(
+                    //             icon: HugeIcons.strokeRoundedCamera01,
+                    //             size: 16.r,
+                    //             color: Colors.white,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    UserAvatarWidget(
+                      url: avatarUrl,
+                      radius: 50,
                     ),
                     SizedBox(height: 16.h),
                     Center(

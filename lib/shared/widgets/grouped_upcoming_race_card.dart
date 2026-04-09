@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import '../../features/upcoming_races/domain/upcoming_race.dart';
+import '../../features/dashboard/domain/athlete.dart';
+import '../../features/dashboard/presentation/athlete_profile_screen.dart';
 import '../utils/image_url_helper.dart';
 
 /// Карточка гонки с поддержкой нескольких атлетов.
@@ -506,7 +508,24 @@ class _AthletesBottomSheet extends StatelessWidget {
                     final athlete = athletes[index];
                     return InkWell(
                       borderRadius: BorderRadius.circular(12.r),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => AthleteProfileScreen(
+                              athlete: Athlete(
+                                id: athlete.id,
+                                name: athlete.name,
+                                avatar: athlete.avatar,
+                                raceCounts: RaceCounts(
+                                  ironman: 0,
+                                  ironman703: 0,
+                                  race5150: 0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                       child: Card(
                         margin: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
