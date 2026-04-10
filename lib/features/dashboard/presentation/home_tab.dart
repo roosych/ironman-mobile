@@ -762,6 +762,7 @@ class _MyResultsExpandableCardState
                             widget.totalRaces!.toString(),
                             style: theme.textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
+                              height: 1.0,
                             ),
                           )
                         else
