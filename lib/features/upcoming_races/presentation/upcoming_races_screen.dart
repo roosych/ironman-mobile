@@ -107,7 +107,9 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
       ),
-      floatingActionButton: Container(
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(right: 8.w),
+        child: Container(
         width: 56.r,
         height: 56.r,
         decoration: BoxDecoration(
@@ -143,6 +145,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
               ),
             ),
           ),
+        ),
         ),
       ),
       body: _buildBody(state, localizations),

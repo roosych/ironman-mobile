@@ -158,31 +158,34 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
         ),
       ),
-      floatingActionButton: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.primaryGradientStart, AppColors.primaryGradientEnd],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.primaryGradientStart, AppColors.primaryGradientEnd],
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => showRaceSelectionBottomSheet(context),
-            borderRadius: BorderRadius.circular(28),
-            child: const Center(
-              child: Icon(Icons.add, color: Colors.white, size: 24),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryGradientShadow.withValues(alpha: 0.35),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => showRaceSelectionBottomSheet(context),
+              borderRadius: BorderRadius.circular(28),
+              child: const Center(
+                child: Icon(Icons.add, color: Colors.white, size: 24),
+              ),
             ),
           ),
         ),
