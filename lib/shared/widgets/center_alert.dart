@@ -115,12 +115,12 @@ class CenterAlert extends StatelessWidget {
     final buttonColor = _getButtonColor(context);
 
     return Dialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: BoxConstraints(maxWidth: 320.w),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16.r),

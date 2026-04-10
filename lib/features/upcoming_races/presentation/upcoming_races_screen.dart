@@ -21,27 +21,17 @@ class UpcomingRacesScreen extends ConsumerStatefulWidget {
       _UpcomingRacesScreenState();
 }
 
-class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
-    with SingleTickerProviderStateMixin {
+class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
   String? _lastShownError;
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadAllRaces();
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   void _loadAllRaces() {
@@ -73,6 +63,15 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       // ignore: use_build_context_synchronously
       ErrorHandler.showError(context, error);
     });
+  }
+
+  List<List<UpcomingRace>> _groupRaces(List<UpcomingRace> races) {
+    final Map<String, List<UpcomingRace>> grouped = {};
+    for (final race in races) {
+      final key = '${race.raceType}|${race.location}|${race.raceDate}';
+      grouped.putIfAbsent(key, () => []).add(race);
+    }
+    return grouped.values.toList();
   }
 
   @override
@@ -144,131 +143,11 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
           ),
         ),
       ),
-      body: Column(
-        children: [
-          // TabBar
-          Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
-            child: ListenableBuilder(
-              listenable: _tabController,
-              builder: (context, _) {
-                final tabs = [
-                  localizations.events_tab_active,
-                  localizations.events_tab_past,
-                ];
-                return Row(
-                  children: List.generate(2, (i) {
-                    final isSelected = _tabController.index == i;
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        child: GestureDetector(
-                          onTap: () => _tabController.animateTo(i),
-                          child: Container(
-                            decoration: isSelected
-                                ? BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        AppColors.primaryGradientStart,
-                                        AppColors.primaryGradientEnd,
-                                      ],
-                                    ),
-                                  )
-                                : BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    color: theme.colorScheme.outlineVariant,
-                                  ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.h),
-                              child: Center(
-                                child: Text(
-                                  tabs[i],
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              },
-            ),
-          ),
-          // TabBarView
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildActiveRacesTab(state, localizations),
-                _buildPastRacesTab(state, localizations),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _buildBody(state, localizations),
     );
   }
 
-  List<UpcomingRace> _getActiveRaces(List<UpcomingRace> races) {
-    final now = DateTime.now();
-    return races.where((race) {
-      try {
-        final raceDate = DateTime.parse(race.raceDate);
-        return raceDate.isAfter(now) || _isSameDay(raceDate, now);
-      } catch (e) {
-        return false;
-      }
-    }).toList();
-  }
-
-  List<UpcomingRace> _getPastRaces(List<UpcomingRace> races) {
-    final now = DateTime.now();
-    return races.where((race) {
-      try {
-        final raceDate = DateTime.parse(race.raceDate);
-        return raceDate.isBefore(now) && !_isSameDay(raceDate, now);
-      } catch (e) {
-        return false;
-      }
-    }).toList()
-      ..sort((a, b) {
-        try {
-          final dateA = DateTime.parse(a.raceDate);
-          final dateB = DateTime.parse(b.raceDate);
-          return dateB.compareTo(dateA);
-        } catch (e) {
-          return 0;
-        }
-      });
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  List<List<UpcomingRace>> _groupRaces(List<UpcomingRace> races) {
-    final Map<String, List<UpcomingRace>> grouped = {};
-    for (final race in races) {
-      final key = '${race.raceType}|${race.location}|${race.raceDate}';
-      grouped.putIfAbsent(key, () => []).add(race);
-    }
-    return grouped.values.toList();
-  }
-
-  Widget _buildActiveRacesTab(UpcomingRacesState state, AppLocalizations localizations) {
+  Widget _buildBody(UpcomingRacesState state, AppLocalizations localizations) {
     if (state.isLoading && state.races.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -277,65 +156,12 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen>
       return _buildErrorState(localizations, _loadAllRaces);
     }
 
-    final grouped = _groupRaces(_getActiveRaces(state.races));
+    final grouped = _groupRaces(state.races);
 
     if (grouped.isEmpty) {
       return Center(
         child: Text(
           localizations.home_no_upcoming_races,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _refreshAllRaces,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
-            if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) _loadNextPage();
-              });
-            }
-          }
-          return false;
-        },
-        child: ListView.builder(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
-          itemCount: grouped.length + (state.isLoadingMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == grouped.length) {
-              return Padding(
-                padding: EdgeInsets.all(16.r),
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            }
-            return Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: GroupedUpcomingRaceCard(races: grouped[index]),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPastRacesTab(UpcomingRacesState state, AppLocalizations localizations) {
-    if (state.isLoading && state.races.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (state.hasError && state.races.isEmpty) {
-      return _buildErrorState(localizations, _loadAllRaces);
-    }
-
-    final grouped = _groupRaces(_getPastRaces(state.races));
-
-    if (grouped.isEmpty) {
-      return Center(
-        child: Text(
-          localizations.events_no_past_races,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       );

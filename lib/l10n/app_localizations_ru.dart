@@ -798,6 +798,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get upcoming_completed => 'ЗАВЕРШЕНО';
 
   @override
+  String get upcoming_participated => 'Финишировал';
+
+  @override
+  String get upcoming_did_not_participate => 'Нет, удалить';
+
+  @override
+  String get upcoming_finished_confirm_title => 'Финишировал?';
+
+  @override
+  String get upcoming_finished_confirm_body =>
+      'Хочешь добавить результат для этой гонки?';
+
+  @override
+  String get upcoming_finished_yes => 'Да';
+
+  @override
+  String get upcoming_finished_no => 'Нет';
+
+  @override
+  String get upcoming_delete_confirm_title => 'Удалить гонку?';
+
+  @override
+  String get upcoming_delete_confirm_body =>
+      'Гонка будет удалена из твоего списка. Это действие нельзя отменить.';
+
+  @override
+  String get upcoming_delete_confirm_button => 'Удалить';
+
+  @override
   String get upcoming_day_label => 'ДЕНЬ';
 
   @override

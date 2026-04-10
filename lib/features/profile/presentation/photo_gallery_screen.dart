@@ -36,6 +36,7 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -128,6 +129,7 @@ class _PhotoGalleryScreenState extends ConsumerState<PhotoGalleryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),

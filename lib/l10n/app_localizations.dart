@@ -1588,6 +1588,60 @@ abstract class AppLocalizations {
   /// **'COMPLETED'**
   String get upcoming_completed;
 
+  /// No description provided for @upcoming_participated.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get upcoming_participated;
+
+  /// No description provided for @upcoming_did_not_participate.
+  ///
+  /// In en, this message translates to:
+  /// **'No, remove'**
+  String get upcoming_did_not_participate;
+
+  /// No description provided for @upcoming_finished_confirm_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you finish?'**
+  String get upcoming_finished_confirm_title;
+
+  /// No description provided for @upcoming_finished_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to add a result for this race?'**
+  String get upcoming_finished_confirm_body;
+
+  /// No description provided for @upcoming_finished_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get upcoming_finished_yes;
+
+  /// No description provided for @upcoming_finished_no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get upcoming_finished_no;
+
+  /// No description provided for @upcoming_delete_confirm_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove race?'**
+  String get upcoming_delete_confirm_title;
+
+  /// No description provided for @upcoming_delete_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'The race will be removed from your list. This action cannot be undone.'**
+  String get upcoming_delete_confirm_body;
+
+  /// No description provided for @upcoming_delete_confirm_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get upcoming_delete_confirm_button;
+
   /// No description provided for @upcoming_day_label.
   ///
   /// In en, this message translates to:

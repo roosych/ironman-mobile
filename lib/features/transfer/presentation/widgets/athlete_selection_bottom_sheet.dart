@@ -111,6 +111,7 @@ class _AthleteSelectionBottomSheetState
     return await showDialog<bool>(
           context: context,
           builder: (context) => Dialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.r),
             ),
@@ -209,6 +210,7 @@ class _AthleteSelectionBottomSheetState
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         content: Column(
           mainAxisSize: MainAxisSize.min,

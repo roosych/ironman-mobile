@@ -191,6 +191,53 @@ class UpcomingRacesApi {
     }
   }
 
+  /// Удалить предстоящую гонку по ID
+  Future<void> deleteUpcomingRace({required int id}) async {
+    try {
+      await _client.delete<Map<String, dynamic>>('/races/upcoming/$id');
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.timeout,
+        );
+      }
+      if (e.type == DioExceptionType.connectionError) {
+        throw const UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.networkNoConnection,
+        );
+      }
+      if (e.response != null) {
+        final statusCode = e.response!.statusCode;
+        final errorData = e.response!.data;
+        if (errorData is Map && errorData['message'] != null) {
+          throw UpcomingRacesApiException(
+            localizationKey: ApiErrorKeys.generic,
+            parameters: {'message': errorData['message'] as String},
+            originalMessage: errorData['message'] as String,
+          );
+        }
+        throw UpcomingRacesApiException(
+          localizationKey: ApiErrorKeys.httpStatus,
+          parameters: {'status': statusCode ?? 0},
+          originalMessage: 'HTTP $statusCode',
+        );
+      }
+      throw UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.generic,
+        parameters: {'message': e.message ?? 'Unknown error'},
+        originalMessage: e.message ?? 'Unknown error',
+      );
+    } catch (e) {
+      if (e is UpcomingRacesApiException) rethrow;
+      throw UpcomingRacesApiException(
+        localizationKey: ApiErrorKeys.unexpected,
+        parameters: {'error': e.toString()},
+        originalMessage: e.toString(),
+      );
+    }
+  }
+
   /// Создать новую предстоящую гонку
   ///
   /// [raceId] - ID гонки из таблицы races

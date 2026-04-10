@@ -797,6 +797,35 @@ class AppLocalizationsAz extends AppLocalizations {
   String get upcoming_completed => 'TAMAMLANIB';
 
   @override
+  String get upcoming_participated => 'Finişlədim';
+
+  @override
+  String get upcoming_did_not_participate => 'Xeyr, sil';
+
+  @override
+  String get upcoming_finished_confirm_title => 'Finişlədınizmi?';
+
+  @override
+  String get upcoming_finished_confirm_body =>
+      'Bu yarış üçün nəticə əlavə etmək istəyirsiniz?';
+
+  @override
+  String get upcoming_finished_yes => 'Bəli';
+
+  @override
+  String get upcoming_finished_no => 'Xeyr';
+
+  @override
+  String get upcoming_delete_confirm_title => 'Yarışı silinsin?';
+
+  @override
+  String get upcoming_delete_confirm_body =>
+      'Yarış siyahınızdan silinəcək. Bu əməliyyat geri alına bilməz.';
+
+  @override
+  String get upcoming_delete_confirm_button => 'Sil';
+
+  @override
   String get upcoming_day_label => 'GÜN';
 
   @override

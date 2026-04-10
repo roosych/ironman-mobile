@@ -208,9 +208,17 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 
   Future<void> _refreshUpcomingRaces() async {
     try {
-      await ref.read(dashboardUpcomingRacesProvider.notifier).refreshUpcomingRaces(
-        onlyFuture: true,
-      );
+      final profileId = ref.read(authProvider).user?.profile?.id;
+      await Future.wait([
+        ref.read(dashboardUpcomingRacesProvider.notifier).refreshUpcomingRaces(
+          onlyFuture: true,
+        ),
+        if (profileId != null)
+          ref.read(myDashboardUpcomingRacesProvider.notifier).refreshUpcomingRaces(
+            userProfileId: profileId,
+            onlyFuture: true,
+          ),
+      ]);
     } catch (e) {
       debugPrint('HomeTab: Error refreshing upcoming races: $e');
     }
@@ -1261,19 +1269,41 @@ class _UpcomingRacesSectionState extends ConsumerState<_UpcomingRacesSection> {
 
 // ─── Мои предстоящие гонки ────────────────────────────────────────────────────
 
-class _MyUpcomingRacesExpandableSection extends ConsumerWidget {
+class _MyUpcomingRacesExpandableSection extends ConsumerStatefulWidget {
   final int profileId;
   const _MyUpcomingRacesExpandableSection({required this.profileId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MyUpcomingRacesExpandableSection> createState() =>
+      _MyUpcomingRacesExpandableSectionState();
+}
+
+class _MyUpcomingRacesExpandableSectionState
+    extends ConsumerState<_MyUpcomingRacesExpandableSection> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref
+            .read(myDashboardUpcomingRacesProvider.notifier)
+            .loadUpcomingRacesFirstPage(
+              userProfileId: widget.profileId,
+              onlyFuture: true,
+            );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(myDashboardUpcomingRacesProvider);
     if (!state.isLoading && state.races.isEmpty) return const SizedBox.shrink();
     return Column(
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: _MyUpcomingRacesExpandableCard(profileId: profileId),
+          child: _MyUpcomingRacesExpandableCard(profileId: widget.profileId),
         ),
         SizedBox(height: 12.h),
       ],
@@ -1307,16 +1337,6 @@ class _MyUpcomingRacesExpandableCardState
         if (page != _currentPage) {
           setState(() => _currentPage = page);
         }
-      }
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref
-            .read(myDashboardUpcomingRacesProvider.notifier)
-            .loadUpcomingRacesFirstPage(
-              userProfileId: widget.profileId,
-              onlyFuture: true,
-            );
       }
     });
   }

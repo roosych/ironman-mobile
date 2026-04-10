@@ -603,6 +603,7 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
                           context: context,
                           builder: (BuildContext context) {
                             return Dialog(
+                              insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.r),
                               ),

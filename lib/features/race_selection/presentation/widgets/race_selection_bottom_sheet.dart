@@ -13,9 +13,21 @@ import '../../providers/race_selection_providers.dart';
 import '../../models/race_model.dart';
 import '../../application/race_selection_state.dart';
 
-/// BottomSheet для выбора гонки из списка доступных гонок
+/// BottomSheet для выбора гонки из списка доступных гонок.
+///
+/// Если [onRaceSelected] передан — при выборе гонки вызывает колбэк и закрывается
+/// (режим "пик-режим", без создания апкаминг гонки).
+/// Если [onRaceSelected] == null — стандартное поведение: создаёт апкаминг гонку.
 class RaceSelectionBottomSheet extends ConsumerStatefulWidget {
-  const RaceSelectionBottomSheet({super.key});
+  final ValueChanged<RaceModel>? onRaceSelected;
+  /// Если true — показывать только гонки с датой в прошлом
+  final bool onlyPast;
+
+  const RaceSelectionBottomSheet({
+    super.key,
+    this.onRaceSelected,
+    this.onlyPast = false,
+  });
 
   @override
   ConsumerState<RaceSelectionBottomSheet> createState() =>
@@ -54,11 +66,18 @@ class _RaceSelectionBottomSheetState
     });
   }
 
-  /// Обработка выбора гонки с подтверждением
+  /// Обработка выбора гонки
   Future<void> _onRaceSelected(RaceModel race) async {
+    // Пик-режим: просто возвращаем гонку через колбэк
+    if (widget.onRaceSelected != null) {
+      Navigator.of(context).pop();
+      widget.onRaceSelected!(race);
+      return;
+    }
+
+    // Стандартный режим: создаём апкаминг гонку
     if (_isSaving) return;
 
-    // Показываем диалог подтверждения
     final confirmed = await _showConfirmationDialog(race);
     if (!confirmed) return;
 
@@ -67,12 +86,10 @@ class _RaceSelectionBottomSheetState
     });
 
     try {
-      // Создаем UpcomingRace используя новый API формат
       await ref.read(globalUpcomingRacesProvider.notifier).createUpcomingRaceFromId(
         raceId: race.id,
       );
 
-      // Обновляем список гонок после успешного создания
       if (mounted) {
         await ref
             .read(globalUpcomingRacesProvider.notifier)
@@ -81,13 +98,11 @@ class _RaceSelectionBottomSheetState
 
       if (!mounted) return;
 
-      // Сохраняем контекст перед использованием
       final navigator = Navigator.of(context);
       final localizations = AppLocalizations.of(context)!;
 
       navigator.pop();
 
-      // Показываем сообщение об успехе
       AlertHelper.showSuccess(context, localizations.race_selection_success);
     } catch (e) {
       if (!mounted) return;
@@ -108,6 +123,7 @@ class _RaceSelectionBottomSheetState
     return await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -356,6 +372,22 @@ class _RaceSelectionBottomSheetState
       return _buildEmptyState(localizations, theme);
     }
 
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final races = widget.onlyPast
+        ? state.races.where((r) {
+            try {
+              return DateTime.parse(r.date).isBefore(today);
+            } catch (_) {
+              return false;
+            }
+          }).toList()
+        : state.races;
+
+    if (races.isEmpty) {
+      return _buildEmptyState(localizations, theme);
+    }
+
     return ListView.separated(
       controller: scrollController,
       padding: EdgeInsets.only(
@@ -363,10 +395,10 @@ class _RaceSelectionBottomSheetState
         right: 20.w,
         bottom: bottomPadding + 16.h + (state.isRaceSelected ? 100.h : 0.0),
       ),
-      itemCount: state.races.length,
+      itemCount: races.length,
       separatorBuilder: (context, index) => SizedBox(height: 8.h),
       itemBuilder: (context, index) {
-        final race = state.races[index];
+        final race = races[index];
         final isSelected = state.selectedRace?.id == race.id;
 
         return _buildRaceCard(race, isSelected, theme);
@@ -502,7 +534,9 @@ class _RaceSelectionBottomSheetState
     return SizedBox(
       width: double.infinity,
       child: AppButtonStyles.gradientElevatedButton(
-        text: localizations.race_selection_save,
+        text: widget.onRaceSelected != null
+            ? localizations.common_confirm
+            : localizations.race_selection_save,
         onPressed: () => _onRaceSelected(state.selectedRace!),
         textStyle: TextStyle(
           fontSize: 16.sp,
@@ -573,12 +607,29 @@ class _RaceSelectionBottomSheetState
   }
 }
 
-/// Helper функция для показа BottomSheet
+/// Helper функция для показа BottomSheet (стандартный режим — добавление апкаминг гонки)
 void showRaceSelectionBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => const RaceSelectionBottomSheet(),
+  );
+}
+
+/// Helper функция для показа BottomSheet в пик-режиме — просто возвращает выбранную гонку.
+/// [onlyPast] — если true, показывать только прошедшие гонки (для добавления результата).
+Future<RaceModel?> showRacePickerBottomSheet(
+  BuildContext context, {
+  bool onlyPast = false,
+}) {
+  return showModalBottomSheet<RaceModel>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => RaceSelectionBottomSheet(
+      onlyPast: onlyPast,
+      onRaceSelected: (race) => Navigator.of(context).pop(race),
+    ),
   );
 }

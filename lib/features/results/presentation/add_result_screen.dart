@@ -7,12 +7,22 @@ import 'package:intl/intl.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import 'package:ironman_mobile/core/theme/app_button_styles.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
+import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
 import '../../../shared/utils/alert_helper.dart';
 import '../infrastructure/race_results_api.dart';
 import '../../settings/application/locale_notifier.dart';
 
 class AddResultScreen extends ConsumerStatefulWidget {
-  const AddResultScreen({super.key});
+  final DateTime? initialDate;
+  final String? initialLocation;
+  final String? initialRaceType;
+
+  const AddResultScreen({
+    super.key,
+    this.initialDate,
+    this.initialLocation,
+    this.initialRaceType,
+  });
 
   @override
   ConsumerState<AddResultScreen> createState() => _AddResultScreenState();
@@ -23,18 +33,13 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   final _locationController = TextEditingController();
   final _scrollController = ScrollController();
 
-  // FocusNodes для управления фокусом
-  late final FocusNode _locationFocusNode;
-
   DateTime? _selectedDate;
   String? _selectedRaceType;
   bool _isSaving = false;
 
-  // Переменные для отслеживания валидации
   bool _showDateValidation = false;
   bool _showTotalTimeValidation = false;
 
-  // Duration переменные для времени
   Duration _totalTime = Duration.zero;
   Duration _swimTime = Duration.zero;
   Duration _t1Time = Duration.zero;
@@ -45,16 +50,32 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
   @override
   void initState() {
     super.initState();
-    // Инициализируем FocusNodes
-    _locationFocusNode = FocusNode();
+    _selectedDate = widget.initialDate;
+    _selectedRaceType = widget.initialRaceType;
+    if (widget.initialLocation != null) {
+      _locationController.text = widget.initialLocation!;
+    }
   }
 
   @override
   void dispose() {
     _locationController.dispose();
     _scrollController.dispose();
-    _locationFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _openRacePicker() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final race = await showRacePickerBottomSheet(context, onlyPast: true);
+    if (race == null || !mounted) return;
+    setState(() {
+      _locationController.text = race.location;
+      _selectedRaceType = race.type;
+      try {
+        _selectedDate = DateTime.parse(race.date);
+        _showDateValidation = false;
+      } catch (_) {}
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -211,11 +232,11 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
 
             SizedBox(height: 16.h),
 
-            // Location field with icon
+            // Location field — tap opens race picker bottom sheet
             TextFormField(
               controller: _locationController,
-              focusNode: _locationFocusNode,
-              textInputAction: TextInputAction.next,
+              readOnly: true,
+              onTap: _openRacePicker,
               decoration: InputDecoration(
                 labelText: localizations.add_result_location,
                 hintText: localizations.add_result_location_hint,
@@ -227,19 +248,18 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   size: 20.r,
                 ),
+                suffixIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSearch01,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  size: 20.r,
+                ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.error,
-                    width: 1,
-                  ),
+                  borderSide: BorderSide(color: theme.colorScheme.error, width: 1),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.error,
-                    width: 1,
-                  ),
+                  borderSide: BorderSide(color: theme.colorScheme.error, width: 1),
                 ),
               ),
               validator: (value) {
@@ -299,6 +319,7 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
 
             // Race type dropdown with icon
             DropdownButtonFormField<String>(
+              key: ValueKey(_selectedRaceType),
               initialValue: _selectedRaceType,
               decoration: InputDecoration(
                 labelText: localizations.add_result_race_type,

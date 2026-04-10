@@ -6,6 +6,7 @@ import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/shared/utils/error_handler.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/features/race_selection/presentation/widgets/race_selection_bottom_sheet.dart';
+import 'package:ironman_mobile/features/results/presentation/add_result_screen.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../domain/upcoming_race.dart';
 import '../application/upcoming_races_notifier.dart';
@@ -30,7 +31,6 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // Загружаем все гонки (будущие и прошедшие) после построения виджета
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadMyRaces();
@@ -44,46 +44,41 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     super.dispose();
   }
 
-  void _loadMyRaces() {
-    final authState = ref.read(authProvider);
-    final user = authState.user;
-    final userProfileId = user?.profile?.id;
+  int? get _userProfileId => ref.read(authProvider).user?.profile?.id;
 
-    // Если профиль не найден — очищаем список и выходим
-    if (userProfileId == null) {
+  void _loadMyRaces() {
+    final profileId = _userProfileId;
+    if (profileId == null) {
       ref.read(myRacesProvider.notifier).setEmpty();
       return;
     }
-
-    // Используем отдельный провайдер для "Мои гонки"
-    ref
-        .read(myRacesProvider.notifier)
-        .loadUpcomingRaces(
-          userProfileId: userProfileId,
-          onlyFuture: false, // Все гонки, включая прошедшие
-        );
+    ref.read(myRacesProvider.notifier).loadUpcomingRaces(
+      userProfileId: profileId,
+      onlyFuture: false,
+    );
   }
 
   Future<void> _refreshMyRaces() async {
-    try {
-      final authState = ref.read(authProvider);
-      final user = authState.user;
-      final userProfileId = user?.profile?.id;
-
-      if (userProfileId == null) {
-        ref.read(myRacesProvider.notifier).setEmpty();
-        return;
-      }
-
-      await ref
-          .read(myRacesProvider.notifier)
-          .refreshUpcomingRaces(
-            userProfileId: userProfileId,
-            onlyFuture: false, // Все гонки, включая прошедшие
-          );
-    } catch (e) {
-      // Ошибка уже обработана в провайдере, алерт покажется через listener
+    final profileId = _userProfileId;
+    if (profileId == null) {
+      ref.read(myRacesProvider.notifier).setEmpty();
+      return;
     }
+    try {
+      await ref.read(myRacesProvider.notifier).refreshUpcomingRaces(
+        userProfileId: profileId,
+        onlyFuture: false,
+      );
+    } catch (_) {}
+  }
+
+  void _loadNextPage() {
+    final profileId = _userProfileId;
+    if (profileId == null) return;
+    ref.read(myRacesProvider.notifier).loadNextPage(
+      userProfileId: profileId,
+      onlyFuture: false,
+    );
   }
 
   void _showErrorSafely(dynamic error, BuildContext context) {
@@ -101,7 +96,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
       try {
         final raceDate = DateTime.parse(race.raceDate);
         return raceDate.isAfter(now) || _isSameDay(raceDate, now);
-      } catch (e) {
+      } catch (_) {
         return false;
       }
     }).toList();
@@ -113,26 +108,21 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
       try {
         final raceDate = DateTime.parse(race.raceDate);
         return raceDate.isBefore(now) && !_isSameDay(raceDate, now);
-      } catch (e) {
+      } catch (_) {
         return false;
       }
     }).toList()
       ..sort((a, b) {
         try {
-          final dateA = DateTime.parse(a.raceDate);
-          final dateB = DateTime.parse(b.raceDate);
-          return dateB.compareTo(dateA); // Сортировка по убыванию даты
-        } catch (e) {
+          return DateTime.parse(b.raceDate).compareTo(DateTime.parse(a.raceDate));
+        } catch (_) {
           return 0;
         }
       });
   }
 
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +130,6 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // Слушаем ошибки
     ref.listen<UpcomingRacesState>(myRacesProvider, (previous, next) {
       if (!mounted) return;
       if (next.hasError && next.error != null) {
@@ -158,7 +147,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
         leading: IconButton(
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedArrowLeft01,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: theme.colorScheme.onSurface,
             size: 24,
           ),
           onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
@@ -176,10 +165,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.primaryGradientStart,
-              AppColors.primaryGradientEnd,
-            ],
+            colors: [AppColors.primaryGradientStart, AppColors.primaryGradientEnd],
           ),
           boxShadow: [
             BoxShadow(
@@ -192,16 +178,9 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () {
-              showRaceSelectionBottomSheet(context);
-              // Обновление списка произойдет автоматически через провайдер в BottomSheet
-            },
+            onTap: () => showRaceSelectionBottomSheet(context),
             borderRadius: BorderRadius.circular(28),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: const Icon(Icons.add, color: Colors.white, size: 24),
           ),
         ),
       ),
@@ -249,7 +228,9 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
                                   tabs[i],
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
                                     color: isSelected
                                         ? Colors.white
                                         : theme.colorScheme.onSurfaceVariant,
@@ -271,8 +252,20 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildActiveRacesTab(state, localizations),
-                _buildPastRacesTab(state, localizations),
+                _buildRacesList(
+                  state: state,
+                  localizations: localizations,
+                  races: _getActiveRaces(state.races),
+                  emptyMessage: localizations.my_races_no_races,
+                  isPastTab: false,
+                ),
+                _buildRacesList(
+                  state: state,
+                  localizations: localizations,
+                  races: _getPastRaces(state.races),
+                  emptyMessage: localizations.events_no_past_races,
+                  isPastTab: true,
+                ),
               ],
             ),
           ),
@@ -281,42 +274,166 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     );
   }
 
-  Widget _buildActiveRacesTab(UpcomingRacesState state, AppLocalizations localizations) {
-    if (state.isLoading && state.races.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  void _navigateToAddResult(UpcomingRace race) {
+    DateTime? raceDate;
+    try {
+      raceDate = DateTime.parse(race.raceDate);
+    } catch (_) {}
 
-    if (state.hasError && state.races.isEmpty) {
-      return _buildErrorState(localizations, _loadMyRaces);
-    }
-
-    final activeRaces = _getActiveRaces(state.races);
-
-    if (activeRaces.isEmpty) {
-      return Center(
-        child: Text(
-          localizations.my_races_no_races,
-          style: Theme.of(context).textTheme.bodyLarge,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AddResultScreen(
+          initialDate: raceDate,
+          initialLocation: race.location,
+          initialRaceType: race.raceType,
         ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _refreshMyRaces,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
-        itemCount: activeRaces.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: UpcomingRaceCard(race: activeRaces[index], showAthleteName: false),
-          );
-        },
       ),
     );
   }
 
-  Widget _buildPastRacesTab(UpcomingRacesState state, AppLocalizations localizations) {
+  Future<void> _onDidNotParticipate(UpcomingRace race) async {
+    final confirmed = await _showDeleteConfirmDialog(race);
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref.read(myRacesProvider.notifier).deleteUpcomingRace(id: race.id);
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorSafely(e, context);
+    }
+  }
+
+  Future<bool?> _showDeleteConfirmDialog(UpcomingRace race) {
+    final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Заголовок + крестик
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      localizations.upcoming_delete_confirm_title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22.sp,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: HugeIcon(
+                      icon: HugeIcons.strokeRoundedCancel01,
+                      size: 24.r,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                '${race.raceTypeLabel.toUpperCase()}, ${race.location}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                localizations.upcoming_delete_confirm_body,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              // Кнопки
+              Row(
+                children: [
+                  // Отмена
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                        side: BorderSide(color: theme.colorScheme.outlineVariant),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: Text(
+                        localizations.common_cancel,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  // Удалить (красный градиент)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(ctx).pop(true),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 14.h),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.r),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFFF6F61), Color(0xFFE53935)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFB71C1C).withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            localizations.upcoming_delete_confirm_button,
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRacesList({
+    required UpcomingRacesState state,
+    required AppLocalizations localizations,
+    required List<UpcomingRace> races,
+    required String emptyMessage,
+    required bool isPastTab,
+  }) {
     if (state.isLoading && state.races.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -325,28 +442,47 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
       return _buildErrorState(localizations, _loadMyRaces);
     }
 
-    final pastRaces = _getPastRaces(state.races);
-
-    if (pastRaces.isEmpty) {
+    if (races.isEmpty) {
       return Center(
-        child: Text(
-          localizations.events_no_past_races,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+        child: Text(emptyMessage, style: Theme.of(context).textTheme.bodyLarge),
       );
     }
 
     return RefreshIndicator(
       onRefresh: _refreshMyRaces,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
-        itemCount: pastRaces.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: UpcomingRaceCard(race: pastRaces[index], showAthleteName: false),
-          );
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (scrollInfo.metrics.pixels >=
+              scrollInfo.metrics.maxScrollExtent * 0.8) {
+            if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _loadNextPage();
+              });
+            }
+          }
+          return false;
         },
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          itemCount: races.length + (state.isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == races.length) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            }
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: UpcomingRaceCard(
+                race: races[index],
+                showAthleteName: false,
+                onParticipated: isPastTab ? () => _navigateToAddResult(races[index]) : null,
+                onDidNotParticipate: isPastTab ? () => _onDidNotParticipate(races[index]) : null,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -354,7 +490,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
   Widget _buildErrorState(AppLocalizations localizations, VoidCallback onRetry) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

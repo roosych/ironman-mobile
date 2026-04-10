@@ -4,18 +4,21 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
-import 'package:ironman_mobile/core/theme/app_colors.dart';
 import '../../features/upcoming_races/domain/upcoming_race.dart';
 import '../utils/image_url_helper.dart';
 
 class UpcomingRaceCard extends StatelessWidget {
   final UpcomingRace race;
   final bool showAthleteName;
+  final VoidCallback? onParticipated;
+  final VoidCallback? onDidNotParticipate;
 
   const UpcomingRaceCard({
     super.key,
     required this.race,
     this.showAthleteName = true,
+    this.onParticipated,
+    this.onDidNotParticipate,
   });
 
   Widget _buildDefaultAvatar(ThemeData theme) {
@@ -170,6 +173,33 @@ class UpcomingRaceCard extends StatelessWidget {
                 ),
               ],
             ),
+            // Participation buttons for past races
+            if (isPast && (onParticipated != null || onDidNotParticipate != null)) ...[
+              SizedBox(height: 12.h),
+              const Divider(height: 1),
+              SizedBox(height: 12.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ParticipationButton(
+                      label: localizations.upcoming_participated,
+                      gradientColors: const [
+                        Color(0xFF66BB6A),
+                        Color(0xFF2E7D32),
+                      ],
+                      onTap: onParticipated,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: _ParticipationButton(
+                      label: localizations.upcoming_did_not_participate,
+                      onTap: onDidNotParticipate,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             // Athlete section (if available and showAthleteName is true)
             if (showAthleteName && race.createdBy != null) ...[
               SizedBox(height: 12.h),
@@ -218,3 +248,60 @@ class UpcomingRaceCard extends StatelessWidget {
   }
 }
 
+class _ParticipationButton extends StatelessWidget {
+  final String label;
+  final List<Color>? gradientColors;
+  final VoidCallback? onTap;
+
+  const _ParticipationButton({
+    required this.label,
+    this.gradientColors,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isFilled = gradientColors != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        decoration: isFilled
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(10.r),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: gradientColors!,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: gradientColors!.last.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              )
+            : BoxDecoration(
+                borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(color: theme.colorScheme.outlineVariant),
+              ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+              color: isFilled
+                  ? Colors.white
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+  }
+}

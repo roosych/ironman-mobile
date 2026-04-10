@@ -54,6 +54,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         child: Padding(
           padding: EdgeInsets.all(24.r),

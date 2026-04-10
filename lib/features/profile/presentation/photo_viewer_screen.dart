@@ -53,6 +53,7 @@ class _PhotoViewerScreenState extends ConsumerState<PhotoViewerScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         title: Text(localizations.photo_delete_title),
         content: photo.isAvatar
             ? Text(localizations.photo_delete_avatar_warning)
@@ -107,6 +108,7 @@ class _PhotoViewerScreenState extends ConsumerState<PhotoViewerScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         title: Text(localizations.photo_set_avatar_title),
         content: Text(localizations.photo_set_avatar_description),
         actions: [

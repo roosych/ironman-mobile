@@ -796,6 +796,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get upcoming_completed => 'COMPLETED';
 
   @override
+  String get upcoming_participated => 'Finished';
+
+  @override
+  String get upcoming_did_not_participate => 'No, remove';
+
+  @override
+  String get upcoming_finished_confirm_title => 'Did you finish?';
+
+  @override
+  String get upcoming_finished_confirm_body =>
+      'Would you like to add a result for this race?';
+
+  @override
+  String get upcoming_finished_yes => 'Yes';
+
+  @override
+  String get upcoming_finished_no => 'No';
+
+  @override
+  String get upcoming_delete_confirm_title => 'Remove race?';
+
+  @override
+  String get upcoming_delete_confirm_body =>
+      'The race will be removed from your list. This action cannot be undone.';
+
+  @override
+  String get upcoming_delete_confirm_button => 'Remove';
+
+  @override
   String get upcoming_day_label => 'DAY';
 
   @override

@@ -252,6 +252,23 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
   }
 
   /// Очистить список гонок
+  /// Удалить гонку по ID (используется при "Не участвовал")
+  Future<void> deleteUpcomingRace({required int id}) async {
+    state = state.copyWith(clearError: true);
+    try {
+      await _api.deleteUpcomingRace(id: id);
+      state = state.copyWith(
+        races: state.races.where((r) => r.id != id).toList(),
+      );
+    } on UpcomingRacesApiException catch (e) {
+      state = state.copyWith(error: e.localizationKey);
+      rethrow;
+    } catch (e) {
+      state = state.copyWith(error: 'Произошла ошибка');
+      rethrow;
+    }
+  }
+
   void clearRaces() {
     state = state.copyWith(
       races: const [],
