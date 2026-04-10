@@ -181,7 +181,9 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
           child: InkWell(
             onTap: () => showRaceSelectionBottomSheet(context),
             borderRadius: BorderRadius.circular(28),
-            child: const Icon(Icons.add, color: Colors.white, size: 24),
+            child: const Center(
+              child: Icon(Icons.add, color: Colors.white, size: 24),
+            ),
           ),
         ),
       ),

@@ -135,10 +135,12 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
               showRaceSelectionBottomSheet(context);
             },
             borderRadius: BorderRadius.circular(28.r),
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 24.r,
+            child: Center(
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 24.r,
+              ),
             ),
           ),
         ),
