@@ -26,6 +26,7 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     with SingleTickerProviderStateMixin {
   String? _lastShownError;
   late TabController _tabController;
+  String? _openedItemKey;
 
   @override
   void initState() {
@@ -303,6 +304,19 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
     }
   }
 
+  Future<void> _onDeleteActiveRace(UpcomingRace race) async {
+    setState(() => _openedItemKey = null);
+    final confirmed = await _showDeleteConfirmDialog(race);
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref.read(myRacesProvider.notifier).deleteUpcomingRace(id: race.id);
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorSafely(e, context);
+    }
+  }
+
   Future<bool?> _showDeleteConfirmDialog(UpcomingRace race) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -472,13 +486,39 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
                 child: const Center(child: CircularProgressIndicator()),
               );
             }
+            if (!isPastTab) {
+              final race = races[index];
+              final itemKey = 'race_${race.id}';
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: _SwipeableRaceCard(
+                  itemKey: itemKey,
+                  isOpen: _openedItemKey == itemKey,
+                  onOpenSwipe: (key) {
+                    if (_openedItemKey != key) {
+                      setState(() => _openedItemKey = key);
+                    }
+                  },
+                  onCloseSwipe: () {
+                    if (_openedItemKey != null) {
+                      setState(() => _openedItemKey = null);
+                    }
+                  },
+                  onDelete: () => _onDeleteActiveRace(race),
+                  child: UpcomingRaceCard(
+                    race: race,
+                    showAthleteName: false,
+                  ),
+                ),
+              );
+            }
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: UpcomingRaceCard(
                 race: races[index],
                 showAthleteName: false,
-                onParticipated: isPastTab ? () => _navigateToAddResult(races[index]) : null,
-                onDidNotParticipate: isPastTab ? () => _onDidNotParticipate(races[index]) : null,
+                onParticipated: () => _navigateToAddResult(races[index]),
+                onDidNotParticipate: () => _onDidNotParticipate(races[index]),
               ),
             );
           },
@@ -506,6 +546,150 @@ class _MyRacesScreenState extends ConsumerState<MyRacesScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SwipeableRaceCard extends StatefulWidget {
+  final String itemKey;
+  final bool isOpen;
+  final void Function(String key) onOpenSwipe;
+  final VoidCallback onCloseSwipe;
+  final VoidCallback onDelete;
+  final Widget child;
+
+  const _SwipeableRaceCard({
+    required this.itemKey,
+    required this.isOpen,
+    required this.onOpenSwipe,
+    required this.onCloseSwipe,
+    required this.onDelete,
+    required this.child,
+  });
+
+  @override
+  State<_SwipeableRaceCard> createState() => _SwipeableRaceCardState();
+}
+
+class _SwipeableRaceCardState extends State<_SwipeableRaceCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  double get _offset => _controller.value;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 160),
+      lowerBound: 0,
+      upperBound: 56,
+      value: widget.isOpen ? 56 : 0,
+    )..addListener(() {
+        setState(() {});
+      });
+  }
+
+  @override
+  void didUpdateWidget(covariant _SwipeableRaceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isOpen && _controller.value != 0) {
+      _controller.animateTo(0, duration: const Duration(milliseconds: 120));
+    } else if (widget.isOpen && _controller.value != _controller.upperBound) {
+      _controller.animateTo(
+        _controller.upperBound,
+        duration: const Duration(milliseconds: 120),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _animateTo(double target) {
+    _controller.animateTo(target, duration: const Duration(milliseconds: 160));
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    final delta = details.primaryDelta ?? 0;
+    _controller.value =
+        (_controller.value - delta).clamp(0, _controller.upperBound);
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    final shouldOpen = _controller.value > _controller.upperBound * 0.3;
+    if (shouldOpen) {
+      _animateTo(_controller.upperBound);
+      widget.onOpenSwipe(widget.itemKey);
+    } else {
+      _animateTo(0);
+      widget.onCloseSwipe();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onHorizontalDragUpdate: _onDragUpdate,
+      onHorizontalDragEnd: _onDragEnd,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFE53E3E).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: widget.onDelete,
+                child: Container(
+                  width: 40.r,
+                  height: 40.r,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE53E3E).withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: const Color(0xFFE53E3E),
+                    size: 22.r,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Transform.translate(
+            offset: Offset(-_offset, 0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.shadowColor.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: widget.child,
+            ),
+          ),
+        ],
       ),
     );
   }
