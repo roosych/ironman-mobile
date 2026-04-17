@@ -412,6 +412,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photo_avatar_set_error => 'Failed to set avatar';
 
   @override
+  String get photo_pending_approval => 'Pending';
+
+  @override
   String get photo_add_button => 'Add';
 
   @override

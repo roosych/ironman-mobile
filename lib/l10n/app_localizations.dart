@@ -856,6 +856,12 @@ abstract class AppLocalizations {
   /// **'Failed to set avatar'**
   String get photo_avatar_set_error;
 
+  /// No description provided for @photo_pending_approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get photo_pending_approval;
+
   /// Add photo button text
   ///
   /// In en, this message translates to:

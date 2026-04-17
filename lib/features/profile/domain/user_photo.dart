@@ -3,6 +3,7 @@ class UserPhoto {
   final String url;
   final String filename;
   final bool isAvatar;
+  final bool isApproved;
   final DateTime? createdAt;
 
   const UserPhoto({
@@ -10,6 +11,7 @@ class UserPhoto {
     required this.url,
     required this.filename,
     required this.isAvatar,
+    required this.isApproved,
     this.createdAt,
   });
 
@@ -19,6 +21,7 @@ class UserPhoto {
       url: json['url'] as String,
       filename: json['filename'] as String? ?? '',
       isAvatar: json['is_avatar'] as bool? ?? false,
+      isApproved: json['is_approved'] as bool? ?? true,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -31,6 +34,7 @@ class UserPhoto {
       'url': url,
       'filename': filename,
       'is_avatar': isAvatar,
+      'is_approved': isApproved,
       'created_at': createdAt?.toIso8601String(),
     };
   }
@@ -40,6 +44,7 @@ class UserPhoto {
     String? url,
     String? filename,
     bool? isAvatar,
+    bool? isApproved,
     DateTime? createdAt,
   }) {
     return UserPhoto(
@@ -47,6 +52,7 @@ class UserPhoto {
       url: url ?? this.url,
       filename: filename ?? this.filename,
       isAvatar: isAvatar ?? this.isAvatar,
+      isApproved: isApproved ?? this.isApproved,
       createdAt: createdAt ?? this.createdAt,
     );
   }

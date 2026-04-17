@@ -23,6 +23,7 @@ import 'package:ironman_mobile/features/upcoming_races/application/upcoming_race
 import 'package:ironman_mobile/features/upcoming_races/application/upcoming_races_state.dart';
 import 'package:ironman_mobile/shared/widgets/upcoming_race_card.dart';
 import 'package:ironman_mobile/features/dashboard/application/athlete_photos_notifier.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'athlete_photo_viewer_screen.dart';
 
 class AthleteProfileScreen extends ConsumerStatefulWidget {
@@ -806,6 +807,10 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
     AppLocalizations localizations,
     SocialLinks socialLinks,
   ) {
+    final hasAny = socialLinks.strava != null ||
+        socialLinks.facebook != null ||
+        socialLinks.instagram != null;
+
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -832,76 +837,42 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
             ],
           ),
           SizedBox(height: 16.h),
-          if (socialLinks.strava != null ||
-              socialLinks.facebook != null ||
-              socialLinks.instagram != null) ...[
-            if (socialLinks.strava != null) ...[
-              Row(
-                children: [
-                  Text(
-                    'Strava: ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+          if (hasAny)
+            Row(
+              children: [
+                if (socialLinks.instagram != null)
+                  _SocialIconButton(
+                    value: socialLinks.instagram!,
+                    platform: 'instagram',
+                    icon: HugeIcons.strokeRoundedInstagram,
+                    label: 'Instagram',
+                    color: const Color(0xFFE1306C),
                   ),
-                  Expanded(
-                    child: Text(
-                      socialLinks.strava!,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.ironmanRed,
-                        fontSize: 16.sp,
-                      ),
-                    ),
+                if (socialLinks.instagram != null && socialLinks.facebook != null)
+                  SizedBox(width: 12.w),
+                if (socialLinks.facebook != null)
+                  _SocialIconButton(
+                    value: socialLinks.facebook!,
+                    platform: 'facebook',
+                    icon: HugeIcons.strokeRoundedFacebook01,
+                    label: 'Facebook',
+                    color: const Color(0xFF1877F2),
                   ),
-                ],
-              ),
-            ],
-            if (socialLinks.facebook != null) ...[
-              if (socialLinks.strava != null) SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Text(
-                    'Facebook: ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                if (socialLinks.facebook != null && socialLinks.strava != null)
+                  SizedBox(width: 12.w),
+                if (socialLinks.strava != null && socialLinks.instagram != null && socialLinks.facebook == null)
+                  SizedBox(width: 12.w),
+                if (socialLinks.strava != null)
+                  _SocialIconButton(
+                    value: socialLinks.strava!,
+                    platform: 'strava',
+                    icon: HugeIcons.strokeRoundedActivity01,
+                    label: 'Strava',
+                    color: const Color(0xFFFC4C02),
                   ),
-                  Expanded(
-                    child: Text(
-                      socialLinks.facebook!,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.ironmanRed,
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            if (socialLinks.instagram != null) ...[
-              if (socialLinks.strava != null || socialLinks.facebook != null)
-                SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Text(
-                    'Instagram: ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      socialLinks.instagram!,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.ironmanRed,
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ] else
+              ],
+            )
+          else
             Padding(
               padding: EdgeInsets.symmetric(vertical: 8.h),
               child: Text(
@@ -1994,6 +1965,81 @@ class _DisciplineRow extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Кнопка-иконка соцсети с переходом по URL
+class _SocialIconButton extends StatelessWidget {
+  final String value;
+  final String platform; // 'instagram' | 'strava' | 'facebook'
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _SocialIconButton({
+    required this.value,
+    required this.platform,
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  String _buildUrl() {
+    final v = value.trim().replaceAll(RegExp(r'^@'), '');
+    switch (platform) {
+      case 'instagram':
+        return 'https://instagram.com/$v';
+      case 'strava':
+        return 'https://www.strava.com/athletes/$v';
+      case 'facebook':
+        return 'https://facebook.com/$v';
+      default:
+        return v.startsWith('http') ? v : 'https://$v';
+    }
+  }
+
+  Future<void> _launch() async {
+    final uri = Uri.tryParse(_buildUrl());
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _launch,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 48.r,
+            height: 48.r,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: HugeIcon(
+              icon: icon,
+              color: color,
+              size: 24.r,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
       ),
     );
   }

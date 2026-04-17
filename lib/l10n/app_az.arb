@@ -126,6 +126,7 @@
   "photo_delete": "Sil",
   "photo_avatar_updated": "Avatar uğurla yeniləndi",
   "photo_avatar_set_error": "Avatar təyin edilmədi",
+  "photo_pending_approval": "Yoxlanışda",
   "photo_add_button": "Əlavə et",
   "result_total_time": "Ümumi vaxt",
   "result_category": "Kateqoriya",

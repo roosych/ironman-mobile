@@ -414,6 +414,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get photo_avatar_set_error => 'Не удалось установить аватар';
 
   @override
+  String get photo_pending_approval => 'Проверяется';
+
+  @override
   String get photo_add_button => 'Добавить';
 
   @override

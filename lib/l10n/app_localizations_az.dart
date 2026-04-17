@@ -414,6 +414,9 @@ class AppLocalizationsAz extends AppLocalizations {
   String get photo_avatar_set_error => 'Avatar təyin edilmədi';
 
   @override
+  String get photo_pending_approval => 'Yoxlanışda';
+
+  @override
   String get photo_add_button => 'Əlavə et';
 
   @override

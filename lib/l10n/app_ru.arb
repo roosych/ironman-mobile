@@ -127,6 +127,7 @@
   "photo_delete": "Удалить",
   "photo_avatar_updated": "Аватар успешно обновлён",
   "photo_avatar_set_error": "Не удалось установить аватар",
+  "photo_pending_approval": "Проверяется",
   "photo_add_button": "Добавить",
   "result_total_time": "Общее время",
   "result_category": "Категория",

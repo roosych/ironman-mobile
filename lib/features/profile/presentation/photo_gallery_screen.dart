@@ -456,6 +456,38 @@ class _PhotoCard extends StatelessWidget {
               ),
             ),
 
+          // Pending approval badge
+          if (!photo.isApproved)
+            Positioned(
+              top: photo.isAvatar ? 24.h : 4,
+              left: 4,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade700,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedClock01,
+                      size: 12.r,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 2.w),
+                    Text(
+                      AppLocalizations.of(context)!.photo_pending_approval,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
           // Action buttons overlay
           Positioned(
             bottom: 0,
@@ -482,12 +514,13 @@ class _PhotoCard extends StatelessWidget {
                     onTap: onDelete,
                     tooltip: AppLocalizations.of(context)!.photo_delete,
                   ),
-                  // Set as avatar button
-                  _ActionButton(
-                    icon: HugeIcons.strokeRoundedUser,
-                    onTap: onSetAvatar,
-                    tooltip: AppLocalizations.of(context)!.photo_set_as_avatar,
-                  ),
+                  // Set as avatar button — only if approved
+                  if (photo.isApproved)
+                    _ActionButton(
+                      icon: HugeIcons.strokeRoundedUser,
+                      onTap: onSetAvatar,
+                      tooltip: AppLocalizations.of(context)!.photo_set_as_avatar,
+                    ),
                 ],
               ),
             ),

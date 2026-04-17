@@ -492,6 +492,7 @@
     "description": "Avatar updated success message"
   },
   "photo_avatar_set_error": "Failed to set avatar",
+  "photo_pending_approval": "Pending",
   "@photo_avatar_set_error": {
     "description": "Error message when setting avatar fails"
   },

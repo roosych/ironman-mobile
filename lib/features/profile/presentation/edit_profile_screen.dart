@@ -36,7 +36,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _stravaController =
         TextEditingController(text: state.athleteProfile.socialLinks.strava ?? '');
     _instagramController =
-        TextEditingController(text: state.athleteProfile.socialLinks.instagram ?? '');
+        TextEditingController(text: (state.athleteProfile.socialLinks.instagram ?? '').replaceAll(RegExp(r'^@+'), ''));
     _facebookController =
         TextEditingController(text: state.athleteProfile.socialLinks.facebook ?? '');
 
@@ -89,12 +89,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _nameController.text = next.name;
         _bioController.text = next.athleteProfile.bio ?? '';
         _stravaController.text = next.athleteProfile.socialLinks.strava ?? '';
-        _instagramController.text = next.athleteProfile.socialLinks.instagram ?? '';
+        _instagramController.text = (next.athleteProfile.socialLinks.instagram ?? '').replaceAll(RegExp(r'^@+'), '');
         _facebookController.text = next.athleteProfile.socialLinks.facebook ?? '';
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          FocusScope.of(context).unfocus();
+          FocusManager.instance.primaryFocus?.unfocus();
           setState(() {
             _selectedCountry = next.countryIso != null
                 ? Countries.all.where((country) =>
@@ -104,10 +104,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         });
       }
       if (next.successMessage != null && previous?.successMessage != next.successMessage) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (!context.mounted) return;
-          FocusScope.of(context).unfocus();
-          AlertHelper.showSuccess(context, next.successMessage!);
+          FocusManager.instance.primaryFocus?.unfocus();
+          await AlertHelper.showSuccess(context, next.successMessage!);
+          FocusManager.instance.primaryFocus?.unfocus();
           try {
             ref.read(editProfileProvider.notifier).clearSuccessMessage();
           } catch (e) {
@@ -306,9 +307,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             controller: _stravaController,
                             decoration: InputDecoration(
                               labelText: 'Strava',
-                              hintText: 'Strava ID',
+                              hintText: '12345678',
                               prefixIcon: HugeIcon(
-                                icon: HugeIcons.strokeRoundedBicycle,
+                                icon: HugeIcons.strokeRoundedActivity01,
                                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                                 size: 20.r,
                               ),
@@ -325,7 +326,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
                               ),
                             ),
-                            keyboardType: TextInputType.url,
+                            keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
                             onChanged: (value) {
                               ref.read(editProfileProvider.notifier).updateStrava(value);
@@ -338,7 +339,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             controller: _instagramController,
                             decoration: InputDecoration(
                               labelText: 'Instagram',
-                              hintText: '@username',
+                              hintText: 'username',
+                              prefixText: '@',
                               prefixIcon: HugeIcon(
                                 icon: HugeIcons.strokeRoundedInstagram,
                                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -360,7 +362,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.next,
                             onChanged: (value) {
-                              ref.read(editProfileProvider.notifier).updateInstagram(value);
+                              // Strip leading @ if user types it manually
+                              final stripped = value.replaceAll(RegExp(r'^@+'), '');
+                              if (stripped != value) {
+                                _instagramController.value = _instagramController.value.copyWith(
+                                  text: stripped,
+                                  selection: TextSelection.collapsed(offset: stripped.length),
+                                );
+                              }
+                              ref.read(editProfileProvider.notifier).updateInstagram(stripped);
                             },
                           ),
                           SizedBox(height: 16.h),
@@ -389,7 +399,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
                               ),
                             ),
-                            keyboardType: TextInputType.url,
+                            keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.done,
                             onChanged: (value) {
                               ref.read(editProfileProvider.notifier).updateFacebook(value);

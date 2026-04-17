@@ -195,42 +195,75 @@ class _PhotoViewerScreenState extends ConsumerState<PhotoViewerScreen> {
                         size: 28,
                       ),
                     ),
-                    // Avatar badge
-                    if (currentPhoto.isAvatar)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const HugeIcon(
-                              icon: HugeIcons.strokeRoundedStar,
-                              size: 16,
+                    // Badges row
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (currentPhoto.isAvatar)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const HugeIcon(
+                                  icon: HugeIcons.strokeRoundedStar,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppLocalizations.of(context)!.photo_avatar,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Text(
+                            '${safeIndex + 1} / ${photos.length}',
+                            style: const TextStyle(
                               color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              AppLocalizations.of(context)!.photo_avatar,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          ),
+                        if (!currentPhoto.isApproved) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade700,
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                          ],
-                        ),
-                      )
-                    else
-                      Text(
-                        '${safeIndex + 1} / ${photos.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const HugeIcon(
+                                  icon: HugeIcons.strokeRoundedClock01,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppLocalizations.of(context)!.photo_pending_approval,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                     const SizedBox(width: 48),
                   ],
                 ),
@@ -267,19 +300,20 @@ class _PhotoViewerScreenState extends ConsumerState<PhotoViewerScreen> {
                           ? null
                           : () => _onDelete(currentPhoto),
                     ),
-                    // Set as avatar button
-                    _ActionButton(
-                      icon: currentPhoto.isAvatar
-                          ? HugeIcons.strokeRoundedStar
-                          : HugeIcons.strokeRoundedUser,
-                      label: currentPhoto.isAvatar 
-                          ? AppLocalizations.of(context)!.photo_avatar 
-                          : AppLocalizations.of(context)!.photo_set_as_avatar,
-                      onTap: photosState.isLoading || currentPhoto.isAvatar
-                          ? null
-                          : () => _onSetAvatar(currentPhoto),
-                      isActive: currentPhoto.isAvatar,
-                    ),
+                    // Set as avatar button — only if approved
+                    if (currentPhoto.isApproved)
+                      _ActionButton(
+                        icon: currentPhoto.isAvatar
+                            ? HugeIcons.strokeRoundedStar
+                            : HugeIcons.strokeRoundedUser,
+                        label: currentPhoto.isAvatar
+                            ? AppLocalizations.of(context)!.photo_avatar
+                            : AppLocalizations.of(context)!.photo_set_as_avatar,
+                        onTap: photosState.isLoading || currentPhoto.isAvatar
+                            ? null
+                            : () => _onSetAvatar(currentPhoto),
+                        isActive: currentPhoto.isAvatar,
+                      ),
                   ],
                 ),
               ),
