@@ -232,11 +232,10 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
 
             SizedBox(height: 16.h),
 
-            // Location field — tap opens race picker bottom sheet
+            // Location field — manual input OR tap search icon to pick from list
             TextFormField(
               controller: _locationController,
-              readOnly: true,
-              onTap: _openRacePicker,
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: localizations.add_result_location,
                 hintText: localizations.add_result_location_hint,
@@ -248,10 +247,27 @@ class _AddResultScreenState extends ConsumerState<AddResultScreen> {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   size: 20.r,
                 ),
-                suffixIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                  size: 20.r,
+                suffixIcon: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                  child: InkWell(
+                    onTap: _openRacePicker,
+                    borderRadius: BorderRadius.circular(50.r),
+                    child: Tooltip(
+                      message: localizations.add_result_location_hint,
+                      child: Container(
+                        padding: EdgeInsets.all(6.r),
+                        decoration: BoxDecoration(
+                          color: AppColors.ironmanRed.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedSearch01,
+                          color: AppColors.ironmanRed,
+                          size: 18.r,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),

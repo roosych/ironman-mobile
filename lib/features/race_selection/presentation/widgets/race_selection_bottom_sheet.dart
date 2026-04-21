@@ -68,9 +68,8 @@ class _RaceSelectionBottomSheetState
 
   /// Обработка выбора гонки
   Future<void> _onRaceSelected(RaceModel race) async {
-    // Пик-режим: просто возвращаем гонку через колбэк
+    // Пик-режим: колбэк сам закрывает боттомшит через Navigator.pop(race)
     if (widget.onRaceSelected != null) {
-      Navigator.of(context).pop();
       widget.onRaceSelected!(race);
       return;
     }
