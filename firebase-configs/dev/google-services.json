@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "46649103584",
-    "project_id": "ironmanapp-dev",
-    "storage_bucket": "ironmanapp-dev.firebasestorage.app"
+    "project_number": "867398416282",
+    "project_id": "ironman-app-2c09b",
+    "storage_bucket": "ironman-app-2c09b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:46649103584:android:15b7c900a2ebc8ad17ec85",
+        "mobilesdk_app_id": "1:867398416282:android:6049ee635e06d487d06c23",
         "android_client_info": {
           "package_name": "az.metak.ironstats_mobile"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDRjjx6R0VFPQen_W9F2EK_EONRo-jP_1A"
+          "current_key": "AIzaSyArn_qNIJUzcU885OXH-lBfjR5PtTeJD6A"
         }
       ],
       "services": {

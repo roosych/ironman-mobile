@@ -82,4 +82,5 @@ firebase-configs/prod/GoogleService-Info.plist
 # Они будут в firebase-configs/dev/
 
 # Environment switcher logs
-switch-env.log
+switch-env.logassets/adi-registration.properties
+**/adi-registration.properties
