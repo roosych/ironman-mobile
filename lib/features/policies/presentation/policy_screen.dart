@@ -9,6 +9,7 @@ import '../domain/policy.dart';
 import '../../settings/application/locale_notifier.dart';
 import '../../../shared/widgets/language_selector.dart';
 import '../../../core/theme/app_button_styles.dart';
+import '../../../shared/utils/error_handler.dart';
 
 class PolicyScreen extends ConsumerStatefulWidget {
   final String? initialType; // privacy, terms, data_processing, cookies
@@ -220,7 +221,7 @@ class _PolicyScreenState extends ConsumerState<PolicyScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              error,
+              ErrorHandler.localizeErrorKey(error, localizations),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16,

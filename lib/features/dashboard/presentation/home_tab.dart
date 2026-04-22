@@ -826,10 +826,12 @@ class _MyResultsExpandableCardState
                       child: Column(
                         children: [
                           Text(
-                            resultsState.error ??
-                                AppLocalizations.of(
-                                  context,
-                                )!.common_loading_error,
+                            resultsState.error != null
+                                ? ErrorHandler.localizeErrorKey(
+                                    resultsState.error!,
+                                    AppLocalizations.of(context)!,
+                                  )
+                                : AppLocalizations.of(context)!.common_loading_error,
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyMedium,
                           ),

@@ -564,7 +564,7 @@ class _RaceSelectionBottomSheetState
             ),
             SizedBox(height: 16.h),
             Text(
-              error,
+              ErrorHandler.localizeErrorKey(error, localizations),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge,
             ),
