@@ -93,6 +93,9 @@ class _RaceSelectionBottomSheetState
         await ref
             .read(globalUpcomingRacesProvider.notifier)
             .refreshUpcomingRaces();
+        ref.invalidate(myRacesProvider);
+        ref.invalidate(dashboardUpcomingRacesProvider);
+        ref.invalidate(myDashboardUpcomingRacesProvider);
       }
 
       if (!mounted) return;
