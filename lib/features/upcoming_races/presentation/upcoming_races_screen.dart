@@ -35,7 +35,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
   }
 
   void _loadAllRaces() {
-    ref.read(globalUpcomingRacesProvider.notifier).loadUpcomingRaces(
+    ref.read(globalUpcomingRacesProvider.notifier).refreshUpcomingRaces(
       onlyFuture: false,
     );
   }
