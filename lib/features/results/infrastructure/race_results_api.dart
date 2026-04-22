@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/errors/api_error_keys.dart';
 import '../domain/race_result.dart';
 import '../domain/paginated_response.dart';
 
@@ -54,10 +55,10 @@ class RaceResultsApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Request timeout');
+        throw RaceResultsApiException(ApiErrorKeys.timeout);
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RaceResultsApiException('NETWORK_NO_CONNECTION');
+        throw RaceResultsApiException(ApiErrorKeys.networkNoConnection);
       }
 
       // Более детальная информация об ошибке
@@ -168,10 +169,10 @@ class RaceResultsApi {
       
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Request timeout');
+        throw RaceResultsApiException(ApiErrorKeys.timeout);
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RaceResultsApiException('NETWORK_NO_CONNECTION');
+        throw RaceResultsApiException(ApiErrorKeys.networkNoConnection);
       }
 
       // Более детальная информация об ошибке
@@ -272,10 +273,10 @@ class RaceResultsApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Request timeout');
+        throw RaceResultsApiException(ApiErrorKeys.timeout);
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RaceResultsApiException('NETWORK_NO_CONNECTION');
+        throw RaceResultsApiException(ApiErrorKeys.networkNoConnection);
       }
 
       // Более детальная информация об ошибке
@@ -370,10 +371,10 @@ class RaceResultsApi {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        throw RaceResultsApiException('Request timeout');
+        throw RaceResultsApiException(ApiErrorKeys.timeout);
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw RaceResultsApiException('NETWORK_NO_CONNECTION');
+        throw RaceResultsApiException(ApiErrorKeys.networkNoConnection);
       }
 
       // Более детальная информация об ошибке
