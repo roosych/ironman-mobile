@@ -36,14 +36,14 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
 
   void _loadAllRaces() {
     ref.read(globalUpcomingRacesProvider.notifier).refreshUpcomingRaces(
-      onlyFuture: false,
+      onlyFuture: true,
     );
   }
 
   Future<void> _refreshAllRaces() async {
     try {
       await ref.read(globalUpcomingRacesProvider.notifier).refreshUpcomingRaces(
-        onlyFuture: false,
+        onlyFuture: true,
       );
     } catch (e) {
       // Ошибка уже обработана в провайдере
@@ -52,7 +52,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
 
   void _loadNextPage() {
     ref.read(globalUpcomingRacesProvider.notifier).loadNextPage(
-      onlyFuture: false,
+      onlyFuture: true,
     );
   }
 
@@ -163,7 +163,7 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
 
     final grouped = _groupRaces(state.races);
 
-    if (grouped.isEmpty) {
+    if (grouped.isEmpty && !state.isLoading) {
       return Center(
         child: Text(
           localizations.home_no_upcoming_races,
@@ -172,36 +172,47 @@ class _UpcomingRacesScreenState extends ConsumerState<UpcomingRacesScreen> {
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _refreshAllRaces,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
-            if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) _loadNextPage();
-              });
-            }
-          }
-          return false;
-        },
-        child: ListView.builder(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
-          itemCount: grouped.length + (state.isLoadingMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == grouped.length) {
-              return Padding(
-                padding: EdgeInsets.all(16.r),
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            }
-            return Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: GroupedUpcomingRaceCard(races: grouped[index]),
-            );
-          },
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: _refreshAllRaces,
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
+                if (state.hasMorePages && !state.isLoadingMore && !state.isLoading) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) _loadNextPage();
+                  });
+                }
+              }
+              return false;
+            },
+            child: ListView.builder(
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 32.h),
+              itemCount: grouped.length + (state.isLoadingMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == grouped.length) {
+                  return Padding(
+                    padding: EdgeInsets.all(16.r),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 16.h),
+                  child: GroupedUpcomingRaceCard(races: grouped[index]),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        if (state.isLoading && state.races.isNotEmpty)
+          Positioned(
+            top: 16.h,
+            left: 0,
+            right: 0,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
     );
   }
 

@@ -84,14 +84,17 @@ class GroupedUpcomingRaceCard extends StatelessWidget {
   }
 
   Widget _buildAvatar(CreatedBy athlete, ThemeData theme, double size) {
+    final isLight = theme.brightness == Brightness.light;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: theme.cardTheme.color ?? theme.colorScheme.surface,
-          width: 2,
+          color: isLight
+              ? theme.colorScheme.outlineVariant
+              : (theme.cardTheme.color ?? theme.colorScheme.surface),
+          width: 1,
         ),
       ),
       child: ClipOval(
@@ -162,9 +165,10 @@ class GroupedUpcomingRaceCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: theme.colorScheme.surfaceContainerHighest,
                         border: Border.all(
-                          color: theme.cardTheme.color ??
-                              theme.colorScheme.surface,
-                          width: 2,
+                          color: theme.brightness == Brightness.light
+                              ? theme.colorScheme.outlineVariant
+                              : (theme.cardTheme.color ?? theme.colorScheme.surface),
+                          width: 1,
                         ),
                       ),
                       child: Center(
@@ -356,7 +360,11 @@ class _AthletesBottomSheet extends StatelessWidget {
     return Container(
       width: size.r,
       height: size.r,
-      decoration: const BoxDecoration(shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: theme.colorScheme.outline,
+      ),
+      padding: const EdgeInsets.all(1),
       child: ClipOval(
         child: athlete.avatar != null
             ? Image.network(

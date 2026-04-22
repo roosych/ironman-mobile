@@ -188,25 +188,24 @@ class UpcomingRacesNotifier extends StateNotifier<UpcomingRacesState> {
     String? raceType,
     bool onlyFuture = true,
   }) async {
-    state = state.copyWith(clearError: true);
+    state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      final racesResponse = await _api
-          .fetchUpcomingRacesWithPagination(
-            userProfileId: userProfileId,
-            raceType: raceType,
-            onlyFuture: onlyFuture,
-            page: 1,
-          )
-;
+      final racesResponse = await _api.fetchUpcomingRacesWithPagination(
+        userProfileId: userProfileId,
+        raceType: raceType,
+        onlyFuture: onlyFuture,
+        page: 1,
+      );
       state = state.copyWith(
         races: racesResponse.data,
+        isLoading: false,
         paginationMeta: racesResponse.meta,
       );
     } on UpcomingRacesApiException catch (e) {
-      state = state.copyWith(error: e.localizationKey);
+      state = state.copyWith(isLoading: false, error: e.localizationKey);
     } catch (e) {
-      state = state.copyWith(error: 'Произошла ошибка');
+      state = state.copyWith(isLoading: false, error: 'Произошла ошибка');
     }
   }
 
