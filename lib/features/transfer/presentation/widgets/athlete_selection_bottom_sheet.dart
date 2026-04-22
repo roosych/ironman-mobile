@@ -10,6 +10,7 @@ import '../../application/eligible_athletes_state.dart';
 import '../../providers/transfer_providers.dart';
 import '../../../auth/application/auth_notifier.dart';
 import '../../../results/application/race_results_notifier.dart';
+import '../../../../shared/utils/error_handler.dart';
 
 /// BottomSheet для выбора атлета-донора результатов
 class AthleteSelectionBottomSheet extends ConsumerStatefulWidget {
@@ -85,8 +86,10 @@ class _AthleteSelectionBottomSheetState
         _refreshUserResults();
       } else {
         // Показываем диалог ошибки (BottomSheet остаётся открытым)
-        final error = ref.read(transferStatusProvider).error ??
-            localizations.transfer_request_error;
+        final rawError = ref.read(transferStatusProvider).error;
+        final error = rawError != null
+            ? ErrorHandler.localizeErrorKey(rawError, localizations)
+            : localizations.transfer_request_error;
         await _showResultDialog(
           isSuccess: false,
           localizations: localizations,
@@ -466,34 +469,6 @@ class _AthleteSelectionBottomSheetState
     );
   }
 
-  String _localizeError(String key, AppLocalizations loc) {
-    // Обработка api_error_server:STATUS (закодированный статус-код)
-    if (key.startsWith('api_error_server:')) {
-      final status = key.substring('api_error_server:'.length);
-      return loc.api_error_server(status.isNotEmpty ? status : '?');
-    }
-    switch (key) {
-      case 'api_error_timeout':
-        return loc.api_error_timeout;
-      case 'api_error_empty_response':
-        return loc.api_error_empty_response;
-      case 'api_error_athletes_format':
-        return loc.api_error_athletes_format;
-      case 'api_error_athlete_item_format':
-        return loc.api_error_athlete_item_format;
-      case 'api_error_athletes_loading':
-        return loc.api_error_athletes_loading;
-      case 'api_error_server':
-        return loc.api_error_server('?');
-      case 'api_error_network_no_connection':
-        return loc.api_error_network_no_connection;
-      case 'api_error_unexpected':
-        return loc.api_error_unexpected('');
-      default:
-        return key;
-    }
-  }
-
   /// Строит состояние ошибки
   Widget _buildErrorState(
     String error,
@@ -513,7 +488,7 @@ class _AthleteSelectionBottomSheetState
             ),
             SizedBox(height: 16.h),
             Text(
-              _localizeError(error, localizations),
+              ErrorHandler.localizeErrorKey(error, localizations),
               style: theme.textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
