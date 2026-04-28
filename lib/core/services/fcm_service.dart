@@ -466,53 +466,6 @@ class FcmService {
     }
   }
 
-  /// Показать локальное уведомление в foreground
-  Future<void> _showLocalNotification(RemoteMessage message) async {
-    try {
-      final notification = message.notification;
-      final android = notification?.android;
-
-      debugPrint('📱 FCM: Showing local notification');
-      debugPrint(
-        '📱 FCM: Title: ${notification?.title ?? message.data['title']}',
-      );
-      debugPrint('📱 FCM: Body: ${notification?.body ?? message.data['body']}');
-      debugPrint(
-        '📱 FCM: Channel ID: ${_androidChannel?.id ?? 'ironman_high_importance'}',
-      );
-      debugPrint('📱 FCM: Local notifications ready: $_isInitialized');
-
-      final details = NotificationDetails(
-        android: AndroidNotificationDetails(
-          _androidChannel?.id ?? 'ironman_high_importance',
-          _androidChannel?.name ?? 'High Importance Notifications',
-          channelDescription:
-              _androidChannel?.description ?? 'Foreground notifications',
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: android?.smallIcon ?? '@drawable/ic_notification',
-          showWhen: true,
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      );
-
-      await _localNotifications.show(
-        notification.hashCode,
-        notification?.title ?? message.data['title'],
-        notification?.body ?? message.data['body'],
-        details,
-        payload: message.data.isNotEmpty ? message.data.toString() : null,
-      );
-
-      debugPrint('✅ FCM: Local notification shown successfully');
-    } catch (e) {
-      debugPrint('FCM: Error showing local notification: $e');
-    }
-  }
 }
 
 /// Top-level функция для обработки фоновых сообщений

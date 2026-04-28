@@ -142,8 +142,6 @@ class _PaceCalculatorScreenState extends ConsumerState<PaceCalculatorScreen> {
     );
     Duration selected = clampedInitial;
 
-    final theme = Theme.of(context);
-
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,

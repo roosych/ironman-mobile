@@ -5,7 +5,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:ironman_mobile/l10n/app_localizations.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
-import 'package:ironman_mobile/shared/data/countries.dart';
 import 'package:ironman_mobile/features/dashboard/domain/athlete.dart';
 import 'package:ironman_mobile/features/dashboard/application/athlete_detail_notifier.dart';
 import 'package:ironman_mobile/features/dashboard/application/athlete_detail_state.dart';
@@ -1314,8 +1313,6 @@ class _AthleteProfileScreenState extends ConsumerState<AthleteProfileScreen>
   }
 
   Widget _buildRatingBlock(BuildContext context, ThemeData theme, Athlete athlete) {
-    final localizations = AppLocalizations.of(context)!;
-
     return Card(
         elevation: 0,
         shape: RoundedRectangleBorder(

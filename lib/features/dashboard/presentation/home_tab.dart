@@ -434,7 +434,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
 }
 
 class _NotificationPermissionCard extends ConsumerStatefulWidget {
-  const _NotificationPermissionCard({super.key});
+  const _NotificationPermissionCard();
 
   @override
   ConsumerState<_NotificationPermissionCard> createState() =>

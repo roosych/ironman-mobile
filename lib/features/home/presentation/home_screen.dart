@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:ironman_mobile/core/theme/app_colors.dart';
-import 'package:ironman_mobile/features/auth/application/auth_notifier.dart';
 import 'package:ironman_mobile/features/home/presentation/pace_calculator_screen.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/results_screen.dart';
 import 'package:ironman_mobile/features/dashboard/presentation/ratings_screen.dart';

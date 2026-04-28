@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/utils/alert_helper.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_button_styles.dart';
 import '../application/change_password_notifier.dart';
 

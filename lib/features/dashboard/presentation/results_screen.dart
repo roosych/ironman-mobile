@@ -138,24 +138,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return authState.status == AuthStatus.authenticated && authState.user != null;
   }
 
-  List<Widget> _buildTabs(BuildContext context) {
-    final tabs = <Widget>[
-      Tab(
-        text: AppLocalizations.of(context)!.results_all_athletes,
-      ),
-    ];
-
-    if (_isUserAuthenticated()) {
-      tabs.add(
-        Tab(
-          text: AppLocalizations.of(context)!.results_my_results,
-        ),
-      );
-    }
-
-    return tabs;
-  }
-
   List<Widget> _buildTabViews(RaceResultsState allResultsState, RaceResultsState myResultsState) {
     final views = <Widget>[
       _buildAllAthletesTab(allResultsState),
